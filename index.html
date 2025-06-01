@@ -1,149 +1,418 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Lista de la compra</title>
+  <meta charset="UTF-8" />
+  <title>Lista de la compra con usuarios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: Arial; padding: 20px; }
-    h1 { margin-bottom: 30px; }
-    .item { display: flex; align-items: center; margin-bottom: 10px; }
-    .item img { width: 40px; height: 40px; object-fit: cover; margin-right: 10px; border-radius: 4px; }
-    .item input[type="checkbox"] { margin-right: 10px; }
-    .item span.editable, .list-title.editable { cursor: pointer; border-bottom: 1px dotted #888; }
-    .item span.checked { text-decoration: line-through; color: gray; }
-    .form { margin-bottom: 20px; }
-    .list-container { border: 1px solid #ccc; padding: 10px; border-radius: 6px; margin-bottom: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      font-size: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #f9f9f9;
+    }
+    h1 {
+      margin-bottom: 30px;
+      font-size: 28px;
+      text-align: center;
+    }
+
+    #authView {
+      max-width: 400px;
+      width: 100%;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgb(0 0 0 / 0.1);
+    }
+    #authView h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 24px;
+      text-align: center;
+    }
+    #authView input[type="email"],
+    #authView input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    #authView button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4caf50;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    #authView .toggle {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      cursor: pointer;
+    }
+    #authView .toggle span {
+      color: #4caf50;
+      text-decoration: underline;
+    }
+
+    #appView {
+      display: none;
+      width: 100%;
+      max-width: 500px;
+    }
+    #appView.active {
+      display: block;
+    }
+
+    .logout-btn {
+      margin-bottom: 15px;
+      background: #ddd;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      align-self: flex-end;
+    }
+
+    .list-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .list-button {
+      padding: 20px;
+      font-size: 20px;
+      border: 2px solid #888;
+      border-radius: 10px;
+      background: #f3f3f3;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .back-btn {
+      margin-bottom: 15px;
+      background: #ddd;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .list-container {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    h2.list-title.editable {
+      cursor: pointer;
+      font-size: 24px;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    .form {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .form input[type="text"] {
+      font-size: 18px;
+      padding: 8px;
+      flex: 1;
+    }
+
+    .form button {
+      font-size: 30px;
+      height: 30px;
+      width: 30px;
+      border-radius: 50%;
+      background-color: #4caf50;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      margin-right: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .item img.default-img {
+      width: 30px;
+      height: 30px;
+      opacity: 0.7;
+    }
+
+    .item input[type="checkbox"] {
+      margin-right: 10px;
+      width: 22px;
+      height: 22px;
+    }
+
+    .item span.editable {
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .item span.checked {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 99;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Mis listas de la compra</h1>
+  <h1>Lista de la compra con usuarios</h1>
 
-  <!-- Lista 1 -->
-  <div class="list-container">
-    <h2 class="list-title editable" onclick="editListTitle(this)">Lista 1</h2>
-    <form class="form" onsubmit="addItem(event, 'list1')">
-      <input type="text" placeholder="Nombre del artículo" id="name-list1" required>
-      <input type="file" accept="image/*" capture="environment" id="image-list1">
-      <button type="submit">Añadir</button>
+  <div id="authView">
+    <h2 id="authTitle">Iniciar sesión</h2>
+    <form id="authForm">
+      <input type="email" id="email" placeholder="Correo electrónico" required />
+      <input type="password" id="password" placeholder="Contraseña" required />
+      <button type="submit" id="authButton">Entrar</button>
     </form>
-    <div id="list1"></div>
+    <div class="toggle" id="toggleAuth">¿No tienes cuenta? <span>Regístrate</span></div>
+    <p id="authMessage" style="color:red; text-align:center; margin-top:10px;"></p>
   </div>
 
-  <!-- Lista 2 -->
-  <div class="list-container">
-    <h2 class="list-title editable" onclick="editListTitle(this)">Lista 2</h2>
-    <form class="form" onsubmit="addItem(event, 'list2')">
-      <input type="text" placeholder="Nombre del artículo" id="name-list2" required>
-      <input type="file" accept="image/*" capture="environment" id="image-list2">
-      <button type="submit">Añadir</button>
-    </form>
-    <div id="list2"></div>
+  <div id="appView">
+    <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+
+    <div id="modal" class="modal" onclick="closeModal()">
+      <img id="modalImage" src="" alt="Vista ampliada" />
+    </div>
+
+    <div id="selectorView" class="list-selector">
+      <div class="list-button" id="list1Button" onclick="showList('list1View')">Lista 1</div>
+      <div class="list-button" id="list2Button" onclick="showList('list2View')">Lista 2</div>
+    </div>
+
+    <div id="list1View" class="view" style="display:none;">
+      <button class="back-btn" onclick="showList('selectorView')">← Volver</button>
+      <div class="list-container">
+        <h2 class="list-title editable" data-button-id="list1Button" onclick="editListTitle(this)">Lista 1</h2>
+        <form class="form" onsubmit="addItem(event, 'list1')">
+          <input type="text" placeholder="Nombre del artículo" id="name-list1" required />
+          <button type="submit">+</button>
+        </form>
+        <div id="list1"></div>
+      </div>
+    </div>
+
+    <div id="list2View" class="view" style="display:none;">
+      <button class="back-btn" onclick="showList('selectorView')">← Volver</button>
+      <div class="list-container">
+        <h2 class="list-title editable" data-button-id="list2Button" onclick="editListTitle(this)">Lista 2</h2>
+        <form class="form" onsubmit="addItem(event, 'list2')">
+          <input type="text" placeholder="Nombre del artículo" id="name-list2" required />
+          <button type="submit">+</button>
+        </form>
+        <div id="list2"></div>
+      </div>
+    </div>
   </div>
 
   <script>
-    function addItem(event, listId) {
-      event.preventDefault();
-      const nameInput = document.getElementById(`name-${listId}`);
-      const imageInput = document.getElementById(`image-${listId}`);
-      const listDiv = document.getElementById(listId);
+    let currentUser = null;
 
-      const itemName = nameInput.value;
-      const file = imageInput.files[0];
+    const authView = document.getElementById('authView');
+    const appView = document.getElementById('appView');
+    const authTitle = document.getElementById('authTitle');
+    const authForm = document.getElementById('authForm');
+    const authButton = document.getElementById('authButton');
+    const toggleAuth = document.getElementById('toggleAuth');
+    const authMessage = document.getElementById('authMessage');
+    let authMode = 'login';
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const imgSrc = file ? e.target.result : '';
+    toggleAuth.addEventListener('click', () => {
+      authMode = authMode === 'login' ? 'register' : 'login';
+      authTitle.textContent = authMode === 'login' ? 'Iniciar sesión' : 'Regístrate';
+      authButton.textContent = authMode === 'login' ? 'Entrar' : 'Registrar';
+      toggleAuth.innerHTML = authMode === 'login' ? '¿No tienes cuenta? <span>Regístrate</span>' : '¿Ya tienes cuenta? <span>Inicia sesión</span>';
+      authMessage.textContent = '';
+    });
 
-        const item = document.createElement('div');
-        item.className = 'item';
+    authForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      let users = JSON.parse(localStorage.getItem('users') || '{}');
 
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-
-        const img = document.createElement('img');
-        img.src = imgSrc || 'https://via.placeholder.com/40';
-        if (!file) img.style.opacity = 0.4;
-
-        const text = document.createElement('span');
-        text.textContent = itemName;
-        text.className = 'editable';
-        text.addEventListener('click', () => editText(text));
-
-        checkbox.addEventListener('change', () => {
-          if (checkbox.checked) {
-            text.classList.add('checked');
-          } else {
-            text.classList.remove('checked');
-          }
-        });
-
-        item.appendChild(checkbox);
-        item.appendChild(img);
-        item.appendChild(text);
-
-        listDiv.appendChild(item);
-        nameInput.value = '';
-        imageInput.value = '';
-      };
-
-      if (file) {
-        reader.readAsDataURL(file);
+      if (authMode === 'register') {
+        if (users[email]) {
+          authMessage.textContent = 'El usuario ya existe.';
+        } else {
+          users[email] = password;
+          localStorage.setItem('users', JSON.stringify(users));
+          localStorage.setItem(`listApp_${email}`, JSON.stringify({ list1: [], list2: [] }));
+          loginUser(email);
+        }
       } else {
-        reader.onload(); // no image
+        if (users[email] && users[email] === password) {
+          loginUser(email);
+        } else {
+          authMessage.textContent = 'Credenciales incorrectas.';
+        }
       }
+    });
+
+    function loginUser(email) {
+      currentUser = email;
+      authView.style.display = 'none';
+      appView.classList.add('active');
+      loadLists();
     }
 
-    function editText(span) {
-      const currentText = span.textContent;
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.value = currentText;
-      input.style.fontSize = 'inherit';
-      input.style.width = '150px';
+    function logout() {
+      currentUser = null;
+      appView.classList.remove('active');
+      authView.style.display = 'block';
+      authForm.reset();
+    }
 
-      span.replaceWith(input);
-      input.focus();
+    function showList(viewId) {
+      document.getElementById('selectorView').style.display = 'none';
+      document.getElementById('list1View').style.display = 'none';
+      document.getElementById('list2View').style.display = 'none';
+      document.getElementById(viewId).style.display = 'block';
+    }
 
-      input.addEventListener('blur', () => {
-        const newText = input.value.trim() || currentText;
-        span.textContent = newText;
-        input.replaceWith(span);
-      });
-
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          input.blur();
-        }
+    function loadLists() {
+      const data = JSON.parse(localStorage.getItem(`listApp_${currentUser}`));
+      ['list1', 'list2'].forEach(listId => {
+        const container = document.getElementById(listId);
+        container.innerHTML = '';
+        data[listId].forEach(item => {
+          const el = document.createElement('div');
+          el.className = 'item';
+          const img = document.createElement('img');
+          img.src = item.img || 'https://cdn-icons-png.flaticon.com/512/685/685655.png';
+          img.className = item.img ? '' : 'default-img';
+          img.onclick = () => {
+            if (!item.img) {
+              selectImage(item, listId);
+            } else {
+              document.getElementById('modalImage').src = item.img;
+              document.getElementById('modal').style.display = 'flex';
+            }
+          };
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.checked = item.checked;
+          checkbox.onchange = () => {
+            item.checked = checkbox.checked;
+            saveList(listId, data[listId]);
+            span.classList.toggle('checked', item.checked);
+          };
+          const span = document.createElement('span');
+          span.textContent = item.name;
+          span.className = 'editable' + (item.checked ? ' checked' : '');
+          el.append(img, checkbox, span);
+          container.appendChild(el);
+        });
       });
     }
 
-    function editListTitle(heading) {
-      const currentText = heading.textContent;
+    function addItem(e, listId) {
+      e.preventDefault();
+      const input = document.getElementById(`name-${listId}`);
+      const name = input.value.trim();
+      if (!name) return;
+      const data = JSON.parse(localStorage.getItem(`listApp_${currentUser}`));
+      data[listId].push({ name, checked: false });
+      saveList(listId, data[listId]);
+      input.value = '';
+      loadLists();
+    }
+
+    function saveList(listId, items) {
+      const data = JSON.parse(localStorage.getItem(`listApp_${currentUser}`));
+      data[listId] = items;
+      localStorage.setItem(`listApp_${currentUser}`, JSON.stringify(data));
+    }
+
+    function selectImage(item, listId) {
       const input = document.createElement('input');
-      input.type = 'text';
-      input.value = currentText;
-      input.style.fontSize = '1.5em';
-      input.style.width = '200px';
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          item.img = reader.result;
+          const data = JSON.parse(localStorage.getItem(`listApp_${currentUser}`));
+          const index = data[listId].indexOf(item);
+          if (index !== -1) {
+            data[listId][index] = item;
+            saveList(listId, data[listId]);
+            loadLists();
+          }
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();
+    }
 
-      heading.replaceWith(input);
-      input.focus();
-
-      input.addEventListener('blur', () => {
-        const newText = input.value.trim() || currentText;
-        const newHeading = document.createElement('h2');
-        newHeading.className = 'list-title editable';
-        newHeading.textContent = newText;
-        newHeading.onclick = () => editListTitle(newHeading);
-        input.replaceWith(newHeading);
-      });
-
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          input.blur();
-        }
-      });
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
     }
   </script>
+
 </body>
 </html>
