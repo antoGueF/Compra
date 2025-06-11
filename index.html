@@ -125,6 +125,58 @@ const storage = firebase.storage();
       align-self: flex-end;
     }
 
+    .menu-container {
+  position: relative;
+  display: inline-block;
+}
+
+.menu-btn {
+  background: #ddd;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.menu-btn:hover {
+  background: #ccc;
+}
+
+.menu-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  min-width: 150px;
+  z-index: 1000;
+  margin-top: 2px;
+}
+
+.menu-dropdown.show {
+  display: block;
+}
+
+.menu-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:hover {
+  background: #f5f5f5;
+}
+
     .list-selector {
       display: flex;
       flex-direction: column;
@@ -142,15 +194,19 @@ const storage = firebase.storage();
       text-align: center;
     }
 
-    .back-btn {
-      margin-bottom: 15px;
-      background: #ddd;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-    }
+.back-btn {
+  margin-bottom: 15px;
+  background: #ddd;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  height: 42px; /* Altura fija para que coincida con el menú */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
     .list-container {
       border: 1px solid #ccc;
@@ -288,8 +344,13 @@ const storage = firebase.storage();
 
     <div id="selectorView" class="list-selector">
      <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-    <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+  <div class="menu-container">
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <div class="menu-dropdown" id="menuDropdown">
+      <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+    </div>
   </div>
+</div>
   <div class="list-button" id="list1Button" onclick="showList('list1View')">Lista 1</div>
   <div class="list-button" id="list2Button" onclick="showList('list2View')">Lista 2</div>
 </div>
@@ -297,7 +358,12 @@ const storage = firebase.storage();
     <div id="list1View" class="view" style="display:none;">
       <div class="top-bar">
   <button class="back-btn" onclick="showList('selectorView')">←</button>
-  <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+  <div class="menu-container">
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <div class="menu-dropdown" id="menuDropdown2">
+      <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+    </div>
+  </div>
 </div>
       <div class="list-container">
         <h2 class="list-title editable" data-button-id="list1Button" onclick="editListTitle(this)">Lista 1</h2>
@@ -312,7 +378,12 @@ const storage = firebase.storage();
     <div id="list2View" class="view" style="display:none;">
       <div class="top-bar">
   <button class="back-btn" onclick="showList('selectorView')">←</button>
-  <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+  <div class="menu-container">
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <div class="menu-dropdown" id="menuDropdown3">
+      <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+    </div>
+  </div>
 </div>
       <div class="list-container">
         <h2 class="list-title editable" data-button-id="list2Button" onclick="editListTitle(this)">Lista 2</h2>
@@ -456,10 +527,11 @@ loadLists();
     const userData = doc.data();
     const data = userData.lists || { list1: [], list2: [] };
     
-    ['list1', 'list2'].forEach(listId => {
-      const container = document.getElementById(listId);
-      container.innerHTML = '';
-      (data[listId] || []).forEach((item, index) => {
+['list1', 'list2'].forEach(listId => {
+  const container = document.getElementById(listId);
+  container.innerHTML = '';
+  const orderedList = reorderList(data[listId] || []);
+  orderedList.forEach((item, index) => {
   const el = document.createElement('div');
   el.className = 'item';
   const img = document.createElement('img');
@@ -474,13 +546,20 @@ loadLists();
     }
   };
         const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = item.checked;
-        checkbox.onchange = async () => {
-          item.checked = checkbox.checked;
-          await saveItemToFirebase(listId, data[listId]);
-          span.classList.toggle('checked', item.checked);
-        };
+checkbox.type = 'checkbox';
+checkbox.checked = item.checked;
+checkbox.onchange = async () => {
+  item.checked = checkbox.checked;
+  
+  // Reordenar la lista: no marcados primero, marcados al final
+  const reorderedList = data[listId].sort((a, b) => {
+    if (a.checked === b.checked) return 0;
+    return a.checked ? 1 : -1; // Los marcados (true) van al final
+  });
+  
+  await saveItemToFirebase(listId, reorderedList);
+  loadLists(); // Recargar para mostrar el nuevo orden
+};
         const span = document.createElement('span');
         span.textContent = item.name;
         span.className = 'editable' + (item.checked ? ' checked' : '');
@@ -502,6 +581,15 @@ async function saveItemToFirebase(listId, items) {
   } catch (error) {
     console.error("Error al guardar en Firebase:", error);
   }
+}
+
+function reorderList(list) {
+  // Separar elementos marcados y no marcados
+  const unchecked = list.filter(item => !item.checked);
+  const checked = list.filter(item => item.checked);
+  
+  // Devolver primero los no marcados, luego los marcados
+  return [...unchecked, ...checked];
 }
 
 async function addItem(e, listId) {
@@ -526,11 +614,14 @@ async function addItem(e, listId) {
       console.log('Usando imagen guardada para:', name);
     }
     
-    currentList.push(newItem);
+    currentList.unshift(newItem);
     
-    await db.collection("users").doc(currentUser.uid).update({
-      [`lists.${listId}`]: currentList
-    });
+    // Reordenar la lista antes de guardar
+const reorderedList = reorderList(currentList);
+
+await db.collection("users").doc(currentUser.uid).update({
+  [`lists.${listId}`]: reorderedList
+});
     
     input.value = '';
     loadLists();
@@ -650,6 +741,32 @@ async function editListTitle(element) {
   element.appendChild(input);
   input.focus();
 }
+
+function toggleMenu() {
+  const dropdowns = document.querySelectorAll('.menu-dropdown');
+  dropdowns.forEach(dropdown => {
+    dropdown.classList.toggle('show');
+  });
+}
+
+// Cerrar el menú si se hace clic fuera de él
+document.addEventListener('click', function(event) {
+  const menuContainers = document.querySelectorAll('.menu-container');
+  let clickedInsideMenu = false;
+  
+  menuContainers.forEach(container => {
+    if (container.contains(event.target)) {
+      clickedInsideMenu = true;
+    }
+  });
+  
+  if (!clickedInsideMenu) {
+    const dropdowns = document.querySelectorAll('.menu-dropdown');
+    dropdowns.forEach(dropdown => {
+      dropdown.classList.remove('show');
+    });
+  }
+});
 
   </script>
 
