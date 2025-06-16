@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-storage-compat.js"></script>
+
+<script>
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBb1n1VqR8iXco8ByeCkze_XewNjoH6Ruk",
+    authDomain: "listacompraapp-dae10.firebaseapp.com",
+    projectId: "listacompraapp-dae10",
+    storageBucket: "listacompraapp-dae10.firebasestorage.app",
+    messagingSenderId: "68249280755",
+    appId: "1:68249280755:web:e359ca073cab688f031786",
+    measurementId: "G-M3Z4FJJZ4W"
+  };
+
+ firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+</script>
+
+
+  <meta charset="UTF-8" />
+  <title>Lista de la compra by AKOBU</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- PWA: Enlace al manifest -->
+<link rel="manifest" href="/manifest.json">
+
+<!-- PWA: Meta tags para iOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mi App">
+
+<!-- PWA: Iconos para iOS -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+<!-- PWA: Meta tags generales -->
+<meta name="theme-color" content="#000000">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+<!-- PWA: Favicon estándar -->
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      font-size: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #f9f9f9;
+    }
+    h1 {
+      margin-bottom: 30px;
+      font-size: 28px;
+      text-align: center;
+      display: none; /* Oculto por defecto */
+    }
+
+#authView {
+      max-width: 400px;
+      width: 100%;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgb(0 0 0 / 0.1);
+      display: none; /* Oculto por defecto */
+    }
+
+    #authView h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 24px;
+      text-align: center;
+    }
+    #authView input[type="email"],
+    #authView input[type="password"]{
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    #authView button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4caf50;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    #authView .toggle {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      cursor: pointer;
+    }
+    #authView .toggle span {
+      color: #4caf50;
+      text-decoration: underline;
+    }
+
+    #appView {
+      display: none;
+      width: 100%;
+      max-width: 500px;
+    }
+    #appView.active {
+      display: block;
+    }
+
+    .input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .logout-btn {
+      margin-bottom: 15px;
+      background: #ddd;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      align-self: flex-end;
+    }
+
+    .menu-container {
+  position: relative;
+  display: inline-block;
+}
+
+.menu-btn {
+  background: #ddd;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: bold;
+  height: 42px; /* Misma altura que el botón volver */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-btn:hover {
+  background: #ccc;
+}
+
+.menu-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  min-width: 150px;
+  z-index: 1000;
+  margin-top: 2px;
+}
+
+.menu-dropdown.show {
+  display: block;
+}
+
+.menu-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:hover {
+  background: #f5f5f5;
+}
+
+    .list-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .list-button {
+      padding: 20px;
+      font-size: 20px;
+      border: 2px solid #888;
+      border-radius: 10px;
+      background: #f3f3f3;
+      cursor: pointer;
+      text-align: center;
+    }
+
+.back-btn {
+  background: #ddd;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+    .list-container {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    h2.list-title.editable {
+      cursor: pointer;
+      font-size: 24px;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    .form {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .form input[type="text"] {
+      font-size: 18px;
+      padding: 8px;
+      flex: 1;
+    }
+
+    .form button {
+      font-size: 30px;
+      height: 30px;
+      width: 30px;
+      border-radius: 50%;
+      background-color: #4caf50;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+.item img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  margin-right: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0; /* Para que no se reduzca el tamaño */
+}
+
+.item img.default-img {
+  width: 40px;
+  height: 40px;
+  opacity: 0.7;
+  object-fit: contain; /* Para que el icono se vea completo */
+}
+
+.item input[type="checkbox"] {
+  margin-right: 10px;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0; /* Para que no se reduzca */
+}
+
+    .item span.editable {
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .item span.checked {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 99;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+    }
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.splash-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #ffffff 0%, #d1d1d1 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.splash-content {
+  text-align: center;
+  color: rgb(44, 42, 68);
+}
+
+.splash-logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+  animation: pulse 2s infinite;
+}
+
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin: 20px auto;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+  </style>
+
+      <!-- Código de AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4528722340355771"
+         crossorigin="anonymous"></script>
+  
+</head>
+<body>
+
+  <h1>Lista de la compra by AKOBU</h1>
+
+  <!-- Pantalla de carga/splash -->
+<div id="splashView" class="splash-view">
+  <div class="splash-content">
+    <img src="icono.png" alt="Logo" class="splash-logo">
+    <h2>Lista de la compra</h2>
+    <p>by AKOBU</p>
+    <div class="loading-spinner"></div>
+  </div>
+</div>
+
+  <div id="authView">
+    <h2 id="authTitle">Iniciar sesión</h2>
+    <form id="authForm">
+      <input type="text" id="username" placeholder="Usuario" class="input" style="display:none;" />
+      <input type="email" id="email" placeholder="Correo electrónico" required class="input"/>
+      <input type="password" id="password" placeholder="Contraseña" required class="input"/>
+      <input type="password" id="confirmPassword" placeholder="Repetir contraseña" class="input" style="display:none;" />
+      <button type="submit" id="authButton">Entrar</button>
+    </form>
+    <div class="toggle" id="toggleAuth">¿No tienes cuenta? <span>Regístrate</span></div>
+    <p id="authMessage" style="color:red; text-align:center; margin-top:10px;"></p>
+  </div>
+
+  <div id="appView">
+    
+    <div id="modal" class="modal" onclick="closeModal()">
+      <img id="modalImage" src="" alt="Vista ampliada" />
+    </div>
+
+    <div id="selectorView" class="list-selector">
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+        <div class="menu-container">
+          <button class="menu-btn" onclick="toggleMenu()">☰</button>
+          <div class="menu-dropdown" id="menuDropdown">
+            <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
+            <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+          </div>
+        </div>
+      </div>
+      <div class="list-button" id="list1Button" onclick="showList('list1View')">Lista 1</div>
+      <div class="list-button" id="list2Button" onclick="showList('list2View')">Lista 2</div>
+    </div>
+
+    <div id="list1View" class="view" style="display:none;">
+      <div class="top-bar">
+        <button class="back-btn" onclick="showList('selectorView')">←</button>
+        <div class="menu-container">
+          <button class="menu-btn" onclick="toggleMenu()">☰</button>
+          <div class="menu-dropdown" id="menuDropdown2">
+            <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="clearCompletedItems('list1')">Borrar comprados</div>
+            <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
+            <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+          </div>
+        </div>
+      </div>
+      <div class="list-container">
+        <h2 class="list-title editable" data-button-id="list1Button" onclick="editListTitle(this)">Lista 1</h2>
+        <form class="form" onsubmit="addItem(event, 'list1')">
+          <input type="text" placeholder="Nombre del artículo" id="name-list1" required />
+          <button type="submit">+</button>
+        </form>
+        <div id="list1"></div>
+      </div>
+    </div>
+
+    <div id="list2View" class="view" style="display:none;">
+      <div class="top-bar">
+        <button class="back-btn" onclick="showList('selectorView')">←</button>
+        <div class="menu-container">
+          <button class="menu-btn" onclick="toggleMenu()">☰</button>
+          <div class="menu-dropdown" id="menuDropdown3">
+            <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="clearCompletedItems('list2')">Borrar comprados</div>
+            <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
+            <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+          </div>
+        </div>
+      </div>
+      <div class="list-container">
+        <h2 class="list-title editable" data-button-id="list2Button" onclick="editListTitle(this)">Lista 2</h2>
+        <form class="form" onsubmit="addItem(event, 'list2')">
+          <input type="text" placeholder="Nombre del artículo" id="name-list2" required />
+          <button type="submit">+</button>
+        </form>
+        <div id="list2"></div>
+      </div>
+    </div>
+
+    <div id="articlesView" class="view" style="display:none;">
+      <div class="top-bar">
+        <button class="back-btn" onclick="showList('selectorView')">←</button>
+        <div class="menu-container">
+          <button class="menu-btn" onclick="toggleMenu()">☰</button>
+          <div class="menu-dropdown" id="menuDropdown4">
+            <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
+            <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+          </div>
+        </div>
+      </div>
+      <div class="list-container">
+        <h2>Todos los Artículos</h2>
+        <div id="articlesList"></div>
+      </div>
+    </div>
+    <div id="accountView" class="view" style="display:none;">
+      <div class="top-bar">
+        <button class="back-btn" onclick="showList('selectorView')">←</button>
+        <div class="menu-container">
+          <button class="menu-btn" onclick="toggleMenu()">☰</button>
+          <div class="menu-dropdown" id="menuDropdown5">
+            <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
+            <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+          </div>
+        </div>
+      </div>
+      <div class="list-container">
+        <h2>Mi Cuenta</h2>
+        
+        <div style="margin-bottom: 25px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: bold;">Correo electrónico:</label>
+          <input type="email" id="currentEmail" readonly style="background: #f5f5f5; color: #666;" class="input">
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: bold;">Usuario:</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="currentUsername" class="input" style="flex: 1;">
+            <button onclick="changeUsername()" style="padding: 10px 16px;height: 40px; background: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer;">Cambiar</button>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 25px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: bold;">Cambiar contraseña:</label>
+          <input type="password" id="currentPassword" placeholder="Contraseña actual" class="input" style="margin-bottom: 10px;">
+          <input type="password" id="newPassword" placeholder="Nueva contraseña" class="input" style="margin-bottom: 10px;">
+          <input type="password" id="confirmNewPassword" placeholder="Confirmar nueva contraseña" class="input" style="margin-bottom: 10px;">
+          <button onclick="changePassword()" style="width: 100%; padding: 10px;height: 40px; background: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer;">Cambiar Contraseña</button>
+        </div>
+        
+        <div id="accountMessage" style="margin-top: 15px; padding: 10px; border-radius: 5px; display: none;"></div>
+      </div>
+    </div>
+
+</div>
+
+  <script>
+    
+    let currentUser = null;
+
+    const usernameInput = document.getElementById('username');
+    const mainTitle = document.querySelector('h1');
+    const authView = document.getElementById('authView');
+    const appView = document.getElementById('appView');
+    const authTitle = document.getElementById('authTitle');
+    const authForm = document.getElementById('authForm');
+    const authButton = document.getElementById('authButton');
+    const toggleAuth = document.getElementById('toggleAuth');
+    const authMessage = document.getElementById('authMessage');
+    const splashView = document.getElementById('splashView'); 
+    let isInitialLoad = true;
+    let authMode = 'login';
+
+    // Timeout de seguridad para la pantalla de splash
+const splashTimeout = setTimeout(() => {
+  console.warn('Timeout de splash - forzando vista de login');
+  if (splashView) splashView.style.display = 'none';
+  authView.style.display = 'block';
+  appView.classList.remove('active');
+  isInitialLoad = false;
+}, 3000); // 3 segundos máximo de espera
+
+// Función para limpiar el timeout cuando ya no lo necesites
+const clearSplashTimeout = () => {
+  if (splashTimeout) {
+    clearTimeout(splashTimeout);
+  }
+};
+
+    toggleAuth.addEventListener('click', () => {
+      authMode = authMode === 'login' ? 'register' : 'login';
+      authTitle.textContent = authMode === 'login' ? 'Iniciar sesión' : 'Regístrate';
+      authButton.textContent = authMode === 'login' ? 'Entrar' : 'Registrar';
+      toggleAuth.innerHTML = authMode === 'login' ? '¿No tienes cuenta? <span>Regístrate</span>' : '¿Ya tienes cuenta? <span>Inicia sesión</span>';
+      authMessage.textContent = '';
+
+     const confirmPasswordInput = document.getElementById('confirmPassword');
+if (authMode === 'register') {
+  usernameInput.style.display = 'block';
+  usernameInput.required = true;
+  confirmPasswordInput.style.display = 'block';
+  confirmPasswordInput.required = true;
+} else {
+  usernameInput.style.display = 'none';
+  usernameInput.required = false;
+  confirmPasswordInput.style.display = 'none';
+  confirmPasswordInput.required = false;
+}
+    });
+
+    authForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const username = document.getElementById("username").value.trim();
+
+  if (authMode === "register") {
+    if (password !== confirmPassword) {
+      authMessage.textContent = "Las contraseñas no coinciden.";
+      return;
+    }
+    try {
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+
+      await db.collection("users").doc(user.uid).set({
+  username: username,
+  email: email,
+  lists: {
+    list1: [],
+    list2: []
+  },
+  itemLibrary: {} // Nueva biblioteca de artículos del usuario
+});
+
+      currentUser = user;
+      mainTitle.textContent = `Lista de la compra de ${username}`;
+      authView.style.display = 'none';
+      appView.classList.add('active');
+
+} catch (error) {
+      // Mostrar mensajes más amigables según el tipo de error
+      if (error.code === 'auth/weak-password') {
+        authMessage.textContent = 'La contraseña debe tener al menos 6 caracteres';
+      } else if (error.code === 'auth/email-already-in-use') {
+        authMessage.textContent = 'Ya existe una cuenta con este correo electrónico';
+      } else if (error.code === 'auth/invalid-email') {
+        authMessage.textContent = 'El formato del correo electrónico no es válido';
+      } else if (error.code === 'auth/operation-not-allowed') {
+        authMessage.textContent = 'El registro con email está deshabilitado';
+      } else {
+        authMessage.textContent = 'Error al crear la cuenta. Inténtalo de nuevo';
+      }
+    }
+  } else {
+    // LOGIN
+    try {
+      const userCredential = await auth.signInWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+
+const doc = await db.collection("users").doc(user.uid).get();
+const userData = doc.data();
+
+currentUser = user;
+mainTitle.textContent = `Lista de la compra de ${userData.username}`;
+
+// Cargar nombres de listas guardados
+if (userData.list1Name) {
+  document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
+  document.getElementById('list1Button').textContent = userData.list1Name;
+}
+if (userData.list2Name) {
+  document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
+  document.getElementById('list2Button').textContent = userData.list2Name;
+}
+
+authView.style.display = 'none';
+appView.classList.add('active');
+loadLists();
+      // Aquí puedes cargar listas desde Firestore más adelante.
+    } catch (error) {
+      // Mostrar mensajes más amigables según el tipo de error
+      if (error.code === 'auth/invalid-credential' || 
+          error.code === 'auth/user-not-found' || 
+          error.code === 'auth/wrong-password') {
+        authMessage.textContent = 'Usuario y/o contraseña incorrecta';
+      } else if (error.code === 'auth/invalid-email') {
+        authMessage.textContent = 'El formato del correo electrónico no es válido';
+      } else if (error.code === 'auth/user-disabled') {
+        authMessage.textContent = 'Esta cuenta ha sido deshabilitada';
+      } else if (error.code === 'auth/too-many-requests') {
+        authMessage.textContent = 'Demasiados intentos fallidos. Inténtalo más tarde';
+      } else {
+        authMessage.textContent = 'Error al iniciar sesión. Inténtalo de nuevo';
+      }
+    }
+  }
+});
+
+
+
+function logout() {
+    // Cerrar sesión en Firebase 
+    auth.signOut().then(() => {
+        console.log('Sesión cerrada correctamente');
+        // El resto del código se ejecutará automáticamente por onAuthStateChanged
+    }).catch((error) => {
+        console.error('Error al cerrar sesión:', error);
+    });
+    
+    // Opcional: puedes mantener esto para feedback inmediato en la UI
+    currentUser = null;
+    appView.classList.remove('active');
+    authView.style.display = 'block';
+    authForm.reset();
+    mainTitle.textContent = 'Lista de la compra by AKOBU';
+}
+
+function showList(viewId) {
+  closeAllMenus(); // Cerrar todos los menús al cambiar de vista
+  document.getElementById('selectorView').style.display = 'none';
+  document.getElementById('list1View').style.display = 'none';
+  document.getElementById('list2View').style.display = 'none';
+  document.getElementById('articlesView').style.display = 'none';
+  document.getElementById('accountView').style.display = 'none';
+  if (viewId === 'selectorView') {
+    document.getElementById('selectorView').style.display = 'flex';
+  } else {
+    document.getElementById(viewId).style.display = 'block';
+  }
+  
+  if (viewId === 'articlesView') {
+    loadArticles();
+  } else if (viewId === 'list1View' || viewId === 'list2View') {
+    loadLists();
+  } else if (viewId === 'accountView') {
+    loadAccountView();
+  }
+}
+
+    async function loadLists() {
+  if (!currentUser) return;
+  
+  try {
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const data = userData.lists || { list1: [], list2: [] };
+    
+['list1', 'list2'].forEach(listId => {
+  const container = document.getElementById(listId);
+  container.innerHTML = '';
+  const orderedList = reorderList(data[listId] || []);
+  orderedList.forEach((item, index) => {
+  const el = document.createElement('div');
+  el.className = 'item';
+  const img = document.createElement('img');
+  img.src = item.img || 'https://cdn-icons-png.flaticon.com/512/685/685655.png';
+  img.className = item.img ? '' : 'default-img';
+  img.onclick = () => {
+    if (!item.img) {
+      selectImage(index, listId);
+    } else {
+      document.getElementById('modalImage').src = item.img;
+      document.getElementById('modal').style.display = 'flex';
+    }
+  };
+        const checkbox = document.createElement('input');
+checkbox.type = 'checkbox';
+checkbox.checked = item.checked;
+checkbox.onchange = async () => {
+  item.checked = checkbox.checked;
+  
+  // Reordenar la lista: no marcados primero, marcados al final
+  const reorderedList = data[listId].sort((a, b) => {
+    if (a.checked === b.checked) return 0;
+    return a.checked ? 1 : -1; // Los marcados (true) van al final
+  });
+  
+  await saveItemToFirebase(listId, reorderedList);
+  loadLists(); // Recargar para mostrar el nuevo orden
+};
+        const span = document.createElement('span');
+        span.textContent = item.name;
+        span.className = 'editable' + (item.checked ? ' checked' : '');
+        el.append(checkbox, img, span);
+        container.appendChild(el);
+      });
+    });
+  } catch (error) {
+    console.error("Error al cargar listas:", error);
+  }
+}
+
+async function saveItemToFirebase(listId, items) {
+  if (!currentUser) return;
+  try {
+    await db.collection("users").doc(currentUser.uid).update({
+      [`lists.${listId}`]: items
+    });
+  } catch (error) {
+    console.error("Error al guardar en Firebase:", error);
+  }
+}
+
+function reorderList(list) {
+  // Separar elementos marcados y no marcados
+  const unchecked = list.filter(item => !item.checked);
+  const checked = list.filter(item => item.checked);
+  
+  // Devolver primero los no marcados, luego los marcados
+  return [...unchecked, ...checked];
+}
+
+async function addItem(e, listId) {
+  e.preventDefault();
+  const input = document.getElementById(`name-${listId}`);
+  const name = input.value.trim();
+  if (!name || !currentUser) return;
+  
+  try {
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const currentList = userData.lists[listId] || [];
+    const itemLibrary = userData.itemLibrary || {};
+    
+    // Crear el nuevo item
+    const newItem = { name, checked: false };
+    
+    // Si el artículo ya existe en la biblioteca, usar su imagen
+const normalizedName = name.toLowerCase().trim();
+if (itemLibrary[normalizedName] && itemLibrary[normalizedName].img) {
+  newItem.img = itemLibrary[normalizedName].img;
+  console.log('Usando imagen guardada para:', name);
+}
+
+// Siempre guardar el artículo en la biblioteca (sin imagen si no la tiene)
+itemLibrary[normalizedName] = {
+  name: name,
+  img: newItem.img || null
+};
+
+currentList.unshift(newItem);
+    
+    // Reordenar la lista antes de guardar
+const reorderedList = reorderList(currentList);
+
+console.log('Guardando itemLibrary:', itemLibrary);
+await db.collection("users").doc(currentUser.uid).update({
+  [`lists.${listId}`]: reorderedList,
+  itemLibrary: itemLibrary
+});
+console.log('Guardado exitoso');  
+
+    input.value = '';
+    loadLists();
+  } catch (error) {
+    console.error("Error al añadir artículo:", error);
+  }
+}
+
+    function saveList(listId, items) {
+      const data = JSON.parse(localStorage.getItem(`listApp_${currentUser}`));
+      data[listId] = items;
+      localStorage.setItem(`listApp_${currentUser}`, JSON.stringify(data));
+    }
+
+    // Función para comprimir imágenes
+async function compressImage(file, maxSizeKB = 100, quality = 0.8) {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    img.onload = () => {
+      // Calcular nuevas dimensiones manteniendo la proporción
+      const maxWidth = 800;
+      const maxHeight = 600;
+      let { width, height } = img;
+      
+      if (width > height) {
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = (width * maxHeight) / height;
+          height = maxHeight;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      // Dibujar la imagen redimensionada
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      // Convertir a blob y ajustar calidad si es necesario
+      const tryCompress = (currentQuality) => {
+        canvas.toBlob((blob) => {
+          if (blob.size <= maxSizeKB * 1024 || currentQuality <= 0.1) {
+            resolve(blob);
+          } else {
+            // Si aún es muy grande, reducir más la calidad
+            tryCompress(currentQuality - 0.1);
+          }
+        }, 'image/jpeg', currentQuality);
+      };
+      
+      tryCompress(quality);
+    };
+    
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+async function selectImage(itemIndex, listId) {
+  console.log('Seleccionando imagen para item:', itemIndex, 'en lista:', listId);
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.capture = 'environment';
+input.onchange = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    console.log('Archivo seleccionado:', file.name, 'Tamaño original:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
+    
+    try {
+      // Comprimir la imagen antes de subirla
+      const compressedFile = await compressImage(file, 50); // 50KB máximo
+      console.log('Imagen comprimida:', (compressedFile.size / 1024).toFixed(2) + 'KB');
+      
+      // Crear una referencia única para la imagen
+      const imageRef = storage.ref(`images/${currentUser.uid}/${listId}/${itemIndex}_${Date.now()}`);
+      
+      // Subir la imagen comprimida a Firebase Storage
+      console.log('Subiendo imagen comprimida a Storage...');
+      const snapshot = await imageRef.put(compressedFile);
+      
+      // Obtener la URL de descarga
+      const downloadURL = await snapshot.ref.getDownloadURL();
+      console.log('URL de imagen obtenida:', downloadURL);
+      
+      // Obtener la lista actual de Firebase
+      const doc = await db.collection("users").doc(currentUser.uid).get();
+      const userData = doc.data();
+      const currentList = userData.lists[listId] || [];
+      const itemLibrary = userData.itemLibrary || {};
+      
+      console.log('Lista actual:', currentList);
+      console.log('Item a actualizar:', currentList[itemIndex]);
+      
+      // Actualizar el item específico usando el índice
+      if (currentList[itemIndex]) {
+        currentList[itemIndex].img = downloadURL;
+        
+        // Guardar también en la biblioteca del usuario
+        const normalizedName = currentList[itemIndex].name.toLowerCase().trim();
+        itemLibrary[normalizedName] = {
+          name: currentList[itemIndex].name,
+          img: downloadURL
+        };
+        
+        console.log('Item actualizado con URL de imagen y guardado en biblioteca');
+        
+        // Guardar tanto la lista como la biblioteca
+        await db.collection("users").doc(currentUser.uid).update({
+          [`lists.${listId}`]: currentList,
+          itemLibrary: itemLibrary
+        });
+        
+        console.log('Guardado en Firebase');
+        
+        // Recargar las listas para mostrar la nueva imagen
+        loadLists();
+      }
+    } catch (error) {
+      console.error("Error al guardar imagen:", error);
+    }
+  };
+  input.click();
+}
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+async function editListTitle(element) {
+  const currentTitle = element.textContent;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = currentTitle;
+  input.style.fontSize = '24px';
+  input.style.width = '100%';
+
+  input.onblur = async () => {
+    const newTitle = input.value.trim() || currentTitle;
+    element.textContent = newTitle;
+
+    const buttonId = element.getAttribute('data-button-id');
+    const button = document.getElementById(buttonId);
+    if (button) button.textContent = newTitle;
+
+    // Guardar en Firebase
+    if (currentUser && newTitle !== currentTitle) {
+      try {
+        const listKey = buttonId === 'list1Button' ? 'list1Name' : 'list2Name';
+        await db.collection("users").doc(currentUser.uid).update({
+          [listKey]: newTitle
+        });
+      } catch (error) {
+        console.error("Error al guardar el nombre de la lista:", error);
+      }
+    }
+
+    // Volver a activar la edición si se hace clic de nuevo
+    element.onclick = () => editListTitle(element);
+  };
+
+  element.textContent = '';
+  element.onclick = null; // quitar el evento mientras se edita
+  element.appendChild(input);
+  input.focus();
+}
+
+function toggleMenu(menuId) {
+  // Si no se especifica un ID, usar el menú principal de la vista actual
+  if (!menuId) {
+    const currentView = getCurrentView();
+    if (currentView === 'selectorView') menuId = 'menuDropdown';
+    else if (currentView === 'list1View') menuId = 'menuDropdown2';
+    else if (currentView === 'list2View') menuId = 'menuDropdown3';
+    else if (currentView === 'articlesView') menuId = 'menuDropdown4';
+    else if (currentView === 'accountView') menuId = 'menuDropdown5';
+  }
+  
+  const targetDropdown = document.getElementById(menuId);
+  if (targetDropdown) {
+    targetDropdown.classList.toggle('show');
+  }
+}
+
+function getCurrentView() {
+  if (document.getElementById('selectorView').style.display !== 'none') return 'selectorView';
+  if (document.getElementById('list1View').style.display === 'block') return 'list1View';
+  if (document.getElementById('list2View').style.display === 'block') return 'list2View';
+  if (document.getElementById('articlesView').style.display === 'block') return 'articlesView';
+  if (document.getElementById('accountView').style.display === 'block') return 'accountView';
+  return 'selectorView';
+}
+
+function closeAllMenus() {
+  const dropdowns = document.querySelectorAll('.menu-dropdown');
+  dropdowns.forEach(dropdown => {
+    dropdown.classList.remove('show');
+  });
+}
+
+// Cerrar el menú si se hace clic fuera de él
+document.addEventListener('click', function(event) {
+  const menuContainers = document.querySelectorAll('.menu-container');
+  let clickedInsideMenu = false;
+  
+  menuContainers.forEach(container => {
+    if (container.contains(event.target)) {
+      clickedInsideMenu = true;
+    }
+  });
+  
+  if (!clickedInsideMenu) {
+    const dropdowns = document.querySelectorAll('.menu-dropdown');
+    dropdowns.forEach(dropdown => {
+      dropdown.classList.remove('show');
+    });
+  }
+});
+
+async function loadArticles() {
+  if (!currentUser) return;
+  
+  try {
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const itemLibrary = userData.itemLibrary || {};
+
+        console.log('userData:', userData);
+    console.log('itemLibrary:', itemLibrary);
+    
+    const container = document.getElementById('articlesList');
+    container.innerHTML = '';
+    
+    // Convertir el objeto itemLibrary en array y ordenar alfabéticamente
+    const articles = Object.values(itemLibrary).sort((a, b) => a.name.localeCompare(b.name));
+    
+    if (articles.length === 0) {
+      container.innerHTML = '<p style="text-align: center; color: #888; font-style: italic;">No tienes artículos guardados aún.</p>';
+      return;
+    }
+    
+articles.forEach(article => {
+  const el = document.createElement('div');
+  el.className = 'item';
+  
+  const img = document.createElement('img');
+  img.src = article.img || 'https://cdn-icons-png.flaticon.com/512/685/685655.png';
+  img.className = article.img ? '' : 'default-img';
+  img.onclick = () => {
+    if (!article.img) {
+      selectImageForArticle(article.name);
+    } else {
+      document.getElementById('modalImage').src = article.img;
+      document.getElementById('modal').style.display = 'flex';
+    }
+  };
+  
+  const span = document.createElement('span');
+  span.textContent = article.name;
+  span.className = 'editable';
+  
+  // Crear el menú de edición
+  const menuContainer = document.createElement('div');
+  menuContainer.className = 'menu-container';
+  menuContainer.style.marginLeft = 'auto';
+  
+  const editBtn = document.createElement('button');
+  editBtn.innerHTML = '✏️';
+  editBtn.className = 'menu-btn';
+  editBtn.style.minWidth = '35px';
+  editBtn.style.height = '35px';
+  editBtn.style.fontSize = '16px';
+  editBtn.onclick = (e) => {
+    e.stopPropagation();
+    toggleArticleMenu(menuContainer);
+  };
+  
+  const dropdown = document.createElement('div');
+  dropdown.className = 'menu-dropdown';
+  
+  const changePhotoItem = document.createElement('div');
+  changePhotoItem.className = 'menu-item';
+  changePhotoItem.textContent = 'Cambiar foto';
+  changePhotoItem.onclick = () => {
+    selectImageForArticle(article.name);
+    closeAllMenus();
+  };
+  
+  const editNameItem = document.createElement('div');
+  editNameItem.className = 'menu-item';
+  editNameItem.textContent = 'Editar nombre';
+  editNameItem.onclick = () => {
+    editArticleName(article.name);
+    closeAllMenus();
+  };
+  
+  const deleteItem = document.createElement('div');
+  deleteItem.className = 'menu-item';
+  deleteItem.textContent = 'Borrar artículo';
+  deleteItem.onclick = () => {
+    deleteArticle(article.name);
+    closeAllMenus();
+  };
+  
+  dropdown.append(changePhotoItem, editNameItem, deleteItem);
+  menuContainer.append(editBtn, dropdown);
+  
+  el.append(img, span, menuContainer);
+  container.appendChild(el);
+});
+    
+     console.log('Artículos cargados:', articles.length);
+  } catch (error) {
+    console.error("Error al cargar artículos:", error);
+  }
+}
+
+function toggleArticleMenu(menuContainer) {
+  const dropdown = menuContainer.querySelector('.menu-dropdown');
+  
+  // Cerrar otros menús primero
+  document.querySelectorAll('.menu-dropdown').forEach(otherDropdown => {
+    if (otherDropdown !== dropdown) {
+      otherDropdown.classList.remove('show');
+    }
+  });
+  
+  dropdown.classList.toggle('show');
+}
+
+async function editArticleName(oldName) {
+  const newName = prompt('Nuevo nombre del artículo:', oldName);
+  if (!newName || newName.trim() === '' || newName.trim() === oldName) return;
+  
+  try {
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const itemLibrary = userData.itemLibrary || {};
+    const lists = userData.lists || { list1: [], list2: [] };
+    
+    const oldNormalizedName = oldName.toLowerCase().trim();
+    const newNormalizedName = newName.trim().toLowerCase();
+    
+    // Verificar si el nuevo nombre ya existe (y no es el mismo artículo)
+    if (itemLibrary[newNormalizedName] && newNormalizedName !== oldNormalizedName) {
+      alert(`Ya existe un artículo con el nombre "${newName.trim()}". Por favor, elige otro nombre.`);
+      return;
+    }
+    
+    // Actualizar en la biblioteca
+    if (itemLibrary[oldNormalizedName]) {
+      const articleData = itemLibrary[oldNormalizedName];
+      itemLibrary[newNormalizedName] = {
+        name: newName.trim(),
+        img: articleData.img
+      };
+      delete itemLibrary[oldNormalizedName];
+    }
+    
+    // Actualizar en todas las listas que contengan este artículo
+    Object.keys(lists).forEach(listKey => {
+      lists[listKey].forEach(item => {
+        if (item.name.toLowerCase().trim() === oldNormalizedName) {
+          item.name = newName.trim();
+        }
+      });
+    });
+    
+    // Guardar cambios en Firebase
+    await db.collection("users").doc(currentUser.uid).update({
+      itemLibrary: itemLibrary,
+      lists: lists
+    });
+    
+    console.log('Nombre actualizado correctamente');
+    loadArticles();
+    
+    // Si estamos viendo alguna lista, recargarla también
+    if (document.getElementById('list1View').style.display === 'block' || 
+        document.getElementById('list2View').style.display === 'block') {
+      loadLists();
+    }
+    
+  } catch (error) {
+    console.error("Error al editar nombre del artículo:", error);
+    alert("Error al cambiar el nombre del artículo");
+  }
+}
+
+async function deleteArticle(articleName) {
+  if (!confirm(`¿Estás seguro de que quieres borrar "${articleName}"?\n\nEsto también lo eliminará de todas las listas de la compra.`)) return;
+  
+  try {
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const itemLibrary = userData.itemLibrary || {};
+    const lists = userData.lists || { list1: [], list2: [] };
+    
+    const normalizedName = articleName.toLowerCase().trim();
+    
+    // Obtener la URL de la imagen antes de eliminar el artículo
+    const imageUrl = itemLibrary[normalizedName]?.img;
+    
+    // Si el artículo tiene imagen, eliminarla de Storage
+    if (imageUrl) {
+      try {
+        const imageRef = storage.refFromURL(imageUrl);
+        await imageRef.delete();
+        console.log('Imagen eliminada de Storage:', imageUrl);
+      } catch (imageError) {
+        console.warn('Error al eliminar imagen de Storage:', imageError);
+        // Continuar aunque falle el borrado de la imagen
+      }
+    }
+    
+    // Eliminar de la biblioteca
+    delete itemLibrary[normalizedName];
+    
+    // Eliminar de todas las listas
+    Object.keys(lists).forEach(listKey => {
+      lists[listKey] = lists[listKey].filter(item => 
+        item.name.toLowerCase().trim() !== normalizedName
+      );
+    });
+    
+    // Guardar cambios en Firebase
+    await db.collection("users").doc(currentUser.uid).update({
+      itemLibrary: itemLibrary,
+      lists: lists
+    });
+    
+    console.log('Artículo eliminado correctamente');
+    loadArticles();
+    
+    // Si estamos viendo alguna lista, recargarla también
+    if (document.getElementById('list1View').style.display === 'block' || 
+        document.getElementById('list2View').style.display === 'block') {
+      loadLists();
+    }
+    
+  } catch (error) {
+    console.error("Error al eliminar artículo:", error);
+    alert("Error al eliminar el artículo");
+  }
+}
+
+async function selectImageForArticle(articleName) {
+  console.log('Seleccionando imagen para artículo:', articleName);
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.capture = 'environment';
+input.onchange = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    console.log('Archivo seleccionado:', file.name, 'Tamaño original:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
+    
+    try {
+      // Comprimir la imagen antes de subirla
+      const compressedFile = await compressImage(file, 50); // 50KB máximo
+      console.log('Imagen comprimida:', (compressedFile.size / 1024).toFixed(2) + 'KB');
+      
+      // Crear una referencia única para la imagen
+      const imageRef = storage.ref(`images/${currentUser.uid}/articles/${articleName}_${Date.now()}`);
+      
+      // Subir la imagen comprimida a Firebase Storage
+      console.log('Subiendo imagen comprimida a Storage...');
+      const snapshot = await imageRef.put(compressedFile);
+      
+      // Obtener la URL de descarga
+      const downloadURL = await snapshot.ref.getDownloadURL();
+      console.log('URL de imagen obtenida:', downloadURL);
+      
+      // Obtener los datos actuales del usuario
+      const doc = await db.collection("users").doc(currentUser.uid).get();
+      const userData = doc.data();
+      const itemLibrary = userData.itemLibrary || {};
+      
+      // Actualizar la imagen del artículo en la biblioteca
+      const normalizedName = articleName.toLowerCase().trim();
+      itemLibrary[normalizedName] = itemLibrary[normalizedName] || { name: articleName };
+      itemLibrary[normalizedName].img = downloadURL;
+
+      // Obtener las listas y actualizar todas las que contengan este artículo
+      const lists = userData.lists || { list1: [], list2: [] };
+
+      Object.keys(lists).forEach(listKey => {
+        lists[listKey].forEach(item => {
+          if (item.name.toLowerCase().trim() === normalizedName) {
+            item.img = downloadURL;
+            console.log('Actualizando imagen en lista:', listKey, 'para artículo:', item.name);
+          }
+        });
+      });
+
+      console.log('Artículo actualizado con nueva imagen');
+
+      // Guardar tanto la biblioteca como las listas actualizadas
+      await db.collection("users").doc(currentUser.uid).update({
+        itemLibrary: itemLibrary,
+        lists: lists
+      });
+        
+      console.log('Guardado en Firebase');
+      
+      // Recargar tanto la vista de artículos como las listas si estamos en una vista de lista
+      loadArticles();
+      if (document.getElementById('list1View').style.display === 'block' || 
+          document.getElementById('list2View').style.display === 'block') {
+        loadLists();
+      }
+    } catch (error) {
+      console.error("Error al guardar imagen del artículo:", error);
+    }
+  };
+  input.click();
+}
+
+async function clearCompletedItems(listId) {
+  if (!currentUser) return;
+  
+  // Cerrar el menú primero
+  closeAllMenus();
+  
+  try {
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const currentList = userData.lists[listId] || [];
+    
+    // Contar cuántos artículos se van a borrar
+    const completedItems = currentList.filter(item => item.checked);
+    
+    if (completedItems.length === 0) {
+      alert('No hay artículos comprados para borrar.');
+      return;
+    }
+    
+    if (!confirm(`¿Estás seguro de que quieres borrar ${completedItems.length} artículo(s) comprado(s)?`)) {
+      return;
+    }
+    
+    // Filtrar solo los artículos no marcados (borrar los marcados)
+    const remainingItems = currentList.filter(item => !item.checked);
+    
+    // Guardar la lista actualizada en Firebase
+    await db.collection("users").doc(currentUser.uid).update({
+      [`lists.${listId}`]: remainingItems
+    });
+    
+    console.log(`${completedItems.length} artículos comprados eliminados de ${listId}`);
+    loadLists();
+    
+  } catch (error) {
+    console.error("Error al borrar artículos comprados:", error);
+    alert("Error al borrar los artículos comprados");
+  }
+}
+
+// Detector de estado de autenticación con splash screen
+auth.onAuthStateChanged(async (user) => {
+  console.log('Estado de autenticación cambió:', user ? 'Logueado' : 'No logueado');
+  
+  // Función para ocultar splash y mostrar la vista correcta
+const showFinalView = () => {
+  clearSplashTimeout(); // Limpiar timeout de seguridad
+  if (splashView) splashView.style.display = 'none';
+  
+  if (user) {
+    // Usuario logueado
+    authView.style.display = 'none';
+    appView.classList.add('active');
+    showList('selectorView');
+  } else {
+    // No hay usuario  
+    authView.style.display = 'block';
+    appView.classList.remove('active');
+  }
+};
+  
+  if (user) {
+    // Usuario está logueado
+    console.log('Usuario detectado:', user.email);
+    currentUser = user;
+    
+    try {
+      // Cargar datos del usuario
+      const doc = await db.collection("users").doc(user.uid).get();
+      const userData = doc.data();
+      
+      // Actualizar el título con el nombre del usuario
+      mainTitle.textContent = `Lista de la compra de ${userData.username}`;
+      mainTitle.style.display = 'block';
+      
+      // Cargar nombres de listas guardados
+      if (userData.list1Name) {
+        document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
+        document.getElementById('list1Button').textContent = userData.list1Name;
+      }
+      if (userData.list2Name) {
+        document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
+        document.getElementById('list2Button').textContent = userData.list2Name;
+      }
+      
+      // Mostrar vista después del delay solo en carga inicial
+      if (isInitialLoad) {
+        setTimeout(() => {
+          showFinalView();
+          isInitialLoad = false;
+        }, 2000); // 2 segundos de splash
+      } else {
+        showFinalView(); // Sin delay si no es carga inicial
+      }
+      
+    } catch (error) {
+      console.error("Error al cargar datos del usuario:", error);
+      auth.signOut(); // Si hay error, hacer logout
+    }
+  } else {
+    // No hay usuario logueado
+    console.log('No hay usuario logueado');
+    currentUser = null;
+    mainTitle.textContent = 'Lista de la compra by AKOBU';
+    mainTitle.style.display = 'block';
+    
+    // Mostrar vista después del delay solo en carga inicial
+    if (isInitialLoad) {
+      setTimeout(() => {
+        showFinalView();
+        isInitialLoad = false;
+      }, 2000); // 2 segundos de splash
+    } else {
+      showFinalView(); // Sin delay si no es carga inicial
+    }
+  }
+});
+
+async function changeUsername() {
+  const newUsername = document.getElementById('currentUsername').value.trim();
+  if (!newUsername || !currentUser) return;
+  
+  try {
+    // Actualizar el nombre de usuario en Firestore
+    await db.collection("users").doc(currentUser.uid).update({
+      username: newUsername
+    });
+    
+    // Actualizar el título de la aplicación
+    mainTitle.textContent = `Lista de la compra de ${newUsername}`;
+    
+    // Mostrar mensaje de éxito
+    showAccountMessage('Usuario cambiado correctamente', 'success');
+    
+  } catch (error) {
+    console.error("Error al cambiar usuario:", error);
+    showAccountMessage('Error al cambiar el usuario', 'error');
+  }
+}
+
+async function changePassword() {
+  const currentPassword = document.getElementById('currentPassword').value;
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+  
+  if (!currentPassword || !newPassword || !confirmNewPassword) {
+    showAccountMessage('Por favor, completa todos los campos', 'error');
+    return;
+  }
+  
+  if (newPassword !== confirmNewPassword) {
+    showAccountMessage('Las contraseñas nuevas no coinciden', 'error');
+    return;
+  }
+  
+  if (newPassword.length < 6) {
+    showAccountMessage('La nueva contraseña debe tener al menos 6 caracteres', 'error');
+    return;
+  }
+  
+  try {
+    // Reautenticar al usuario con la contraseña actual
+    const credential = firebase.auth.EmailAuthProvider.credential(
+      currentUser.email,
+      currentPassword
+    );
+    await currentUser.reauthenticateWithCredential(credential);
+    
+    // Cambiar la contraseña
+    await currentUser.updatePassword(newPassword);
+    
+    // Limpiar los campos
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmNewPassword').value = '';
+    
+    showAccountMessage('Contraseña cambiada correctamente', 'success');
+    
+  } catch (error) {
+    console.error("Error al cambiar contraseña:", error);
+    if (error.code === 'auth/wrong-password') {
+      showAccountMessage('La contraseña actual es incorrecta', 'error');
+    } else if (error.code === 'auth/weak-password') {
+      showAccountMessage('La nueva contraseña es muy débil', 'error');
+    } else {
+      showAccountMessage('Error al cambiar la contraseña', 'error');
+    }
+  }
+}
+
+function showAccountMessage(message, type) {
+  const messageDiv = document.getElementById('accountMessage');
+  messageDiv.textContent = message;
+  messageDiv.style.display = 'block';
+  
+  if (type === 'success') {
+    messageDiv.style.backgroundColor = '#d4edda';
+    messageDiv.style.color = '#155724';
+    messageDiv.style.border = '1px solid #c3e6cb';
+  } else {
+    messageDiv.style.backgroundColor = '#f8d7da';
+    messageDiv.style.color = '#721c24';
+    messageDiv.style.border = '1px solid #f5c6cb';
+  }
+  
+  // Ocultar el mensaje después de 5 segundos
+  setTimeout(() => {
+    messageDiv.style.display = 'none';
+  }, 5000);
+}
+
+async function loadAccountView() {
+  if (!currentUser) return;
+  
+  try {
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    
+    // Cargar el email (solo lectura)
+    document.getElementById('currentEmail').value = currentUser.email;
+    
+    // Cargar el nombre de usuario actual
+    document.getElementById('currentUsername').value = userData.username || '';
+    
+  } catch (error) {
+    console.error("Error al cargar datos de la cuenta:", error);
+  }
+}
+
+// Inicialización - mostrar splash al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+  if (splashView) {
+    splashView.style.display = 'flex';
+  }
+  authView.style.display = 'none';
+  appView.classList.remove('active');
+});
+
+  </script>
+
+  <footer style="text-align: center; margin-top: 40px; padding: 20px; font-size: 10px; border-top: 1px solid #eee;">
+  <a href="privacy-policy.html" style="color: #666; text-decoration: none;">Privacy Policy</a>
+</footer>
+  
+</body>
+</html>
