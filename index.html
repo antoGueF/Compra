@@ -430,10 +430,10 @@ input:focus, textarea:focus {
   <div id="authView">
     <h2 id="authTitle">Iniciar sesión</h2>
     <form id="authForm">
-      <input type="text" id="username" placeholder="Usuario" class="input" style="display:none;" />
-      <input type="email" id="email" placeholder="Correo electrónico" required class="input"/>
-      <input type="password" id="password" placeholder="Contraseña" required class="input"/>
-      <input type="password" id="confirmPassword" placeholder="Repetir contraseña" class="input" style="display:none;" />
+      <input type="text" id="username" placeholder="Usuario" class="input" style="display:none;"onclick="this.focus()" ontouchstart="this.focus()" />
+      <input type="email" id="email" placeholder="Correo electrónico" required class="input"onclick="this.focus()" ontouchstart="this.focus()"/>
+      <input type="password" id="password" placeholder="Contraseña" required class="input"onclick="this.focus()" ontouchstart="this.focus()"/>
+      <input type="password" id="confirmPassword" placeholder="Repetir contraseña" class="input" style="display:none;"onclick="this.focus()" ontouchstart="this.focus()" />
       <button type="submit" id="authButton">Entrar</button>
     </form>
     <div class="toggle" id="toggleAuth">¿No tienes cuenta? <span>Regístrate</span></div>
