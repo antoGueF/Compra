@@ -386,25 +386,7 @@ const storage = firebase.storage();
   to { transform: rotate(360deg); }
 }
 
-    /* Mejorar comportamiento de inputs en iOS PWA */
-input, textarea {
-  -webkit-user-select: text;
-  -webkit-appearance: none;
-  border-radius: 0;
-}
 
-/* Asegurar que los inputs sean clickeables */
-input:focus, textarea:focus {
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Fix específico para iOS standalone */
-@media (display-mode: standalone) {
-  input, textarea {
-    font-size: 16px; /* Evita zoom automático */
-  }
-}
 
 /* Fix para teclado en iOS PWA */
 input, textarea {
