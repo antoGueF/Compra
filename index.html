@@ -1494,7 +1494,7 @@ const showFinalView = () => {
         setTimeout(() => {
           showFinalView();
           isInitialLoad = false;
-        }, 1000); // 1 segundos de splash
+        }, 2000); // 1 segundos de splash
       } else {
         showFinalView(); // Sin delay si no es carga inicial
       }
@@ -1515,7 +1515,7 @@ const showFinalView = () => {
       setTimeout(() => {
         showFinalView();
         isInitialLoad = false;
-      }, 1000); // 1 segundos de splash
+      }, 2000); // 1 segundos de splash
     } else {
       showFinalView(); // Sin delay si no es carga inicial
     }
@@ -1640,34 +1640,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   authView.style.display = 'none';
   appView.classList.remove('active');
-});
-
-    // Fix para teclado en iOS PWA
-document.addEventListener('DOMContentLoaded', function() {
-  // Detectar si estamos en una PWA
-  const isStandalone = window.navigator.standalone === true;
-  
-  if (isStandalone) {
-    // Añadir listener a todos los inputs
-    const inputs = document.querySelectorAll('input, textarea');
-    
-    inputs.forEach(function(input) {
-      input.addEventListener('click', function() {
-        // Pequeño delay y forzar foco
-        setTimeout(function() {
-          input.focus();
-          input.click();
-        }, 100);
-      });
-      
-      // También para el evento touchstart
-      input.addEventListener('touchstart', function() {
-        setTimeout(function() {
-          input.focus();
-        }, 100);
-      });
-    });
-  }
 });
 
   </script>
