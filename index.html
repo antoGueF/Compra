@@ -406,6 +406,21 @@ input:focus, textarea:focus {
   }
 }
 
+/* Fix para teclado en iOS PWA */
+input, textarea {
+  font-size: 16px !important;
+  -webkit-user-select: text;
+  -webkit-appearance: none;
+}
+
+/* Específico para PWA */
+@supports (-webkit-touch-callout: none) {
+  input:focus {
+    -webkit-user-select: text;
+  }
+}    
+    
+
   </style>
 
       <!-- Código de AdSense -->
