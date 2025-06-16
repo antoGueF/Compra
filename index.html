@@ -31,6 +31,26 @@ const storage = firebase.storage();
   <meta charset="UTF-8" />
   <title>Lista de la compra by AKOBU</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- PWA: Enlace al manifest -->
+<link rel="manifest" href="/manifest.json">
+
+<!-- PWA: Meta tags para iOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mi App">
+
+<!-- PWA: Iconos para iOS -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+<!-- PWA: Meta tags generales -->
+<meta name="theme-color" content="#000000">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+<!-- PWA: Favicon estándar -->
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+  
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -380,7 +400,7 @@ const storage = firebase.storage();
   <!-- Pantalla de carga/splash -->
 <div id="splashView" class="splash-view">
   <div class="splash-content">
-    <img src="tu-logo.png" alt="Logo" class="splash-logo">
+    <img src="icono.png" alt="Logo" class="splash-logo">
     <h2>Lista de la compra</h2>
     <p>by AKOBU</p>
     <div class="loading-spinner"></div>
