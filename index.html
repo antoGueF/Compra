@@ -386,6 +386,26 @@ const storage = firebase.storage();
   to { transform: rotate(360deg); }
 }
 
+    /* Mejorar comportamiento de inputs en iOS PWA */
+input, textarea {
+  -webkit-user-select: text;
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+/* Asegurar que los inputs sean clickeables */
+input:focus, textarea:focus {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fix específico para iOS standalone */
+@media (display-mode: standalone) {
+  input, textarea {
+    font-size: 16px; /* Evita zoom automático */
+  }
+}
+
   </style>
 
       <!-- Código de AdSense -->
@@ -1605,6 +1625,34 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   authView.style.display = 'none';
   appView.classList.remove('active');
+});
+
+    // Fix para teclado en iOS PWA
+document.addEventListener('DOMContentLoaded', function() {
+  // Detectar si estamos en una PWA
+  const isStandalone = window.navigator.standalone === true;
+  
+  if (isStandalone) {
+    // Añadir listener a todos los inputs
+    const inputs = document.querySelectorAll('input, textarea');
+    
+    inputs.forEach(function(input) {
+      input.addEventListener('click', function() {
+        // Pequeño delay y forzar foco
+        setTimeout(function() {
+          input.focus();
+          input.click();
+        }, 100);
+      });
+      
+      // También para el evento touchstart
+      input.addEventListener('touchstart', function() {
+        setTimeout(function() {
+          input.focus();
+        }, 100);
+      });
+    });
+  }
 });
 
   </script>
