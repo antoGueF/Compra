@@ -1140,7 +1140,7 @@ articles.forEach(article => {
   menuContainer.style.marginLeft = 'auto';
   
   const editBtn = document.createElement('button');
-  editBtn.innerHTML = '✏️';
+  editBtn.innerHTML = '🖉';
   editBtn.className = 'menu-btn';
   editBtn.style.minWidth = '35px';
   editBtn.style.height = '35px';
@@ -1482,7 +1482,7 @@ const showFinalView = () => {
         setTimeout(() => {
           showFinalView();
           isInitialLoad = false;
-        }, 2000); // 2 segundos de splash
+        }, 1500); // 1.5 segundos de splash
       } else {
         showFinalView(); // Sin delay si no es carga inicial
       }
@@ -1503,7 +1503,7 @@ const showFinalView = () => {
       setTimeout(() => {
         showFinalView();
         isInitialLoad = false;
-      }, 2000); // 2 segundos de splash
+      }, 1500); // 1.5 segundos de splash
     } else {
       showFinalView(); // Sin delay si no es carga inicial
     }
