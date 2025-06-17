@@ -416,6 +416,7 @@ const storage = firebase.storage();
       <input type="password" id="confirmPassword" placeholder="Repetir contraseña" class="input" style="display:none;" />
       <button type="submit" id="authButton">Entrar</button>
     </form>
+    <div class="forgot-password" id="forgotPassword" style="text-align:center; font-size: 14px;margin:10px 0; cursor:pointer; color:#007bff; text-decoration:underline;">¿Olvidaste tu contraseña?</div>
     <div class="toggle" id="toggleAuth">¿No tienes cuenta? <span>Regístrate</span></div>
     <p id="authMessage" style="color:red; text-align:center; margin-top:10px;"></p>
   </div>
@@ -560,6 +561,7 @@ const storage = firebase.storage();
     const toggleAuth = document.getElementById('toggleAuth');
     const authMessage = document.getElementById('authMessage');
     const splashView = document.getElementById('splashView'); 
+    const forgotPassword = document.getElementById('forgotPassword');
     let isInitialLoad = true;
     let authMode = 'login';
 
@@ -584,6 +586,7 @@ const clearSplashTimeout = () => {
       authTitle.textContent = authMode === 'login' ? 'Iniciar sesión' : 'Regístrate';
       authButton.textContent = authMode === 'login' ? 'Entrar' : 'Registrar';
       toggleAuth.innerHTML = authMode === 'login' ? '¿No tienes cuenta? <span>Regístrate</span>' : '¿Ya tienes cuenta? <span>Inicia sesión</span>';
+      forgotPassword.style.display = authMode === 'login' ? 'block' : 'none';
       authMessage.textContent = '';
 
      const confirmPasswordInput = document.getElementById('confirmPassword');
@@ -600,6 +603,26 @@ if (authMode === 'register') {
 }
     });
 
+    forgotPassword.addEventListener('click', () => {
+  const email = document.getElementById('email').value;
+  
+  if (!email) {
+    document.getElementById('authMessage').textContent = 'Por favor, introduce tu correo electrónico';
+    return;
+  }
+  
+  // Enviar email de recuperación
+  auth.sendPasswordResetEmail(email)
+    .then(() => {
+      document.getElementById('authMessage').style.color = 'green';
+      document.getElementById('authMessage').textContent = 'Se ha enviado un correo de recuperación. Revisa tu bandeja de entrada.';
+    })
+    .catch((error) => {
+      document.getElementById('authMessage').style.color = 'red';
+      document.getElementById('authMessage').textContent = 'Error: ' + error.message;
+    });
+});
+    
     authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("email").value.trim();
