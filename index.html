@@ -783,7 +783,7 @@ function showList(viewId) {
   
   if (viewId === 'articlesView') {
     loadArticles();
-  } else if (viewId === 'list1View' || viewId === 'list2View'|| viewId === 'list3View') {
+  } else if (viewId === 'list1View' || viewId === 'list2View' || viewId === 'list3View') {
     loadLists();
   } else if (viewId === 'accountView') {
     loadAccountView();
@@ -1057,7 +1057,9 @@ async function editListTitle(element) {
     // Guardar en Firebase
     if (currentUser && newTitle !== currentTitle) {
       try {
-        const listKey = buttonId === 'list1Button' ? 'list1Name' : 'list2Name': 'list3Name';
+        const listKey = buttonId === 'list1Button' ? 'list1Name' : 
+                buttonId === 'list2Button' ? 'list2Name' : 
+                'list3Name';
         await db.collection("users").doc(currentUser.uid).update({
           [listKey]: newTitle
         });
