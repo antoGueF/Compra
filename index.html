@@ -1635,9 +1635,14 @@ document.addEventListener('DOMContentLoaded', function() {
   appView.classList.remove('active');
 });
 
-    function goToAbout() {
-    window.open('about.html', '_blank'); // Abre en nueva pestaña
-    // O: window.location.href = 'about.html'; // Navega a la página
+   function goToAbout() {
+    const user = firebase.auth().currentUser;
+    if (user) {
+        const username = user.displayName || user.email || 'Usuario';
+        window.location.href = `about.html?user=${encodeURIComponent(username)}`;
+    } else {
+        window.location.href = 'about.html';
+    }
 }
 
   </script>
