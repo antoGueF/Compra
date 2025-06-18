@@ -452,6 +452,7 @@ const storage = firebase.storage();
           <div class="menu-dropdown" id="menuDropdown2">
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
             <div class="menu-item" onclick="clearCompletedItems('list1')">Borrar comprados</div>
+            <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
             <div class="menu-item" onclick="goToAbout()">Acerca de</div>
@@ -476,6 +477,7 @@ const storage = firebase.storage();
           <div class="menu-dropdown" id="menuDropdown3">
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
             <div class="menu-item" onclick="clearCompletedItems('list2')">Borrar comprados</div>
+            <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
             <div class="menu-item" onclick="goToAbout()">Acerca de</div>
@@ -500,6 +502,7 @@ const storage = firebase.storage();
           <div class="menu-dropdown" id="menuDropdown6">
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
             <div class="menu-item" onclick="clearCompletedItems('list3')">Borrar comprados</div>
+            <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
             <div class="menu-item" onclick="goToAbout()">Acerca de</div>
@@ -523,6 +526,7 @@ const storage = firebase.storage();
           <button class="menu-btn" onclick="toggleMenu()">☰</button>
           <div class="menu-dropdown" id="menuDropdown4">
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
             <div class="menu-item" onclick="goToAbout()">Acerca de</div>
@@ -541,6 +545,7 @@ const storage = firebase.storage();
           <button class="menu-btn" onclick="toggleMenu()">☰</button>
           <div class="menu-dropdown" id="menuDropdown5">
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
             <div class="menu-item" onclick="goToAbout()">Acerca de</div>
@@ -1693,6 +1698,19 @@ document.addEventListener('visibilitychange', function() {
         loadLists();
     }
 });
+
+function goToSuggestions() {
+    let username = 'Usuario';
+    
+    // Intentar obtener el nombre del usuario actual
+    if (currentUser && currentUser.displayName) {
+        username = currentUser.displayName;
+    } else if (currentUser && currentUser.email) {
+        username = currentUser.email.split('@')[0]; // Usar parte antes del @
+    }
+    
+    window.location.href = `suggestions.html?user=${encodeURIComponent(username)}`;
+}
 
   </script>
 
