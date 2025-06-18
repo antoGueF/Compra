@@ -1645,9 +1645,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 }
 
-    document.addEventListener('visibilitychange', function() {
+document.addEventListener('visibilitychange', function() {
     if (!document.hidden) {
-                location.reload(); 
+        console.log('App visible again - refreshing lists');
+        loadLists();
     }
 });
 
