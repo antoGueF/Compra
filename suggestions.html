@@ -313,6 +313,10 @@
             border-top: 1px solid #eee;
         }
 
+        .loading {
+            opacity: 0.7;
+        }
+
         @media (max-width: 600px) {
             .donation-buttons {
                 gap: 10px;
@@ -415,14 +419,69 @@
              emailjs.init('FRpZGNE1_pmJ5Lzvk');
         })();
 
-        // Configurar título con nombre de usuario desde URL
-        function setupTitle() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const username = urlParams.get('user') || 'Usuario';
-            
+        // Variable para almacenar el usuario actual
+        let currentUser = null;
+        let userDisplayName = null;
+
+        // Función para actualizar el título
+        function updateTitle(username) {
             const mainTitle = document.getElementById('mainTitle');
-            mainTitle.textContent = `Lista de la compra de ${userData.username}`;
+            mainTitle.textContent = `Lista de la compra de ${username}`;
         }
+
+        // Función para obtener el nombre de usuario
+        async function getUserDisplayName(user) {
+            if (!user) return null;
+            
+            try {
+                // Intentar obtener el nombre desde Firestore primero
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    return userData.displayName || userData.name || user.displayName || user.email || 'Usuario';
+                }
+            } catch (error) {
+                console.warn('Error al obtener datos de Firestore:', error);
+            }
+            
+            // Fallback a los datos básicos de Firebase Auth
+            return user.displayName || user.email || 'Usuario';
+        }
+
+        // Función para configurar el título de la página
+        async function setupTitle() {
+            // Primero intentar obtener el nombre desde la URL (para compatibilidad)
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlUsername = urlParams.get('user');
+            
+            if (urlUsername) {
+                updateTitle(urlUsername);
+                userDisplayName = urlUsername;
+                return;
+            }
+
+            // Si no hay nombre en URL, esperar a que Firebase se inicialice
+            if (currentUser) {
+                const displayName = await getUserDisplayName(currentUser);
+                updateTitle(displayName);
+                userDisplayName = displayName;
+            } else {
+                // Si no hay usuario, usar un nombre genérico
+                updateTitle('Usuario');
+                userDisplayName = 'Usuario';
+            }
+        }
+
+        // Listener para cambios en la autenticación
+        auth.onAuthStateChanged(async (user) => {
+            currentUser = user;
+            
+            // Solo actualizar el título si no se obtuvo desde la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!urlParams.get('user')) {
+                await setupTitle();
+            }
+        });
 
         // Manejar envío del formulario
         document.getElementById('suggestionForm').addEventListener('submit', async function(e) {
@@ -441,34 +500,31 @@
             submitBtn.textContent = '📤 Enviando...';
             
             try {
-                // Verificar si el usuario está logueado
-                const user = firebase.auth().currentUser;
-                
                 let formData = {
                     suggestion: document.getElementById('suggestion').value,
                     timestamp: new Date().toISOString(),
                     userAgent: navigator.userAgent
                 };
 
-                if (user) {
+                if (currentUser) {
                     // Usuario logueado - obtener datos adicionales
                     try {
-                        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                        const userDoc = await db.collection('users').doc(currentUser.uid).get();
                         const userData = userDoc.data();
                         
-                        formData.userName = userData?.displayName || user.displayName || 'Usuario sin nombre';
-                        formData.userEmail = userData?.email || user.email || 'Email no disponible';
-                        formData.userId = user.uid;
+                        formData.userName = userData?.displayName || userData?.name || currentUser.displayName || userDisplayName || 'Usuario sin nombre';
+                        formData.userEmail = userData?.email || currentUser.email || 'Email no disponible';
+                        formData.userId = currentUser.uid;
                     } catch (firestoreError) {
                         console.warn('Error al obtener datos de Firestore:', firestoreError);
                         // Usar datos básicos del usuario
-                        formData.userName = user.displayName || 'Usuario sin nombre';
-                        formData.userEmail = user.email || 'Email no disponible';
-                        formData.userId = user.uid;
+                        formData.userName = currentUser.displayName || userDisplayName || 'Usuario sin nombre';
+                        formData.userEmail = currentUser.email || 'Email no disponible';
+                        formData.userId = currentUser.uid;
                     }
                 } else {
-                    // Usuario anónimo
-                    formData.userName = 'Usuario anónimo';
+                    // Usuario anónimo o desde URL
+                    formData.userName = userDisplayName || 'Usuario anónimo';
                     formData.userEmail = 'No proporcionado';
                     formData.userId = 'Anónimo';
                 }
@@ -510,6 +566,8 @@
 
         // Inicializar página cuando se cargue
         document.addEventListener('DOMContentLoaded', function() {
+            // El título se configurará automáticamente cuando Firebase se inicialice
+            // o inmediatamente si hay un parámetro en la URL
             setupTitle();
         });
     </script>
