@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de la Compra - Sugerencias y Contacto</title>
     
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-storage-compat.js"></script>
+    
     <!-- EmailJS -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function(){
-             emailjs.init('FRpZGNE1_pmJ5Lzvk');
-        })();
-    </script>
     
     <style>
         body {
@@ -339,7 +340,7 @@
             <h2>Envíanos tus sugerencias</h2>
             <p>
                 ¿Tienes ideas para mejorar la aplicación? ¿Has encontrado algún problema? 
-                ¡Nos encantaría escucharte! Tu feedback nos ayuda a hacer la aplicación mejor para todos.
+                ¡Nos encantaría escucharte!
             </p>
 
             <div class="success-message" id="successMessage">
@@ -364,8 +365,6 @@
             </form>
         </div>
 
-
-
         <!-- Sección de donaciones -->
         <div class="suggestions-section">
             <h2>☕ Apoya el proyecto</h2>
@@ -380,7 +379,6 @@
                     <a href="#" class="donation-btn paypal" id="paypalBtn">
                         💳 Donar con PayPal
                     </a>
-                    
                 </div>
                 
                 <p style="text-align: center; margin-bottom: 0; font-size: 14px; color: #666; margin-top: 15px;">
@@ -396,6 +394,27 @@
     </div>
 
     <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBb1n1VqR8iXco8ByeCkze_XewNjoH6Ruk",
+            authDomain: "listacompraapp-dae10.firebaseapp.com",
+            projectId: "listacompraapp-dae10",
+            storageBucket: "listacompraapp-dae10.firebasestorage.app",
+            messagingSenderId: "68249280755",
+            appId: "1:68249280755:web:e359ca073cab688f031786",
+            measurementId: "G-M3Z4FJJZ4W"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Inicializar EmailJS
+        (function(){
+             emailjs.init('FRpZGNE1_pmJ5Lzvk');
+        })();
+
         // Configurar título con nombre de usuario desde URL
         function setupTitle() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -417,37 +436,47 @@
             successMessage.style.display = 'none';
             errorMessage.style.display = 'none';
             
-            // Verificar que el usuario esté logueado
-            if (!firebase.auth().currentUser) {
-                errorMessage.textContent = '❌ Debes estar logueado para enviar sugerencias.';
-                errorMessage.style.display = 'block';
-                return;
-            }
-            
             // Deshabilitar botón
             submitBtn.disabled = true;
             submitBtn.textContent = '📤 Enviando...';
             
-            // Obtener datos del usuario logueado
-            const user = firebase.auth().currentUser;
-            const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
-            const userData = userDoc.data();
-            
-            // Obtener datos del formulario
-            const formData = {
-                userName: userData?.displayName || user.displayName || 'Usuario sin nombre',
-                userEmail: userData?.email || user.email,
-                suggestion: document.getElementById('suggestion').value,
-                timestamp: new Date().toISOString(),
-                userId: user.uid,
-                userAgent: navigator.userAgent
-            };
-            
             try {
-                // Envío real con EmailJS
+                // Verificar si el usuario está logueado
+                const user = firebase.auth().currentUser;
+                
+                let formData = {
+                    suggestion: document.getElementById('suggestion').value,
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent
+                };
+
+                if (user) {
+                    // Usuario logueado - obtener datos adicionales
+                    try {
+                        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                        const userData = userDoc.data();
+                        
+                        formData.userName = userData?.displayName || user.displayName || 'Usuario sin nombre';
+                        formData.userEmail = userData?.email || user.email || 'Email no disponible';
+                        formData.userId = user.uid;
+                    } catch (firestoreError) {
+                        console.warn('Error al obtener datos de Firestore:', firestoreError);
+                        // Usar datos básicos del usuario
+                        formData.userName = user.displayName || 'Usuario sin nombre';
+                        formData.userEmail = user.email || 'Email no disponible';
+                        formData.userId = user.uid;
+                    }
+                } else {
+                    // Usuario anónimo
+                    formData.userName = 'Usuario anónimo';
+                    formData.userEmail = 'No proporcionado';
+                    formData.userId = 'Anónimo';
+                }
+                
+                // Envío con EmailJS
                 await emailjs.send(
-                    'gmail_service',        
-                    'template_suggestions',       
+                    'service_f7k335l',        
+                    'template_3i2enft',       
                     {
                         from_name: formData.userName,
                         from_email: formData.userEmail,
@@ -467,6 +496,7 @@
                 
             } catch (error) {
                 console.error('Error al enviar sugerencia:', error);
+                errorMessage.textContent = `❌ Error: ${error.message || 'Error desconocido'}`;
                 errorMessage.style.display = 'block';
             } finally {
                 // Rehabilitar botón
@@ -475,11 +505,13 @@
             }
         });
 
-        // Configurar enlaces de donación (reemplaza con tus enlaces reales)
-        document.getElementById('paypalBtn').href = 'https://paypal.me/Antofer6'; // Reemplaza con tu enlace
+        // Configurar enlaces de donación
+        document.getElementById('paypalBtn').href = 'https://paypal.me/Antofer6';
 
-        // Inicializar página
-        setupTitle();
+        // Inicializar página cuando se cargue
+        document.addEventListener('DOMContentLoaded', function() {
+            setupTitle();
+        });
     </script>
 </body>
 </html>
