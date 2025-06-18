@@ -435,6 +435,7 @@ const storage = firebase.storage();
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+            <div class="menu-item" onclick="goToAbout()">Acerca de</div>
           </div>
         </div>
       </div>
@@ -452,6 +453,7 @@ const storage = firebase.storage();
             <div class="menu-item" onclick="clearCompletedItems('list1')">Borrar comprados</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+            <div class="menu-item" onclick="goToAbout()">Acerca de</div>
           </div>
         </div>
       </div>
@@ -475,6 +477,7 @@ const storage = firebase.storage();
             <div class="menu-item" onclick="clearCompletedItems('list2')">Borrar comprados</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+            <div class="menu-item" onclick="goToAbout()">Acerca de</div>
           </div>
         </div>
       </div>
@@ -497,6 +500,7 @@ const storage = firebase.storage();
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+            <div class="menu-item" onclick="goToAbout()">Acerca de</div>
           </div>
         </div>
       </div>
@@ -514,6 +518,7 @@ const storage = firebase.storage();
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+            <div class="menu-item" onclick="goToAbout()">Acerca de</div>
           </div>
         </div>
       </div>
@@ -1629,6 +1634,11 @@ document.addEventListener('DOMContentLoaded', function() {
   authView.style.display = 'none';
   appView.classList.remove('active');
 });
+
+    function goToAbout() {
+    window.open('about.html', '_blank'); // Abre en nueva pestaña
+    // O: window.location.href = 'about.html'; // Navega a la página
+}
 
   </script>
 
