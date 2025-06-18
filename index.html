@@ -441,6 +441,7 @@ const storage = firebase.storage();
       </div>
       <div class="list-button" id="list1Button" onclick="showList('list1View')">Lista 1</div>
       <div class="list-button" id="list2Button" onclick="showList('list2View')">Lista 2</div>
+      <div class="list-button" id="list3Button" onclick="showList('list3View')">Lista 3</div>
     </div>
 
     <div id="list1View" class="view" style="display:none;">
@@ -488,6 +489,30 @@ const storage = firebase.storage();
           <button type="submit">+</button>
         </form>
         <div id="list2"></div>
+      </div>
+    </div>
+
+    <div id="list3View" class="view" style="display:none;">
+      <div class="top-bar">
+        <button class="back-btn" onclick="showList('selectorView')">←</button>
+        <div class="menu-container">
+          <button class="menu-btn" onclick="toggleMenu()">☰</button>
+          <div class="menu-dropdown" id="menuDropdown6">
+            <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="clearCompletedItems('list3')">Borrar comprados</div>
+            <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
+            <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+            <div class="menu-item" onclick="goToAbout()">Acerca de</div>
+          </div>
+        </div>
+      </div>
+      <div class="list-container">
+        <h2 class="list-title editable" data-button-id="list3Button" onclick="editListTitle(this)">Lista 3</h2>
+        <form class="form" onsubmit="addItem(event, 'list3')">
+          <input type="text" placeholder="Nombre del artículo" id="name-list3" required />
+          <button type="submit">+</button>
+        </form>
+        <div id="list3"></div>
       </div>
     </div>
 
@@ -577,7 +602,7 @@ const splashTimeout = setTimeout(() => {
   authView.style.display = 'block';
   appView.classList.remove('active');
   isInitialLoad = false;
-}, 3000); // 3 segundos máximo de espera
+}, 1500); // 1.5 segundos máximo de espera
 
 // Función para limpiar el timeout cuando ya no lo necesites
 const clearSplashTimeout = () => {
@@ -649,7 +674,8 @@ if (authMode === 'register') {
   email: email,
   lists: {
     list1: [],
-    list2: []
+    list2: [],
+    list3: []
   },
   itemLibrary: {} // Nueva biblioteca de artículos del usuario
 });
@@ -693,6 +719,10 @@ if (userData.list1Name) {
 if (userData.list2Name) {
   document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
   document.getElementById('list2Button').textContent = userData.list2Name;
+}
+if (userData.list3Name) {
+  document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
+  document.getElementById('list3Button').textContent = userData.list3Name;
 }
 
 authView.style.display = 'none';
@@ -742,6 +772,7 @@ function showList(viewId) {
   document.getElementById('selectorView').style.display = 'none';
   document.getElementById('list1View').style.display = 'none';
   document.getElementById('list2View').style.display = 'none';
+  document.getElementById('list3View').style.display = 'none';
   document.getElementById('articlesView').style.display = 'none';
   document.getElementById('accountView').style.display = 'none';
   if (viewId === 'selectorView') {
@@ -752,7 +783,7 @@ function showList(viewId) {
   
   if (viewId === 'articlesView') {
     loadArticles();
-  } else if (viewId === 'list1View' || viewId === 'list2View') {
+  } else if (viewId === 'list1View' || viewId === 'list2View'|| viewId === 'list3View') {
     loadLists();
   } else if (viewId === 'accountView') {
     loadAccountView();
@@ -765,9 +796,9 @@ function showList(viewId) {
   try {
     const doc = await db.collection("users").doc(currentUser.uid).get();
     const userData = doc.data();
-    const data = userData.lists || { list1: [], list2: [] };
+    const data = userData.lists || { list1: [], list2: [], list3: [] };
     
-['list1', 'list2'].forEach(listId => {
+['list1', 'list2', 'list3'].forEach(listId => {
   const container = document.getElementById(listId);
   container.innerHTML = '';
   const orderedList = reorderList(data[listId] || []);
@@ -1026,7 +1057,7 @@ async function editListTitle(element) {
     // Guardar en Firebase
     if (currentUser && newTitle !== currentTitle) {
       try {
-        const listKey = buttonId === 'list1Button' ? 'list1Name' : 'list2Name';
+        const listKey = buttonId === 'list1Button' ? 'list1Name' : 'list2Name': 'list3Name';
         await db.collection("users").doc(currentUser.uid).update({
           [listKey]: newTitle
         });
@@ -1052,6 +1083,7 @@ function toggleMenu(menuId) {
     if (currentView === 'selectorView') menuId = 'menuDropdown';
     else if (currentView === 'list1View') menuId = 'menuDropdown2';
     else if (currentView === 'list2View') menuId = 'menuDropdown3';
+    else if (currentView === 'list3View') menuId = 'menuDropdown6';
     else if (currentView === 'articlesView') menuId = 'menuDropdown4';
     else if (currentView === 'accountView') menuId = 'menuDropdown5';
   }
@@ -1066,6 +1098,7 @@ function getCurrentView() {
   if (document.getElementById('selectorView').style.display !== 'none') return 'selectorView';
   if (document.getElementById('list1View').style.display === 'block') return 'list1View';
   if (document.getElementById('list2View').style.display === 'block') return 'list2View';
+  if (document.getElementById('list3View').style.display === 'block') return 'list3View';
   if (document.getElementById('articlesView').style.display === 'block') return 'articlesView';
   if (document.getElementById('accountView').style.display === 'block') return 'accountView';
   return 'selectorView';
@@ -1216,7 +1249,7 @@ async function editArticleName(oldName) {
     const doc = await db.collection("users").doc(currentUser.uid).get();
     const userData = doc.data();
     const itemLibrary = userData.itemLibrary || {};
-    const lists = userData.lists || { list1: [], list2: [] };
+    const lists = userData.lists || { list1: [], list2: [],list3: [] };
     
     const oldNormalizedName = oldName.toLowerCase().trim();
     const newNormalizedName = newName.trim().toLowerCase();
@@ -1257,7 +1290,8 @@ async function editArticleName(oldName) {
     
     // Si estamos viendo alguna lista, recargarla también
     if (document.getElementById('list1View').style.display === 'block' || 
-        document.getElementById('list2View').style.display === 'block') {
+        document.getElementById('list2View').style.display === 'block' || 
+        document.getElementById('list3View').style.display === 'block') {
       loadLists();
     }
     
@@ -1274,7 +1308,7 @@ async function deleteArticle(articleName) {
     const doc = await db.collection("users").doc(currentUser.uid).get();
     const userData = doc.data();
     const itemLibrary = userData.itemLibrary || {};
-    const lists = userData.lists || { list1: [], list2: [] };
+    const lists = userData.lists || { list1: [], list2: [],list3: [] };
     
     const normalizedName = articleName.toLowerCase().trim();
     
@@ -1314,7 +1348,8 @@ async function deleteArticle(articleName) {
     
     // Si estamos viendo alguna lista, recargarla también
     if (document.getElementById('list1View').style.display === 'block' || 
-        document.getElementById('list2View').style.display === 'block') {
+        document.getElementById('list2View').style.display === 'block' || 
+        document.getElementById('list3View').style.display === 'block') {
       loadLists();
     }
     
@@ -1363,7 +1398,7 @@ input.onchange = async e => {
       itemLibrary[normalizedName].img = downloadURL;
 
       // Obtener las listas y actualizar todas las que contengan este artículo
-      const lists = userData.lists || { list1: [], list2: [] };
+      const lists = userData.lists || { list1: [], list2: [], list3: []  };
 
       Object.keys(lists).forEach(listKey => {
         lists[listKey].forEach(item => {
@@ -1387,7 +1422,8 @@ input.onchange = async e => {
       // Recargar tanto la vista de artículos como las listas si estamos en una vista de lista
       loadArticles();
       if (document.getElementById('list1View').style.display === 'block' || 
-          document.getElementById('list2View').style.display === 'block') {
+          document.getElementById('list2View').style.display === 'block' || 
+          document.getElementById('list3View').style.display === 'block') {
         loadLists();
       }
     } catch (error) {
@@ -1480,6 +1516,10 @@ const showFinalView = () => {
       if (userData.list2Name) {
         document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
         document.getElementById('list2Button').textContent = userData.list2Name;
+      }
+       if (userData.list3Name) {
+        document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
+        document.getElementById('list3Button').textContent = userData.list3Name;
       }
       
       // Mostrar vista después del delay solo en carga inicial
