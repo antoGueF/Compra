@@ -924,12 +924,6 @@ console.log('Guardado exitoso');
   }
 }
 
-    function saveList(listId, items) {
-      const data = JSON.parse(localStorage.getItem(`listApp_${currentUser}`));
-      data[listId] = items;
-      localStorage.setItem(`listApp_${currentUser}`, JSON.stringify(data));
-    }
-
     // Función para comprimir imágenes
 async function compressImage(file, maxSizeKB = 100, quality = 0.8) {
   return new Promise((resolve) => {
@@ -985,7 +979,7 @@ async function selectImage(itemIndex, listId) {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
-  input.capture = 'environment';
+  <!--  input.capture = 'environment'; -->
 input.onchange = async e => {
     const file = e.target.files[0];
     if (!file) return;
@@ -1422,7 +1416,7 @@ async function selectImageForArticle(articleName) {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
-  input.capture = 'environment';
+  <!--  input.capture = 'environment'; -->
 input.onchange = async e => {
     const file = e.target.files[0];
     if (!file) return;
