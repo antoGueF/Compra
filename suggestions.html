@@ -423,40 +423,47 @@
         let currentUser = null;
         let userDisplayName = null;
 
-        // Función para actualizar el título
+        // Función para actualizar el título - CORREGIDA
         function updateTitle(username) {
             const mainTitle = document.getElementById('mainTitle');
-            mainTitle.textContent = `Lista de la compra de ${userData.username}`;
+            mainTitle.textContent = `Lista de la compra de ${username}`;
         }
 
-        // Función para obtener el nombre de usuario
+        // Función para obtener el nombre de usuario - CORREGIDA para ser consistente
         async function getUserDisplayName(user) {
             if (!user) return null;
             
             try {
-                // Intentar obtener el nombre desde Firestore primero
+                // Obtener datos desde Firestore con la misma lógica que el index
                 const userDoc = await db.collection('users').doc(user.uid).get();
                 if (userDoc.exists) {
                     const userData = userDoc.data();
-                    return userData.displayName || userData.name || user.displayName || user.email || 'Usuario';
+                    // Buscar primero 'username', luego otros campos
+                    return userData.username || 
+                           userData.displayName || 
+                           userData.name || 
+                           user.displayName || 
+                           (user.email ? user.email.split('@')[0] : 'Usuario');
                 }
             } catch (error) {
                 console.warn('Error al obtener datos de Firestore:', error);
             }
             
             // Fallback a los datos básicos de Firebase Auth
-            return user.displayName || user.email || 'Usuario';
+            return user.displayName || 
+                   (user.email ? user.email.split('@')[0] : 'Usuario');
         }
 
-        // Función para configurar el título de la página
+        // Función para configurar el título de la página - MEJORADA
         async function setupTitle() {
-            // Primero intentar obtener el nombre desde la URL (para compatibilidad)
+            // Primero intentar obtener el nombre desde la URL
             const urlParams = new URLSearchParams(window.location.search);
             const urlUsername = urlParams.get('user');
             
             if (urlUsername) {
-                updateTitle(urlUsername);
-                userDisplayName = urlUsername;
+                const decodedUsername = decodeURIComponent(urlUsername);
+                updateTitle(decodedUsername);
+                userDisplayName = decodedUsername;
                 return;
             }
 
@@ -483,7 +490,7 @@
             }
         });
 
-        // Manejar envío del formulario
+        // Manejar envío del formulario - MEJORADO
         document.getElementById('suggestionForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -507,18 +514,27 @@
                 };
 
                 if (currentUser) {
-                    // Usuario logueado - obtener datos adicionales
+                    // Usuario logueado - obtener datos adicionales con lógica consistente
                     try {
                         const userDoc = await db.collection('users').doc(currentUser.uid).get();
                         const userData = userDoc.data();
                         
-                        formData.userName = userData?.displayName || userData?.name || currentUser.displayName || userDisplayName || 'Usuario sin nombre';
+                        // Usar la misma lógica que getUserDisplayName
+                        formData.userName = userData?.username || 
+                                          userData?.displayName || 
+                                          userData?.name || 
+                                          currentUser.displayName || 
+                                          userDisplayName || 
+                                          (currentUser.email ? currentUser.email.split('@')[0] : 'Usuario sin nombre');
+                        
                         formData.userEmail = userData?.email || currentUser.email || 'Email no disponible';
                         formData.userId = currentUser.uid;
                     } catch (firestoreError) {
                         console.warn('Error al obtener datos de Firestore:', firestoreError);
                         // Usar datos básicos del usuario
-                        formData.userName = currentUser.displayName || userDisplayName || 'Usuario sin nombre';
+                        formData.userName = currentUser.displayName || 
+                                          userDisplayName || 
+                                          (currentUser.email ? currentUser.email.split('@')[0] : 'Usuario sin nombre');
                         formData.userEmail = currentUser.email || 'Email no disponible';
                         formData.userId = currentUser.uid;
                     }
@@ -566,8 +582,6 @@
 
         // Inicializar página cuando se cargue
         document.addEventListener('DOMContentLoaded', function() {
-            // El título se configurará automáticamente cuando Firebase se inicialice
-            // o inmediatamente si hay un parámetro en la URL
             setupTitle();
         });
     </script>
