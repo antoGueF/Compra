@@ -709,32 +709,9 @@ if (authMode === 'register') {
     // LOGIN
     try {
       const userCredential = await auth.signInWithEmailAndPassword(email, password);
-      const user = userCredential.user;
+     // onAuthStateChanged se encargará automáticamente de cargar los datos del usuario
 
-const doc = await db.collection("users").doc(user.uid).get();
-const userData = doc.data();
 
-currentUser = user;
-mainTitle.textContent = `Lista de la compra de ${userData.username}`;
-
-// Cargar nombres de listas guardados
-if (userData.list1Name) {
-  document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
-  document.getElementById('list1Button').textContent = userData.list1Name;
-}
-if (userData.list2Name) {
-  document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
-  document.getElementById('list2Button').textContent = userData.list2Name;
-}
-if (userData.list3Name) {
-  document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
-  document.getElementById('list3Button').textContent = userData.list3Name;
-}
-
-authView.style.display = 'none';
-appView.classList.add('active');
-loadLists();
-      // Aquí puedes cargar listas desde Firestore más adelante.
     } catch (error) {
       // Mostrar mensajes más amigables según el tipo de error
       if (error.code === 'auth/invalid-credential' || 
@@ -757,20 +734,12 @@ loadLists();
 
 
 function logout() {
-    // Cerrar sesión en Firebase 
-    auth.signOut().then(() => {
-        console.log('Sesión cerrada correctamente');
-        // El resto del código se ejecutará automáticamente por onAuthStateChanged
-    }).catch((error) => {
-        console.error('Error al cerrar sesión:', error);
-    });
-    
-    // Opcional: puedes mantener esto para feedback inmediato en la UI
-    currentUser = null;
-    appView.classList.remove('active');
-    authView.style.display = 'block';
-    authForm.reset();
-    mainTitle.textContent = 'Lista de la compra by AKOBU';
+  auth.signOut().then(() => {
+    console.log('Sesión cerrada correctamente');
+    // onAuthStateChanged se encargará de limpiar todo automáticamente
+  }).catch((error) => {
+    console.error('Error al cerrar sesión:', error);
+  });
 }
 
 function showList(viewId) {
@@ -1480,6 +1449,58 @@ async function clearCompletedItems(listId) {
 // Detector de estado de autenticación con splash screen
 auth.onAuthStateChanged(async (user) => {
   console.log('Estado de autenticación cambió:', user ? 'Logueado' : 'No logueado');
+  
+  if (user) {
+    // Usuario logueado - cargar sus datos
+    currentUser = user;
+    const doc = await db.collection("users").doc(user.uid).get();
+    const userData = doc.data();
+    
+    mainTitle.textContent = `Lista de la compra de ${userData.username}`;
+    
+    // Cargar nombres de listas
+    if (userData.list1Name) {
+      document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
+      document.getElementById('list1Button').textContent = userData.list1Name;
+    }
+    if (userData.list2Name) {
+      document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
+      document.getElementById('list2Button').textContent = userData.list2Name;
+    }
+    if (userData.list3Name) {
+      document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
+      document.getElementById('list3Button').textContent = userData.list3Name;
+    }
+    
+    authView.style.display = 'none';
+    appView.classList.add('active');
+    loadLists();
+    
+  } else {
+    // Usuario NO logueado - limpiar todo
+    currentUser = null;
+    
+    // Resetear título
+    mainTitle.textContent = 'Lista de la compra';
+    
+    // Resetear nombres de listas
+    document.querySelector('[data-button-id="list1Button"]').textContent = 'Lista 1';
+    document.getElementById('list1Button').textContent = 'Lista 1';
+    document.querySelector('[data-button-id="list2Button"]').textContent = 'Lista 2';
+    document.getElementById('list2Button').textContent = 'Lista 2';
+    document.querySelector('[data-button-id="list3Button"]').textContent = 'Lista 3';
+    document.getElementById('list3Button').textContent = 'Lista 3';
+    
+    // Limpiar listas del DOM
+    document.getElementById('list1').innerHTML = '';
+    document.getElementById('list2').innerHTML = '';
+    document.getElementById('list3').innerHTML = '';
+    
+    // Mostrar vista de autenticación
+    authView.style.display = 'block';
+    appView.classList.remove('active');
+  }
+});
   
   // Función para ocultar splash y mostrar la vista correcta
 const showFinalView = () => {
