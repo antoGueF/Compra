@@ -1447,59 +1447,72 @@ async function clearCompletedItems(listId) {
 }
 
 // Detector de estado de autenticación con splash screen
-auth.onAuthStateChanged(async (user) => {
-  console.log('Estado de autenticación cambió:', user ? 'Logueado' : 'No logueado');
-  
-  if (user) {
-    // Usuario logueado - cargar sus datos
-    currentUser = user;
-    const doc = await db.collection("users").doc(user.uid).get();
-    const userData = doc.data();
+document.addEventListener('DOMContentLoaded', () => {
+  auth.onAuthStateChanged(async (user) => {
+    console.log('Estado de autenticación cambió:', user ? 'Logueado' : 'No logueado');
     
-    mainTitle.textContent = `Lista de la compra de ${userData.username}`;
-    
-    // Cargar nombres de listas
-    if (userData.list1Name) {
-      document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
-      document.getElementById('list1Button').textContent = userData.list1Name;
+    if (user) {
+      // Usuario logueado - cargar sus datos
+      currentUser = user;
+      const doc = await db.collection("users").doc(user.uid).get();
+      const userData = doc.data();
+      
+      mainTitle.textContent = `Lista de la compra de ${userData.username}`;
+      
+      // Cargar nombres de listas
+      if (userData.list1Name) {
+        document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
+        document.getElementById('list1Button').textContent = userData.list1Name;
+      }
+      if (userData.list2Name) {
+        document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
+        document.getElementById('list2Button').textContent = userData.list2Name;
+      }
+      if (userData.list3Name) {
+        document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
+        document.getElementById('list3Button').textContent = userData.list3Name;
+      }
+      
+      authView.style.display = 'none';
+      appView.classList.add('active');
+      loadLists();
+      
+    } else {
+      // Usuario NO logueado - limpiar todo
+      currentUser = null;
+      
+      // Resetear título
+      if (mainTitle) mainTitle.textContent = 'Lista de la compra';
+      
+      // Resetear nombres de listas (con verificación de existencia)
+      const list1BtnData = document.querySelector('[data-button-id="list1Button"]');
+      const list1Btn = document.getElementById('list1Button');
+      if (list1BtnData) list1BtnData.textContent = 'Lista 1';
+      if (list1Btn) list1Btn.textContent = 'Lista 1';
+      
+      const list2BtnData = document.querySelector('[data-button-id="list2Button"]');
+      const list2Btn = document.getElementById('list2Button');
+      if (list2BtnData) list2BtnData.textContent = 'Lista 2';
+      if (list2Btn) list2Btn.textContent = 'Lista 2';
+      
+      const list3BtnData = document.querySelector('[data-button-id="list3Button"]');
+      const list3Btn = document.getElementById('list3Button');
+      if (list3BtnData) list3BtnData.textContent = 'Lista 3';
+      if (list3Btn) list3Btn.textContent = 'Lista 3';
+      
+      // Limpiar listas del DOM
+      const list1 = document.getElementById('list1');
+      const list2 = document.getElementById('list2');
+      const list3 = document.getElementById('list3');
+      if (list1) list1.innerHTML = '';
+      if (list2) list2.innerHTML = '';
+      if (list3) list3.innerHTML = '';
+      
+      // Mostrar vista de autenticación
+      if (authView) authView.style.display = 'block';
+      if (appView) appView.classList.remove('active');
     }
-    if (userData.list2Name) {
-      document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
-      document.getElementById('list2Button').textContent = userData.list2Name;
-    }
-    if (userData.list3Name) {
-      document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
-      document.getElementById('list3Button').textContent = userData.list3Name;
-    }
-    
-    authView.style.display = 'none';
-    appView.classList.add('active');
-    loadLists();
-    
-  } else {
-    // Usuario NO logueado - limpiar todo
-    currentUser = null;
-    
-    // Resetear título
-    mainTitle.textContent = 'Lista de la compra';
-    
-    // Resetear nombres de listas
-    document.querySelector('[data-button-id="list1Button"]').textContent = 'Lista 1';
-    document.getElementById('list1Button').textContent = 'Lista 1';
-    document.querySelector('[data-button-id="list2Button"]').textContent = 'Lista 2';
-    document.getElementById('list2Button').textContent = 'Lista 2';
-    document.querySelector('[data-button-id="list3Button"]').textContent = 'Lista 3';
-    document.getElementById('list3Button').textContent = 'Lista 3';
-    
-    // Limpiar listas del DOM
-    document.getElementById('list1').innerHTML = '';
-    document.getElementById('list2').innerHTML = '';
-    document.getElementById('list3').innerHTML = '';
-    
-    // Mostrar vista de autenticación
-    authView.style.display = 'block';
-    appView.classList.remove('active');
-  }
+  });
 });
   
   // Función para ocultar splash y mostrar la vista correcta
