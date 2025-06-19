@@ -1146,48 +1146,6 @@ document.addEventListener('click', function(event) {
   }
 });
 
-    document.addEventListener('DOMContentLoaded', function() {
-    // Detectar si es móvil
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-    
-    if (isMobile) {
-        // En móvil, cerrar menús en varios eventos
-        const externalLinks = document.querySelectorAll('a[href$=".html"], a[href*="/"]');
-        
-        externalLinks.forEach(link => {
-            // Usar touchstart en lugar de click para móviles
-            link.addEventListener('touchstart', function() {
-                closeAllMenus();
-            });
-            
-            link.addEventListener('click', function() {
-                closeAllMenus();
-            });
-        });
-        
-        // También cerrar cuando se pierde el foco de la ventana
-        window.addEventListener('pagehide', function() {
-            closeAllMenus();
-        });
-        
-        window.addEventListener('blur', function() {
-            closeAllMenus();
-        });
-    } else {
-        // En PC, usar la solución original
-        const externalLinks = document.querySelectorAll('a[href$=".html"], a[href*="/"]');
-        externalLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                closeAllMenus();
-            });
-        });
-        
-        window.addEventListener('beforeunload', function() {
-            closeAllMenus();
-        });
-    }
-});
-
 async function loadArticles() {
   if (!currentUser) return;
   
