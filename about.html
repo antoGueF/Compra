@@ -226,18 +226,19 @@
         </div>
     </div>
 
-    <script>
-               // Configurar título con nombre de usuario desde URL
-        function setupTitle() {
-            // Obtener parámetros de la URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const username = urlParams.get('user') || 'Usuario';
-            
-            const mainTitle = document.getElementById('mainTitle');
-            mainTitle.textContent = `Lista de la compra de ${userData.username}`;
-        }
-
+<script>
+    // Configurar título con nombre de usuario desde URL
+    function setupTitle() {
+        // Obtener parámetros de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('user') || 'Usuario';
         
-    </script>
+        const mainTitle = document.getElementById('mainTitle');
+        mainTitle.textContent = `Lista de la compra de ${username}`; // ✅ Usar username, no userData.username
+    }
+
+    // Ejecutar cuando se carga la página
+    setupTitle();
+</script>
 </body>
 </html>
