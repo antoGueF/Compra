@@ -608,7 +608,7 @@ const splashTimeout = setTimeout(() => {
   authView.style.display = 'block';
   appView.classList.remove('active');
   isInitialLoad = false;
-}, 1500); // 1.5 segundos máximo de espera
+}, 2000); // 2 segundos máximo de espera
 
 // Función para limpiar el timeout cuando ya no lo necesites
 const clearSplashTimeout = () => {
@@ -1535,7 +1535,7 @@ const showFinalView = () => {
         setTimeout(() => {
           showFinalView();
           isInitialLoad = false;
-        }, 1500); // 1.5 segundos de splash
+        }, 2000); // 2 segundos de splash
       } else {
         showFinalView(); // Sin delay si no es carga inicial
       }
@@ -1556,7 +1556,7 @@ const showFinalView = () => {
       setTimeout(() => {
         showFinalView();
         isInitialLoad = false;
-      }, 1500); // 1.5 segundos de splash
+      }, 2000); // 2 segundos de splash
     } else {
       showFinalView(); // Sin delay si no es carga inicial
     }
@@ -1697,6 +1697,8 @@ document.addEventListener('visibilitychange', function() {
     if (!document.hidden) {
         console.log('App visible again - refreshing lists');
         loadLists();
+        loadArticles();
+        loadAccountView();
     }
 });
 
