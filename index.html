@@ -1447,67 +1447,54 @@ async function clearCompletedItems(listId) {
 }
 
 // Detector de estado de autenticación con splash screen
-document.addEventListener('DOMContentLoaded', () => {
-  auth.onAuthStateChanged(async (user) => {
-    console.log('Estado de autenticación cambió:', user ? 'Logueado' : 'No logueado');
+// SIN DOMContentLoaded - más simple
+auth.onAuthStateChanged(async (user) => {
+  console.log('Estado de autenticación cambió:', user ? 'Logueado' : 'No logueado');
+  
+  if (user) {
+    currentUser = user;
+    const doc = await db.collection("users").doc(user.uid).get();
+    const userData = doc.data();
     
-    if (user) {
-      // Usuario logueado - cargar sus datos
-      currentUser = user;
-      const doc = await db.collection("users").doc(user.uid).get();
-      const userData = doc.data();
-      
-      mainTitle.textContent = `Lista de la compra de ${userData.username}`;
-      
-      // SIEMPRE resetear a nombres por defecto PRIMERO
-      document.querySelector('[data-button-id="list1Button"]').textContent = 'Lista 1';
-      document.getElementById('list1Button').textContent = 'Lista 1';
-      document.querySelector('[data-button-id="list2Button"]').textContent = 'Lista 2';
-      document.getElementById('list2Button').textContent = 'Lista 2';
-      document.querySelector('[data-button-id="list3Button"]').textContent = 'Lista 3';
-      document.getElementById('list3Button').textContent = 'Lista 3';
-      
-      // DESPUÉS aplicar nombres personalizados si existen
-      if (userData.list1Name) {
-        document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
-        document.getElementById('list1Button').textContent = userData.list1Name;
-      }
-      if (userData.list2Name) {
-        document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
-        document.getElementById('list2Button').textContent = userData.list2Name;
-      }
-      if (userData.list3Name) {
-        document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
-        document.getElementById('list3Button').textContent = userData.list3Name;
-      }
-      
-      authView.style.display = 'none';
-      appView.classList.add('active');
-      loadLists();
-      
-    } else {
-      // Usuario NO logueado - limpiar todo
-      currentUser = null;
-      
-      mainTitle.textContent = 'Lista de la compra';
-      
-      // Resetear nombres de listas
-      document.querySelector('[data-button-id="list1Button"]').textContent = 'Lista 1';
-      document.getElementById('list1Button').textContent = 'Lista 1';
-      document.querySelector('[data-button-id="list2Button"]').textContent = 'Lista 2';
-      document.getElementById('list2Button').textContent = 'Lista 2';
-      document.querySelector('[data-button-id="list3Button"]').textContent = 'Lista 3';
-      document.getElementById('list3Button').textContent = 'Lista 3';
-      
-      // Limpiar listas del DOM
-      document.getElementById('list1').innerHTML = '';
-      document.getElementById('list2').innerHTML = '';
-      document.getElementById('list3').innerHTML = '';
-      
-      authView.style.display = 'block';
-      appView.classList.remove('active');
-    }
-  });
+    // Esperar a que los elementos existan
+    const waitForElement = (id) => {
+      return new Promise(resolve => {
+        const check = () => {
+          const el = document.getElementById(id);
+          if (el) resolve(el);
+          else setTimeout(check, 50);
+        };
+        check();
+      });
+    };
+    
+    await waitForElement('list1Button');
+    
+    if (mainTitle) mainTitle.textContent = `Lista de la compra de ${userData.username}`;
+    
+    // Resetear y aplicar nombres
+    document.getElementById('list1Button').textContent = userData.list1Name || 'Lista 1';
+    document.getElementById('list2Button').textContent = userData.list2Name || 'Lista 2';
+    document.getElementById('list3Button').textContent = userData.list3Name || 'Lista 3';
+    
+    const list1BtnData = document.querySelector('[data-button-id="list1Button"]');
+    const list2BtnData = document.querySelector('[data-button-id="list2Button"]');
+    const list3BtnData = document.querySelector('[data-button-id="list3Button"]');
+    
+    if (list1BtnData) list1BtnData.textContent = userData.list1Name || 'Lista 1';
+    if (list2BtnData) list2BtnData.textContent = userData.list2Name || 'Lista 2';
+    if (list3BtnData) list3BtnData.textContent = userData.list3Name || 'Lista 3';
+    
+    authView.style.display = 'none';
+    appView.classList.add('active');
+    loadLists();
+    
+  } else {
+    currentUser = null;
+    if (mainTitle) mainTitle.textContent = 'Lista de la compra';
+    if (authView) authView.style.display = 'block';
+    if (appView) appView.classList.remove('active');
+  }
 });
   
   // Función para ocultar splash y mostrar la vista correcta
