@@ -608,7 +608,7 @@ const splashTimeout = setTimeout(() => {
   authView.style.display = 'block';
   appView.classList.remove('active');
   isInitialLoad = false;
-}, 2000); // 2 segundos máximo de espera
+}, 1500); // 1.5 segundos máximo de espera
 
 // Función para limpiar el timeout cuando ya no lo necesites
 const clearSplashTimeout = () => {
@@ -709,9 +709,32 @@ if (authMode === 'register') {
     // LOGIN
     try {
       const userCredential = await auth.signInWithEmailAndPassword(email, password);
-     // onAuthStateChanged se encargará automáticamente de cargar los datos del usuario
+      const user = userCredential.user;
 
+const doc = await db.collection("users").doc(user.uid).get();
+const userData = doc.data();
 
+currentUser = user;
+mainTitle.textContent = `Lista de la compra de ${userData.username}`;
+
+// Cargar nombres de listas guardados
+if (userData.list1Name) {
+  document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
+  document.getElementById('list1Button').textContent = userData.list1Name;
+}
+if (userData.list2Name) {
+  document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
+  document.getElementById('list2Button').textContent = userData.list2Name;
+}
+if (userData.list3Name) {
+  document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
+  document.getElementById('list3Button').textContent = userData.list3Name;
+}
+
+authView.style.display = 'none';
+appView.classList.add('active');
+loadLists();
+      // Aquí puedes cargar listas desde Firestore más adelante.
     } catch (error) {
       // Mostrar mensajes más amigables según el tipo de error
       if (error.code === 'auth/invalid-credential' || 
@@ -734,12 +757,20 @@ if (authMode === 'register') {
 
 
 function logout() {
-  auth.signOut().then(() => {
-    console.log('Sesión cerrada correctamente');
-    // onAuthStateChanged se encargará de limpiar todo automáticamente
-  }).catch((error) => {
-    console.error('Error al cerrar sesión:', error);
-  });
+    // Cerrar sesión en Firebase 
+    auth.signOut().then(() => {
+        console.log('Sesión cerrada correctamente');
+        // El resto del código se ejecutará automáticamente por onAuthStateChanged
+    }).catch((error) => {
+        console.error('Error al cerrar sesión:', error);
+    });
+    
+    // Opcional: puedes mantener esto para feedback inmediato en la UI
+    currentUser = null;
+    appView.classList.remove('active');
+    authView.style.display = 'block';
+    authForm.reset();
+    mainTitle.textContent = 'Lista de la compra by AKOBU';
 }
 
 function showList(viewId) {
@@ -885,7 +916,11 @@ console.log('Guardado exitoso');
   }
 }
 
-
+    function saveList(listId, items) {
+      const data = JSON.parse(localStorage.getItem(`listApp_${currentUser}`));
+      data[listId] = items;
+      localStorage.setItem(`listApp_${currentUser}`, JSON.stringify(data));
+    }
 
     // Función para comprimir imágenes
 async function compressImage(file, maxSizeKB = 100, quality = 0.8) {
@@ -1447,55 +1482,8 @@ async function clearCompletedItems(listId) {
 }
 
 // Detector de estado de autenticación con splash screen
-// SIN DOMContentLoaded - más simple
 auth.onAuthStateChanged(async (user) => {
   console.log('Estado de autenticación cambió:', user ? 'Logueado' : 'No logueado');
-  
-  if (user) {
-    currentUser = user;
-    const doc = await db.collection("users").doc(user.uid).get();
-    const userData = doc.data();
-    
-    // Esperar a que los elementos existan
-    const waitForElement = (id) => {
-      return new Promise(resolve => {
-        const check = () => {
-          const el = document.getElementById(id);
-          if (el) resolve(el);
-          else setTimeout(check, 50);
-        };
-        check();
-      });
-    };
-    
-    await waitForElement('list1Button');
-    
-    if (mainTitle) mainTitle.textContent = `Lista de la compra de ${userData.username}`;
-    
-    // Resetear y aplicar nombres
-    document.getElementById('list1Button').textContent = userData.list1Name || 'Lista 1';
-    document.getElementById('list2Button').textContent = userData.list2Name || 'Lista 2';
-    document.getElementById('list3Button').textContent = userData.list3Name || 'Lista 3';
-    
-    const list1BtnData = document.querySelector('[data-button-id="list1Button"]');
-    const list2BtnData = document.querySelector('[data-button-id="list2Button"]');
-    const list3BtnData = document.querySelector('[data-button-id="list3Button"]');
-    
-    if (list1BtnData) list1BtnData.textContent = userData.list1Name || 'Lista 1';
-    if (list2BtnData) list2BtnData.textContent = userData.list2Name || 'Lista 2';
-    if (list3BtnData) list3BtnData.textContent = userData.list3Name || 'Lista 3';
-    
-    authView.style.display = 'none';
-    appView.classList.add('active');
-    loadLists();
-    
-  } else {
-    currentUser = null;
-    if (mainTitle) mainTitle.textContent = 'Lista de la compra';
-    if (authView) authView.style.display = 'block';
-    if (appView) appView.classList.remove('active');
-  }
-});
   
   // Función para ocultar splash y mostrar la vista correcta
 const showFinalView = () => {
@@ -1547,7 +1535,7 @@ const showFinalView = () => {
         setTimeout(() => {
           showFinalView();
           isInitialLoad = false;
-        }, 2000); // 2 segundos de splash
+        }, 1500); // 1.5 segundos de splash
       } else {
         showFinalView(); // Sin delay si no es carga inicial
       }
@@ -1568,7 +1556,7 @@ const showFinalView = () => {
       setTimeout(() => {
         showFinalView();
         isInitialLoad = false;
-      }, 2000); // 2 segundos de splash
+      }, 1500); // 1.5 segundos de splash
     } else {
       showFinalView(); // Sin delay si no es carga inicial
     }
@@ -1709,8 +1697,6 @@ document.addEventListener('visibilitychange', function() {
     if (!document.hidden) {
         console.log('App visible again - refreshing lists');
         loadLists();
-        loadArticles();
-        loadAccountView();
     }
 });
 
