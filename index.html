@@ -916,11 +916,7 @@ console.log('Guardado exitoso');
   }
 }
 
-    function saveList(listId, items) {
-      const data = JSON.parse(localStorage.getItem(`listApp_${currentUser}`));
-      data[listId] = items;
-      localStorage.setItem(`listApp_${currentUser}`, JSON.stringify(data));
-    }
+
 
     // Función para comprimir imágenes
 async function compressImage(file, maxSizeKB = 100, quality = 0.8) {
