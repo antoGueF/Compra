@@ -1766,6 +1766,120 @@ function goToSuggestions() {
     window.location.href = `suggestions.html?user=${encodeURIComponent(username)}`;
 }
 
+    
+// Registro y gestión del Service Worker
+
+let updateAvailable = false;
+
+// Registrar Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('Service Worker registrado correctamente:', registration.scope);
+        
+        // Verificar actualizaciones
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('Nueva versión del Service Worker encontrada');
+          
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed') {
+              if (navigator.serviceWorker.controller) {
+                // Hay una nueva versión disponible
+                updateAvailable = true;
+                showUpdateNotification();
+              } else {
+                // Primera instalación
+                console.log('Service Worker instalado por primera vez');
+              }
+            }
+          });
+        });
+      })
+      .catch(error => {
+        console.error('Error al registrar Service Worker:', error);
+      });
+  });
+
+  // Escuchar cambios en el Service Worker
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (updateAvailable) {
+      window.location.reload();
+    }
+  });
+}
+
+// Función para mostrar notificación de actualización
+function showUpdateNotification() {
+  // Opción 1: Alerta simple
+  if (confirm('¡Hay una nueva versión disponible! ¿Quieres actualizar ahora?')) {
+    updateApp();
+  }
+  
+  // Opción 2: Notificación personalizada (comenta la alerta de arriba si usas esto)
+  /*
+  const notification = document.createElement('div');
+  notification.id = 'update-notification';
+  notification.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #4CAF50;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 1000;
+      font-family: Arial, sans-serif;
+    ">
+      <p style="margin: 0 0 10px 0;">¡Nueva versión disponible!</p>
+      <button onclick="updateApp()" style="
+        background: white;
+        color: #4CAF50;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+      ">Actualizar</button>
+      <button onclick="dismissUpdate()" style="
+        background: transparent;
+        color: white;
+        border: 1px solid white;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+      ">Más tarde</button>
+    </div>
+  `;
+  document.body.appendChild(notification);
+  */
+}
+
+// Función para actualizar la app
+function updateApp() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistration().then(registration => {
+      if (registration && registration.waiting) {
+        // Enviar mensaje al service worker para que se active
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+    });
+  }
+}
+
+// Función para cerrar la notificación (si usas la opción 2)
+function dismissUpdate() {
+  const notification = document.getElementById('update-notification');
+  if (notification) {
+    notification.remove();
+  }
+}
+
+
+
   </script>
 
   <footer style="text-align: center; margin-top: 40px; padding: 20px; font-size: 10px; border-top: 1px solid #eee;">
