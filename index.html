@@ -1700,31 +1700,41 @@ document.addEventListener('DOMContentLoaded', function() {
   appView.classList.remove('active');
 });
 
-   function goToAbout() {
+async function goToAbout() {
     const user = firebase.auth().currentUser;
     if (user) {
-        const username = user.displayName || user.email || 'Usuario';
-        window.location.href = `about.html?user=${encodeURIComponent(username)}`;
+        try {
+            // Obtener el username desde Firestore (igual que haces en el login)
+            const doc = await db.collection("users").doc(user.uid).get();
+            const userData = doc.data();
+            const username = userData.username || user.email || 'Usuario';
+            
+            window.location.href = `about.html?user=${encodeURIComponent(username)}`;
+        } catch (error) {
+            console.error("Error al obtener datos del usuario:", error);
+            // Fallback si hay error
+            window.location.href = `about.html?user=${encodeURIComponent(user.email || 'Usuario')}`;
+        }
     } else {
         window.location.href = 'about.html';
     }
 }
 
-document.addEventListener('visibilitychange', function() {
-    if (!document.hidden) {
-        console.log('App visible again - refreshing lists');
-        loadLists();
-    }
-});
 
-function goToSuggestions() {
+async function goToSuggestions() {
     let username = 'Usuario';
     
-    // Intentar obtener el nombre del usuario actual
-    if (currentUser && currentUser.displayName) {
-        username = currentUser.displayName;
-    } else if (currentUser && currentUser.email) {
-        username = currentUser.email.split('@')[0]; // Usar parte antes del @
+    if (currentUser) {
+        try {
+            // Obtener el username desde Firestore
+            const doc = await db.collection("users").doc(currentUser.uid).get();
+            const userData = doc.data();
+            username = userData.username || currentUser.email.split('@')[0] || 'Usuario';
+        } catch (error) {
+            console.error("Error al obtener datos del usuario:", error);
+            // Fallback si hay error
+            username = currentUser.email ? currentUser.email.split('@')[0] : 'Usuario';
+        }
     }
     
     window.location.href = `suggestions.html?user=${encodeURIComponent(username)}`;
