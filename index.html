@@ -1146,6 +1146,21 @@ document.addEventListener('click', function(event) {
   }
 });
 
+    document.addEventListener('DOMContentLoaded', function() {
+    // Cerrar menús antes de navegar
+    const externalLinks = document.querySelectorAll('a[href$=".html"], a[href*="/"]');
+    externalLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            closeAllMenus();
+        });
+    });
+    
+    // Cerrar menús antes de descargar la página
+    window.addEventListener('beforeunload', function() {
+        closeAllMenus();
+    });
+});
+
 async function loadArticles() {
   if (!currentUser) return;
   
