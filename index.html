@@ -390,12 +390,19 @@ const storage = firebase.storage();
 
 .onboarding-overlay {
   position: fixed;
-  inset: 0; /* Equivale a top:0, left:0, right:0, bottom:0 */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
-  display: grid;
-  place-items: center; /* Centrado perfecto con grid */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 9999;
   padding: 20px;
+  box-sizing: border-box;
+  /* Forzar el centrado con múltiples métodos */
+  margin: 0;
 }
 
 .onboarding-container {
@@ -409,7 +416,11 @@ const storage = firebase.storage();
   max-height: 90vh;
   overflow-y: auto;
   box-sizing: border-box;
-  margin: auto; /* Centrado adicional */
+  /* Centrado adicional por si acaso */
+  margin: auto;
+  /* Asegurar que no haya transformaciones que interfieran */
+  transform: none;
+  position: relative;
 }
 
 .progress-indicator {
