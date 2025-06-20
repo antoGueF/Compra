@@ -390,105 +390,50 @@ const storage = firebase.storage();
 
 /* CSS principal para onboarding - centrado mejorado */
 .onboarding-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh; /* Para móviles modernos */
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 20px;
-  box-sizing: border-box;
-  /* Asegurar que esté por encima de todo */
-  overflow: hidden;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%) !important;
+  z-index: 9999 !important;
+  
+  /* CENTRADO ABSOLUTO */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+  /* PADDING MÍNIMO */
+  padding: 10px !important;
+  box-sizing: border-box !important;
 }
 
 .onboarding-container {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  width: 100%;
-  padding: 32px;
-  text-align: center;
-  max-height: calc(100vh - 40px);
-  max-height: calc(100dvh - 40px);
-  overflow-y: auto;
-  box-sizing: border-box;
-  /* Centrado adicional por si acaso */
-  margin: auto;
-  /* Asegurar que se renderice correctamente */
-  transform: translateZ(0);
-}
-
-/* Específico para móviles pequeños */
-@media (max-width: 480px) {
-  .onboarding-overlay {
-    padding: 10px;
-  }
+  background: white !important;
+  border-radius: 20px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
   
-  .onboarding-container {
-    max-width: calc(100vw - 20px);
-    padding: 24px;
-    max-height: calc(100vh - 20px);
-    max-height: calc(100dvh - 20px);
-    border-radius: 16px;
-  }
-}
-
-/* Para pantallas muy pequeñas */
-@media (max-width: 320px) {
-  .onboarding-container {
-    padding: 16px;
-    border-radius: 12px;
-  }
-}
-
-/* Para dispositivos con altura muy pequeña (landscape) */
-@media (max-height: 600px) {
-  .onboarding-container {
-    max-height: calc(100vh - 10px);
-    max-height: calc(100dvh - 10px);
-    padding: 20px;
-  }
+  /* TAMAÑO CONTROLADO */
+  width: 90% !important;
+  max-width: 400px !important;
+  max-height: 90% !important;
   
-  .onboarding-overlay {
-    padding: 5px;
-  }
+  padding: 24px !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+  
+  /* SCROLL SI ES NECESARIO */
+  overflow-y: auto !important;
+  
+  /* CENTRADO EXTRA POR SI ACASO */
+  margin: 0 auto !important;
 }
 
-/* Reset de estilos que podrían interferir */
-.onboarding-overlay * {
-  box-sizing: border-box;
-}
-
-/* Clases para el body cuando el onboarding está activo */
-body.onboarding-active {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-}
-
-html.onboarding-active {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-/* Indicador de progreso */
+/* RESTO DE ESTILOS */
 .progress-indicator {
   display: flex;
   justify-content: center;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
   gap: 8px;
 }
 
@@ -497,42 +442,38 @@ html.onboarding-active {
   height: 12px;
   border-radius: 50%;
   background: #d1d5db;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
 }
 
 .progress-dot.active {
   background: #3b82f6;
 }
 
-/* Icono del onboarding */
 .onboarding-icon {
-  font-size: 4rem;
+  font-size: 3rem;
   margin-bottom: 16px;
-  line-height: 1;
 }
 
-/* Contenido del onboarding */
 .onboarding-content h2 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: bold;
   color: #1f2937;
-  margin-bottom: 16px;
-  line-height: 1.3;
+  margin-bottom: 12px;
 }
 
 .onboarding-content p {
   color: #6b7280;
-  line-height: 1.6;
-  margin-bottom: 32px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
 }
 
-/* Mockup del teléfono */
 .phone-mockup {
   background: #f9fafb;
   border-radius: 12px;
   border: 2px solid #e5e7eb;
-  width: 200px;
-  height: 120px;
+  width: 180px;
+  height: 100px;
   margin: 0 auto 16px;
   display: flex;
   align-items: center;
@@ -540,23 +481,20 @@ html.onboarding-active {
   position: relative;
 }
 
-/* Texto de instrucciones */
 .instruction-text {
   background: #f9fafb;
   border-radius: 8px;
   padding: 12px;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: #374151;
-  margin-bottom: 24px;
-  line-height: 1.5;
+  margin-bottom: 20px;
 }
 
-/* Botones del onboarding */
 .onboarding-buttons {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .skip-btn {
@@ -564,63 +502,41 @@ html.onboarding-active {
   border: none;
   color: #6b7280;
   cursor: pointer;
-  font-size: 0.875rem;
-  transition: color 0.3s ease;
-  padding: 8px;
-  min-height: 44px; /* Para mejor accesibilidad táctil */
-}
-
-.skip-btn:hover {
-  color: #374151;
+  font-size: 0.9rem;
+  padding: 8px 16px;
 }
 
 .next-btn {
   background: #3b82f6;
   color: white;
   border: none;
-  padding: 12px 32px;
+  padding: 12px 24px;
   border-radius: 50px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  min-height: 44px; /* Para mejor accesibilidad táctil */
-  white-space: nowrap;
+  font-size: 0.9rem;
 }
 
 .next-btn:hover {
   background: #2563eb;
 }
 
-/* Ajustes para botones en móviles */
+/* MOBILE ESPECÍFICO */
 @media (max-width: 480px) {
+  .onboarding-container {
+    width: 95% !important;
+    padding: 20px !important;
+  }
+  
   .onboarding-buttons {
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
   }
   
   .next-btn, .skip-btn {
     width: 100%;
-    max-width: 280px;
-  }
-  
-  .phone-mockup {
-    width: 160px;
-    height: 100px;
-  }
-  
-  .onboarding-icon {
-    font-size: 3rem;
-  }
-  
-  .onboarding-content h2 {
-    font-size: 1.25rem;
-  }
-  
-  .progress-indicator {
-    margin-bottom: 24px;
   }
 }
-
   </style>
 
       <!-- Código de AdSense -->
@@ -2243,43 +2159,33 @@ function updateInstructionVisual(step) {
   const mockup = document.getElementById('phoneMockup');
   const instructionText = document.getElementById('instructionText');
   
-  if (isIOS && step === 1) {
+if (isIOS && step === 1) {
+    // 👈 Reemplazar con imagen real
     mockup.innerHTML = `
-      <div style="position: absolute; bottom: 10px; left: 0; right: 0; background: #007AFF; color: white; padding: 8px; border-radius: 6px; font-size: 12px;">
-        📤 Safari - Compartir
-      </div>
-      <div style="position: absolute; top: 20px; font-size: 12px; color: #666;">
-        Busca este botón ↓
-      </div>
+      <img src="images/ios-step1.png" 
+           alt="Paso 1 iOS" 
+           style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
     `;
     instructionText.innerHTML = '<strong>1.</strong> Toca el botón de <strong>compartir</strong> en la barra inferior de Safari';
   } else if (isIOS && step === 2) {
     mockup.innerHTML = `
-      <div style="background: #f0f0f0; padding: 8px; border-radius: 6px; font-size: 10px; width: 80%;">
-        <div style="background: white; padding: 4px; margin: 2px 0; border-radius: 4px;">Compartir foto</div>
-        <div style="background: white; padding: 4px; margin: 2px 0; border-radius: 4px;">Copiar enlace</div>
-        <div style="background: #007AFF; color: white; padding: 4px; margin: 2px 0; border-radius: 4px;">➕ Añadir a inicio</div>
-      </div>
+      <img src="images/ios-step2.png" 
+           alt="Paso 2 iOS" 
+           style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
     `;
     instructionText.innerHTML = '<strong>2.</strong> Busca y toca <strong>"Añadir a pantalla de inicio"</strong>';
   } else if (isAndroid && step === 1) {
     mockup.innerHTML = `
-      <div style="position: absolute; top: 10px; right: 10px; font-size: 20px;">⋮</div>
-      <div style="text-align: center; font-size: 12px; color: #666; margin-top: 40px;">
-        Toca los tres puntos →
-      </div>
-      <div style="position: absolute; bottom: 10px; left: 0; right: 0; background: #4CAF50; color: white; padding: 8px; border-radius: 6px; font-size: 12px;">
-        Menú Chrome
-      </div>
+      <img src="images/android-step1.png" 
+           alt="Paso 1 Android" 
+           style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
     `;
     instructionText.innerHTML = '<strong>1.</strong> Toca los <strong>tres puntos (⋮)</strong> en la esquina superior derecha';
   } else if (isAndroid && step === 2) {
     mockup.innerHTML = `
-      <div style="background: #f0f0f0; padding: 8px; border-radius: 6px; font-size: 10px; width: 80%;">
-        <div style="background: white; padding: 4px; margin: 2px 0; border-radius: 4px;">Nueva pestaña</div>
-        <div style="background: white; padding: 4px; margin: 2px 0; border-radius: 4px;">Historial</div>
-        <div style="background: #4CAF50; color: white; padding: 4px; margin: 2px 0; border-radius: 4px;">⬇️ Instalar app</div>
-      </div>
+      <img src="images/android-step2.png" 
+           alt="Paso 2 Android" 
+           style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
     `;
     instructionText.innerHTML = '<strong>2.</strong> Toca <strong>"Instalar app"</strong> en el menú';
   }
@@ -2299,8 +2205,7 @@ function nextOnboardingStep() {
 // Cerrar onboarding
 function closeOnboarding() {
   document.getElementById('pwaOnboarding').style.display = 'none';
-    document.body.classList.remove('onboarding-active');
-  document.documentElement.classList.remove('onboarding-active');
+  document.body.style.overflow = ''; // Restaurar scroll
   
   // 👈 AQUÍ es donde debe activarse la app
   appView.classList.add('active');
@@ -2319,8 +2224,7 @@ function showOnboarding() {
   currentOnboardingStep = 0;
   updateOnboardingStep();
   document.getElementById('pwaOnboarding').style.display = 'flex';
-   document.body.classList.add('onboarding-active');
-  document.documentElement.classList.add('onboarding-active');
+  document.body.style.overflow = 'hidden'; // Prevenir scroll
 }
 
 // Inicializar cuando carga la página
