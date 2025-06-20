@@ -837,7 +837,7 @@ if (authMode === 'register') {
     list2: [],
     list3: []
   },
-  itemLibrary: {} // Nueva biblioteca de artículos del usuario
+  itemLibrary: {}, // Nueva biblioteca de artículos del usuario
   hasSeenOnboarding: false
 });
 
@@ -846,8 +846,7 @@ if (authMode === 'register') {
       authView.style.display = 'none';
     // 👈 Mostrar onboarding en lugar de ir directo a la app
     showOnboarding();
-    appView.classList.add('active');
-
+    
 } catch (error) {
       // Mostrar mensajes más amigables según el tipo de error
       if (error.code === 'auth/weak-password') {
@@ -2182,6 +2181,11 @@ function nextOnboardingStep() {
 // Cerrar onboarding
 function closeOnboarding() {
   document.getElementById('pwaOnboarding').style.display = 'none';
+  
+  // 👈 AQUÍ es donde debe activarse la app
+  appView.classList.add('active');
+  loadLists(); // También cargar las listas
+  
   // Marcar que el usuario ya vio el onboarding
   if (currentUser) {
     db.collection("users").doc(currentUser.uid).update({
