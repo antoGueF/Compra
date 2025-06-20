@@ -458,7 +458,7 @@ const storage = firebase.storage();
   border-radius: 12px;
   border: 2px solid #e5e7eb;
   width: 250px;
-  height: 280px;
+  height: 270px;
   margin: 0 auto 16px;
   display: flex;
   align-items: center;
@@ -517,7 +517,7 @@ const storage = firebase.storage();
   
   .phone-mockup {
     width: 250px;
-    height: 280px;
+    height: 270px;
   }
   
   .onboarding-icon {
@@ -2154,28 +2154,21 @@ function updateInstructionVisual(step) {
       <img src="ios-step1.jpeg" 
            alt="Paso 1 iOS" 
            style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
-    `;
       } else if (isIOS && step === 2) {
     mockup.innerHTML = `
       <img src="ios-step2.jpeg" 
            alt="Paso 2 iOS" 
            style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
-    `;
-    
   } else if (isAndroid && step === 1) {
     mockup.innerHTML = `
       <img src="android-step1.jpeg" 
            alt="Paso 1 Android" 
            style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
-    `;
-    instructionText.innerHTML = '<strong>1.</strong> Toca los <strong>tres puntos (⋮)</strong> en la esquina superior derecha';
   } else if (isAndroid && step === 2) {
     mockup.innerHTML = `
       <img src="android-step2.jpeg" 
            alt="Paso 2 Android" 
            style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
-    `;
-    
   }
 }
 
