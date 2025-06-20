@@ -386,6 +386,26 @@ const storage = firebase.storage();
   to { transform: rotate(360deg); }
 }
 
+    /* Asegurar que no hay márgenes que interfieran */
+.onboarding-overlay * {
+  box-sizing: border-box;
+}
+
+/* Para móviles muy pequeños */
+@media (max-width: 480px) {
+  .onboarding-container {
+    max-width: 95%;
+    padding: 24px;
+    margin: 10px;
+  }
+}
+
+/* Centrado más agresivo si es necesario */
+.onboarding-overlay {
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 .onboarding-overlay {
   position: fixed;
   top: 0;
