@@ -435,7 +435,7 @@ const storage = firebase.storage();
 }
 
 .onboarding-icon {
-  font-size: 4rem;
+  font-size: 2rem;
   margin-bottom: 16px;
 }
 
@@ -456,8 +456,8 @@ const storage = firebase.storage();
   background: #f9fafb;
   border-radius: 12px;
   border: 2px solid #e5e7eb;
-  width: 200px;
-  height: 120px;
+  width: 250px;
+  height: 150px;
   margin: 0 auto 16px;
   display: flex;
   align-items: center;
@@ -507,7 +507,16 @@ const storage = firebase.storage();
 .next-btn:hover {
   background: #2563eb;
 }
+/* Para dispositivos móviles */
+@media (max-width: 480px) {
+  .onboarding-container {
+    max-width: 95%;
+    padding: 24px;
+  }
+  
+ 
 
+}
   </style>
 
       <!-- Código de AdSense -->
