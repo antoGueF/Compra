@@ -394,7 +394,7 @@ const storage = firebase.storage();
   height: 100vh;
   background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 9999;
   padding: 20px;
@@ -2098,14 +2098,14 @@ function getOnboardingSteps() {
     {
       icon: isIOS ? '📤' : '⋮',
       title: isIOS ? 'Paso 1: Botón Compartir' : 'Paso 1: Menú del navegador',
-      text: isIOS ? 'Toca el botón de <strong>compartir</strong> en la barra inferior de Safari' : 'Toca los <strong>tres puntos (⋮)</strong> en la esquina superior derecha de Chrome',
+      text: isIOS ? 'Toca el botón de compartir en la barra inferior de Safari' : 'Toca los tres puntos (⋮) en la esquina superior derecha de Chrome',
       showInstructions: true,
       step: 1
     },
     {
       icon: '➕',
       title: isIOS ? 'Paso 2: Añadir a Inicio' : 'Paso 2: Instalar App',
-      text: isIOS ? 'Busca y toca <strong>"Añadir a pantalla de inicio"</strong>' : 'Toca <strong>"Instalar app"</strong> en el menú',
+      text: isIOS ? 'Busca y toca "Añadir a pantalla de inicio"' : 'Toca "Instalar app" en el menú',
       showInstructions: true,
       step: 2
     },
