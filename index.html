@@ -386,6 +386,125 @@ const storage = firebase.storage();
   to { transform: rotate(360deg); }
 }
 
+    .onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.onboarding-container {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  padding: 32px;
+  text-align: center;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.progress-indicator {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.progress-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #d1d5db;
+  margin: 0 4px;
+  transition: background-color 0.3s;
+}
+
+.progress-dot.active {
+  background: #3b82f6;
+}
+
+.onboarding-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.onboarding-content h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.onboarding-content p {
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.phone-mockup {
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  width: 200px;
+  height: 120px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.instruction-text {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.875rem;
+  color: #374151;
+  margin-bottom: 24px;
+}
+
+.onboarding-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skip-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: color 0.3s;
+}
+
+.skip-btn:hover {
+  color: #374151;
+}
+
+.next-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 50px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.next-btn:hover {
+  background: #2563eb;
+}
+
   </style>
 
       <!-- Código de AdSense -->
@@ -422,6 +541,41 @@ const storage = firebase.storage();
   </div>
 
   <div id="appView">
+
+    <!-- Modal de Onboarding PWA -->
+<div id="pwaOnboarding" class="onboarding-overlay" style="display: none;">
+  <div class="onboarding-container">
+    <!-- Indicador de progreso -->
+    <div class="progress-indicator">
+      <div class="progress-dot active" data-step="0"></div>
+      <div class="progress-dot" data-step="1"></div>
+      <div class="progress-dot" data-step="2"></div>
+      <div class="progress-dot" data-step="3"></div>
+    </div>
+
+    <!-- Contenido -->
+    <div class="onboarding-content">
+      <div class="onboarding-icon" id="onboardingIcon">📱</div>
+      <h2 id="onboardingTitle">¡Bienvenido a tu Lista de Compra!</h2>
+      <p id="onboardingText">Esta aplicación funciona como una app nativa. Te vamos a mostrar cómo instalarla en tu dispositivo.</p>
+      
+      <!-- Contenedor de instrucciones visuales -->
+      <div id="instructionsContainer" style="display: none;">
+        <div class="phone-mockup" id="phoneMockup">
+          <!-- Aquí se generará el contenido visual -->
+        </div>
+        <div class="instruction-text" id="instructionText"></div>
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="onboarding-buttons">
+      <button id="skipOnboarding" class="skip-btn">Saltar</button>
+      <button id="nextOnboarding" class="next-btn">Siguiente</button>
+    </div>
+  </div>
+</div>
+    
     
     <div id="modal" class="modal" onclick="closeModal()">
       <img id="modalImage" src="" alt="Vista ampliada" />
@@ -684,12 +838,15 @@ if (authMode === 'register') {
     list3: []
   },
   itemLibrary: {} // Nueva biblioteca de artículos del usuario
+  hasSeenOnboarding: false
 });
 
       currentUser = user;
       mainTitle.textContent = `Lista de la compra de ${username}`;
       authView.style.display = 'none';
-      appView.classList.add('active');
+    // 👈 Mostrar onboarding en lugar de ir directo a la app
+    showOnboarding();
+    appView.classList.add('active');
 
 } catch (error) {
       // Mostrar mensajes más amigables según el tipo de error
@@ -1878,7 +2035,171 @@ function dismissUpdate() {
   }
 }
 
+// Variables para onboarding
+let currentOnboardingStep = 0;
+let isNewUser = false;
+let isIOS = false;
+let isAndroid = false;
 
+// Detectar dispositivo
+function detectDevice() {
+  const userAgent = navigator.userAgent.toLowerCase();
+  isIOS = /iphone|ipad|ipod/.test(userAgent);
+  isAndroid = /android/.test(userAgent);
+}
+
+// Inicializar onboarding
+function initOnboarding() {
+  detectDevice();
+  setupOnboardingEvents();
+}
+
+// Configurar eventos del onboarding
+function setupOnboardingEvents() {
+  document.getElementById('nextOnboarding').addEventListener('click', nextOnboardingStep);
+  document.getElementById('skipOnboarding').addEventListener('click', closeOnboarding);
+}
+
+// Datos de los pasos
+function getOnboardingSteps() {
+  return [
+    {
+      icon: '📱',
+      title: '¡Bienvenido a tu Lista de Compra!',
+      text: 'Esta aplicación funciona como una app nativa. Te vamos a mostrar cómo instalarla en tu dispositivo.',
+      showInstructions: false
+    },
+    {
+      icon: isIOS ? '📤' : '⋮',
+      title: isIOS ? 'Paso 1: Botón Compartir' : 'Paso 1: Menú del navegador',
+      text: isIOS ? 'Toca el botón de compartir en la parte inferior de Safari' : 'Toca los tres puntos (⋮) en la esquina superior derecha de Chrome',
+      showInstructions: true,
+      step: 1
+    },
+    {
+      icon: '➕',
+      title: isIOS ? 'Paso 2: Añadir a Inicio' : 'Paso 2: Instalar App',
+      text: isIOS ? 'Busca y toca "Añadir a pantalla de inicio" en el menú' : 'Toca "Instalar app" o "Añadir a pantalla de inicio"',
+      showInstructions: true,
+      step: 2
+    },
+    {
+      icon: '🏠',
+      title: '¡Listo para usar!',
+      text: 'Una vez instalada, podrás acceder a tu lista de compra directamente desde tu pantalla de inicio, ¡como cualquier otra app!',
+      showInstructions: false
+    }
+  ];
+}
+
+// Actualizar contenido del paso
+function updateOnboardingStep() {
+  const steps = getOnboardingSteps();
+  const currentStep = steps[currentOnboardingStep];
+  
+  // Actualizar indicadores de progreso
+  document.querySelectorAll('.progress-dot').forEach((dot, index) => {
+    dot.classList.toggle('active', index <= currentOnboardingStep);
+  });
+  
+  // Actualizar contenido
+  document.getElementById('onboardingIcon').textContent = currentStep.icon;
+  document.getElementById('onboardingTitle').textContent = currentStep.title;
+  document.getElementById('onboardingText').textContent = currentStep.text;
+  
+  // Mostrar/ocultar instrucciones
+  const container = document.getElementById('instructionsContainer');
+  if (currentStep.showInstructions) {
+    container.style.display = 'block';
+    updateInstructionVisual(currentStep.step);
+  } else {
+    container.style.display = 'none';
+  }
+  
+  // Actualizar botón
+  const nextBtn = document.getElementById('nextOnboarding');
+  nextBtn.textContent = currentOnboardingStep === steps.length - 1 ? '¡Empezar!' : 'Siguiente';
+}
+
+// Actualizar visual de instrucciones
+function updateInstructionVisual(step) {
+  const mockup = document.getElementById('phoneMockup');
+  const instructionText = document.getElementById('instructionText');
+  
+  if (isIOS && step === 1) {
+    mockup.innerHTML = `
+      <div style="position: absolute; bottom: 10px; left: 0; right: 0; background: #007AFF; color: white; padding: 8px; border-radius: 6px; font-size: 12px;">
+        📤 Safari - Compartir
+      </div>
+      <div style="position: absolute; top: 20px; font-size: 12px; color: #666;">
+        Busca este botón ↓
+      </div>
+    `;
+    instructionText.innerHTML = '<strong>1.</strong> Toca el botón de <strong>compartir</strong> en la barra inferior de Safari';
+  } else if (isIOS && step === 2) {
+    mockup.innerHTML = `
+      <div style="background: #f0f0f0; padding: 8px; border-radius: 6px; font-size: 10px; width: 80%;">
+        <div style="background: white; padding: 4px; margin: 2px 0; border-radius: 4px;">Compartir foto</div>
+        <div style="background: white; padding: 4px; margin: 2px 0; border-radius: 4px;">Copiar enlace</div>
+        <div style="background: #007AFF; color: white; padding: 4px; margin: 2px 0; border-radius: 4px;">➕ Añadir a inicio</div>
+      </div>
+    `;
+    instructionText.innerHTML = '<strong>2.</strong> Busca y toca <strong>"Añadir a pantalla de inicio"</strong>';
+  } else if (isAndroid && step === 1) {
+    mockup.innerHTML = `
+      <div style="position: absolute; top: 10px; right: 10px; font-size: 20px;">⋮</div>
+      <div style="text-align: center; font-size: 12px; color: #666; margin-top: 40px;">
+        Toca los tres puntos →
+      </div>
+      <div style="position: absolute; bottom: 10px; left: 0; right: 0; background: #4CAF50; color: white; padding: 8px; border-radius: 6px; font-size: 12px;">
+        Menú Chrome
+      </div>
+    `;
+    instructionText.innerHTML = '<strong>1.</strong> Toca los <strong>tres puntos (⋮)</strong> en la esquina superior derecha';
+  } else if (isAndroid && step === 2) {
+    mockup.innerHTML = `
+      <div style="background: #f0f0f0; padding: 8px; border-radius: 6px; font-size: 10px; width: 80%;">
+        <div style="background: white; padding: 4px; margin: 2px 0; border-radius: 4px;">Nueva pestaña</div>
+        <div style="background: white; padding: 4px; margin: 2px 0; border-radius: 4px;">Historial</div>
+        <div style="background: #4CAF50; color: white; padding: 4px; margin: 2px 0; border-radius: 4px;">⬇️ Instalar app</div>
+      </div>
+    `;
+    instructionText.innerHTML = '<strong>2.</strong> Toca <strong>"Instalar app"</strong> en el menú';
+  }
+}
+
+// Siguiente paso del onboarding
+function nextOnboardingStep() {
+  const steps = getOnboardingSteps();
+  if (currentOnboardingStep < steps.length - 1) {
+    currentOnboardingStep++;
+    updateOnboardingStep();
+  } else {
+    closeOnboarding();
+  }
+}
+
+// Cerrar onboarding
+function closeOnboarding() {
+  document.getElementById('pwaOnboarding').style.display = 'none';
+  // Marcar que el usuario ya vio el onboarding
+  if (currentUser) {
+    db.collection("users").doc(currentUser.uid).update({
+      hasSeenOnboarding: true
+    });
+  }
+}
+
+// Mostrar onboarding
+function showOnboarding() {
+  currentOnboardingStep = 0;
+  updateOnboardingStep();
+  document.getElementById('pwaOnboarding').style.display = 'flex';
+}
+
+// Inicializar cuando carga la página
+document.addEventListener('DOMContentLoaded', initOnboarding);
+    
 
   </script>
 
