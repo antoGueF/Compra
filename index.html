@@ -2162,28 +2162,28 @@ function updateInstructionVisual(step) {
 if (isIOS && step === 1) {
     // 👈 Reemplazar con imagen real
     mockup.innerHTML = `
-      <img src="images/ios-step1.png" 
+      <img src="ios-step1.png" 
            alt="Paso 1 iOS" 
            style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
     `;
     instructionText.innerHTML = '<strong>1.</strong> Toca el botón de <strong>compartir</strong> en la barra inferior de Safari';
   } else if (isIOS && step === 2) {
     mockup.innerHTML = `
-      <img src="images/ios-step2.png" 
+      <img src="ios-step2.png" 
            alt="Paso 2 iOS" 
            style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
     `;
     instructionText.innerHTML = '<strong>2.</strong> Busca y toca <strong>"Añadir a pantalla de inicio"</strong>';
   } else if (isAndroid && step === 1) {
     mockup.innerHTML = `
-      <img src="images/android-step1.png" 
+      <img src="android-step1.png" 
            alt="Paso 1 Android" 
            style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
     `;
     instructionText.innerHTML = '<strong>1.</strong> Toca los <strong>tres puntos (⋮)</strong> en la esquina superior derecha';
   } else if (isAndroid && step === 2) {
     mockup.innerHTML = `
-      <img src="images/android-step2.png" 
+      <img src="android-step2.png" 
            alt="Paso 2 Android" 
            style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
     `;
