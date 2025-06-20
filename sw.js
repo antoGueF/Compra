@@ -1,5 +1,5 @@
 // sw.js - Service Worker para la app de lista de la compra
-const CACHE_VERSION = 'shopping-list-v1.0.17';
+const CACHE_VERSION = 'shopping-list-v1.0.21';
 const CACHE_NAME = `shopping-list-${CACHE_VERSION}`;
 
 // Archivos a cachear (ajusta según tus archivos)
