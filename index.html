@@ -414,6 +414,69 @@ const storage = firebase.storage();
   box-sizing: border-box;
 }
 
+    /* Solución más específica para el problema de centrado */
+.onboarding-overlay-mobile {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+  /* Centrado absoluto con transform */
+  transform: translate3d(0, 0, 0);
+}
+
+.onboarding-container-mobile {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  padding: 32px;
+  text-align: center;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  /* Centrado con transform si es necesario */
+  transform: translateY(0);
+  /* Asegurar que se vea completamente */
+  margin: auto;
+}
+
+/* Para dispositivos móviles */
+@media (max-width: 480px) {
+  .onboarding-overlay {
+    padding: 10px;
+  }
+  
+  .onboarding-container {
+    max-width: 95%;
+    padding: 24px;
+    max-height: 95vh;
+  }
+}
+
+/* Reset de estilos que podrían interferir */
+.onboarding-overlay * {
+  box-sizing: border-box;
+}
+
+/* Si tienes problemas con el body o html */
+body.onboarding-active {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+html.onboarding-active {
+  margin: 0;
+  padding: 0;
+}
 .progress-indicator {
   display: flex;
   justify-content: center;
