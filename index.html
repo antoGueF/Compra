@@ -2095,14 +2095,14 @@ function getOnboardingSteps() {
       icon: isIOS ? '📤' : '⋮',
       title: isIOS ? 'Paso 1: Botón Compartir' : 'Paso 1: Menú del navegador',
       text: isIOS ? 'Toca el botón de <strong>compartir</strong> en la barra inferior de Safari' : 'Toca los <strong>tres puntos (⋮)</strong> en la esquina superior derecha de Chrome',
-      showInstructions: true,
+      showInstructions: false,
       step: 1
     },
     {
       icon: '➕',
       title: isIOS ? 'Paso 2: Añadir a Inicio' : 'Paso 2: Instalar App',
       text: isIOS ? 'Busca y toca <strong>"Añadir a pantalla de inicio"</strong>' : 'Toca <strong>"Instalar app"</strong> en el menú',
-      showInstructions: true,
+      showInstructions: false,
       step: 2
     },
     {
@@ -2149,27 +2149,31 @@ function updateInstructionVisual(step) {
   const instructionText = document.getElementById('instructionText');
   
   if (isIOS && step === 1) {
-    // 👈 Reemplazar con imagen real
     mockup.innerHTML = `
       <img src="ios-step1.jpeg" 
            alt="Paso 1 iOS" 
            style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
-      } else if (isIOS && step === 2) {
+    `;
+  } else if (isIOS && step === 2) {
     mockup.innerHTML = `
       <img src="ios-step2.jpeg" 
            alt="Paso 2 iOS" 
            style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
+    `;
   } else if (isAndroid && step === 1) {
     mockup.innerHTML = `
       <img src="android-step1.jpeg" 
            alt="Paso 1 Android" 
            style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
+    `;
   } else if (isAndroid && step === 2) {
     mockup.innerHTML = `
       <img src="android-step2.jpeg" 
            alt="Paso 2 Android" 
            style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;">
+    `;
   }
+  
 }
 
 // Siguiente paso del onboarding
