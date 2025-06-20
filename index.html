@@ -409,7 +409,8 @@ const storage = firebase.storage();
   width: 100%;
   padding: 32px;
   text-align: center;
-  max-height: 90vh;
+  max-height: 95vh;
+  height: auto;
   overflow-y: auto;
   box-sizing: border-box;
   margin: auto; /* Centrado adicional */
@@ -457,8 +458,10 @@ const storage = firebase.storage();
   background: #f9fafb;
   border-radius: 12px;
   border: 2px solid #e5e7eb;
-  width: 240px;
-  height: 240px;
+  width: 80%;
+  max-width: 250px;
+  height: 200px;
+  aspect-ratio: 1;
   margin: 0 auto 16px;
   display: flex;
   align-items: center;
@@ -517,16 +520,24 @@ const storage = firebase.storage();
 @media (max-width: 480px) {
   .onboarding-container {
     max-width: 95%;
-    padding: 24px;
+    padding: 16px;
+    max-height: 98vh;
   }
   
   .phone-mockup {
-    width: 240px;
-    height: 240px;
+    width: 90%;
+    height: 1800px;
   }
   
   .onboarding-icon {
     font-size: 1.5rem;
+  }
+  .onboarding-content p {
+    margin-bottom: 12px; 
+  }
+  
+  .instruction-text {
+    margin-bottom: 16px;  
   }
 }
 
