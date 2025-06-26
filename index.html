@@ -2127,12 +2127,9 @@ function showUpdateNotification() {
 notification.offsetHeight;
   
   // Actualizar después de 3 segundos
-  setTimeout(() => {
-    // Remover notificación
-    document.body.removeChild(notification);
-    // Llamar a tu función de actualización
-    updateApp();
-  }, 3000);
+setTimeout(() => {
+  updateApp();
+}, 3000);
 }
 
  
