@@ -2303,12 +2303,26 @@ function showOnboarding() {
 
 // Inicializar cuando carga la página
 document.addEventListener('DOMContentLoaded', initOnboarding);
+
+function showVersion() {
+  if (navigator.serviceWorker.controller) {
+    // Escuchar respuesta del SW
+    navigator.serviceWorker.addEventListener('message', event => {
+      document.getElementById('version-display').textContent = `Versión ${event.data}`;
+    });
     
+    // Pedir versión al SW
+    navigator.serviceWorker.controller.postMessage('GET_VERSION');
+  }
+}
+
+// Llamar cuando se carga la página
+document.addEventListener('DOMContentLoaded', showVersion);
 
   </script>
 
   <footer style="text-align: center; margin-top: 40px; padding: 20px; font-size: 10px; border-top: 1px solid #eee;">
-  <a href="privacy-policy.html" style="color: #666; text-decoration: none;">Privacy Policy | Versión 1.10.12 | © 2025 Lista de la Compra</a>
+  <a href="privacy-policy.html" style="color: #666; text-decoration: none;">Privacy Policy | <span id="version-display">Versión 1.10.12</span> | © 2025 Lista de la Compra</a>
 </footer>
   
 </body>
