@@ -2123,13 +2123,7 @@ function showUpdateNotification() {
   // Agregar al DOM
   document.body.appendChild(notification);
 
-  // Forzar renderizado
-notification.offsetHeight;
-  
-  // Actualizar después de 3 segundos
-setTimeout(() => {
-  updateApp();
-}, 3000);
+updateApp();
 }
 
  
@@ -2139,8 +2133,10 @@ function updateApp() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistration().then(registration => {
       if (registration && registration.waiting) {
-        // Enviar mensaje al service worker para que se active
-        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        // Esperar 3 segundos antes de activar el service worker
+        setTimeout(() => {
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }, 3000);
       }
     });
   }
