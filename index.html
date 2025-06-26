@@ -2080,18 +2080,59 @@ if ('serviceWorker' in navigator) {
 
 // Función para mostrar notificación de actualización
 function showUpdateNotification() {
+  /*
   // Opción 1: Alerta simple
-  
   // Mostrar notificación
   alert('¡Nueva versión disponible! Actualizando...');
-  
   // Actualizar después de 3 segundos
   setTimeout(() => {
     updateApp();
-  }, 3000);
+  }, 3000);*/
   
-  // Opción 2: Notificación personalizada 
-   
+    // Opción 2: Notificación personalizada 
+  // Reemplaza tu función actual con esta:
+function showUpdateNotification() {
+  // Limpiar notificación anterior si existe
+  const existingNotification = document.getElementById('update-notification');
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+
+  // Crear elemento de notificación
+  const notification = document.createElement('div');
+  notification.id = 'update-notification';
+  notification.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #4CAF50;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999;
+      font-family: Arial, sans-serif;
+      max-width: 300px;
+      font-size: 14px;
+      line-height: 1.4;
+    ">
+      <strong>¡Nueva versión disponible!</strong><br>
+      Actualizando aplicación...
+    </div>
+  `;
+  
+  // Agregar al DOM
+  document.body.appendChild(notification);
+  
+  // Actualizar después de 3 segundos
+  setTimeout(() => {
+    // Remover notificación
+    document.body.removeChild(notification);
+    // Llamar a tu función de actualización
+    updateApp();
+  }, 3000);
+}
 }
  
 
