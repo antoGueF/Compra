@@ -2122,6 +2122,9 @@ function showUpdateNotification() {
   
   // Agregar al DOM
   document.body.appendChild(notification);
+
+  // Forzar renderizado
+notification.offsetHeight;
   
   // Actualizar después de 3 segundos
   setTimeout(() => {
