@@ -2072,9 +2072,11 @@ if ('serviceWorker' in navigator) {
 
   // Escuchar cambios en el Service Worker
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (updateAvailable) {
+if (updateAvailable) {
+    setTimeout(() => {
       window.location.reload();
-    }
+    }, 3000);
+  }
   });
 }
 
@@ -2133,10 +2135,7 @@ function updateApp() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistration().then(registration => {
       if (registration && registration.waiting) {
-        // Esperar 3 segundos antes de activar el service worker
-        setTimeout(() => {
-          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-        }, 3000);
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       }
     });
   }
