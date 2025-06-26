@@ -2,6 +2,13 @@
 const CACHE_VERSION = 'shopping-list-v1.10.12';
 const CACHE_NAME = `shopping-list-${CACHE_VERSION}`;
 
+self.addEventListener('message', event => {
+  if (event.data === 'GET_VERSION') {
+    const VERSION_NUMBER = CACHE_VERSION.split('-v')[1];
+    event.source.postMessage(VERSION_NUMBER);
+  }
+});
+
 // Archivos a cachear (ajusta según tus archivos)
 const urlsToCache = [
   '/',
@@ -115,5 +122,10 @@ self.addEventListener('fetch', event => {
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+    // Responder cuando la página pida la versión
+  if (event.data === 'GET_VERSION') {
+    const VERSION_NUMBER = CACHE_VERSION.split('-v')[1];
+    event.source.postMessage(VERSION_NUMBER);
   }
 });
