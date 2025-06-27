@@ -2071,13 +2071,15 @@ if ('serviceWorker' in navigator) {
   });
 
   // Escuchar cambios en el Service Worker
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-if (updateAvailable) {
+navigator.serviceWorker.addEventListener('controllerchange', () => {
+  if (updateAvailable) {
+    // Marcar que acabamos de actualizar
+    sessionStorage.setItem('justUpdated', 'true');
     setTimeout(() => {
       window.location.reload();
     }, 3000);
   }
-  });
+});
 }
 
 // Función para mostrar notificación de actualización
@@ -2139,6 +2141,43 @@ function updateApp() {
       }
     });
   }
+}
+
+    window.addEventListener('load', () => {
+  // Verificar si acabamos de actualizar
+  if (sessionStorage.getItem('justUpdated') === 'true') {
+    sessionStorage.removeItem('justUpdated');
+    showUpdateCompletedNotification();
+  }
+});
+
+function showUpdateCompletedNotification() {
+  const notification = document.createElement('div');
+  notification.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #2196F3;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999;
+      font-family: Arial, sans-serif;
+      max-width: 300px;
+      font-size: 14px;
+    ">
+      <strong>¡Actualización completada!</strong><br>
+      Ya tienes la última versión
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    document.body.removeChild(notification);
+  }, 3000);
 }
 
 // Variables para onboarding
