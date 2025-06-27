@@ -2071,13 +2071,15 @@ if ('serviceWorker' in navigator) {
   });
 
   // Escuchar cambios en el Service Worker
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-if (updateAvailable) {
+navigator.serviceWorker.addEventListener('controllerchange', () => {
+  if (updateAvailable) {
+    // Marcar que acabamos de actualizar
+    sessionStorage.setItem('justUpdated', 'true');
     setTimeout(() => {
       window.location.reload();
     }, 3000);
   }
-  });
+});
 }
 
 // Función para mostrar notificación de actualización
@@ -2104,8 +2106,9 @@ function showUpdateNotification() {
   notification.innerHTML = `
     <div style="
       position: fixed;
-      top: 20px;
-      right: 20px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       background: #4CAF50;
       color: white;
       padding: 15px 20px;
@@ -2113,9 +2116,11 @@ function showUpdateNotification() {
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       z-index: 9999;
       font-family: Arial, sans-serif;
-      max-width: 300px;
+      width: 250px;
+      max-width: 90vw;
       font-size: 14px;
       line-height: 1.4;
+      text-align: center;
     ">
       <strong>¡Nueva versión disponible!</strong><br>
       Actualizando aplicación...
@@ -2140,6 +2145,54 @@ function updateApp() {
     });
   }
 }
+
+    window.addEventListener('load', () => {
+  // Verificar si acabamos de actualizar
+  if (sessionStorage.getItem('justUpdated') === 'true') {
+    sessionStorage.removeItem('justUpdated');
+    showUpdateCompletedNotification();
+  }
+});
+
+function showUpdateCompletedNotification() {
+  const notification = document.createElement('div');
+  notification.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #2196F3;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999;
+      font-family: Arial, sans-serif;
+      width: 250px;
+      max-width: 90vw;
+      font-size: 14px;
+      text-align: center;
+    ">
+      <strong>¡Actualización completada!</strong><br><br>
+      Ahora aparece un mensaje de carga al añadir imagenes.<br><br>
+      Gracias a nuestra usuaria Irene por las sugerencias.<br>
+      <br><br>
+      <button onclick="this.closest('div').parentElement.remove()" style="
+        background: white;
+        color: #2196F3;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      ">OK</button>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+}
+
 
 // Variables para onboarding
 let currentOnboardingStep = 0;
