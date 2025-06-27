@@ -2106,8 +2106,9 @@ function showUpdateNotification() {
   notification.innerHTML = `
     <div style="
       position: fixed;
-      top: 20px;
-      right: 20px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       background: #4CAF50;
       color: white;
       padding: 15px 20px;
@@ -2118,6 +2119,7 @@ function showUpdateNotification() {
       max-width: 300px;
       font-size: 14px;
       line-height: 1.4;
+      text-align: center;
     ">
       <strong>¡Nueva versión disponible!</strong><br>
       Actualizando aplicación...
@@ -2156,8 +2158,9 @@ function showUpdateCompletedNotification() {
   notification.innerHTML = `
     <div style="
       position: fixed;
-      top: 20px;
-      right: 20px;
+      top: 50%;
+      right: 50%;
+      transform: translate(-50%, -50%);
       background: #2196F3;
       color: white;
       padding: 15px 20px;
@@ -2167,18 +2170,27 @@ function showUpdateCompletedNotification() {
       font-family: Arial, sans-serif;
       max-width: 300px;
       font-size: 14px;
+      text-align: center;
     ">
-      <strong>¡Caca!</strong><br>
-      Ya tienes la última versión
+      <strong>¡Actualización completada!</strong><br>
+      Ahora aparece un mensaje de carga al añadir imagenes.<br>
+      Gracias a nuestra usuaria Irene por las sugerencias.
+      <br><br><br>
+      <button onclick="this.closest('div').parentElement.remove()" style="
+        background: white;
+        color: #2196F3;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      ">OK</button>
     </div>
   `;
   
   document.body.appendChild(notification);
-  
-  setTimeout(() => {
-    document.body.removeChild(notification);
-  }, 6000);
 }
+
 
 // Variables para onboarding
 let currentOnboardingStep = 0;
