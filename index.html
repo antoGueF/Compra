@@ -370,9 +370,9 @@ const storage = firebase.storage();
 .loading-spinner {
   width: 30px;
   height: 30px;
-  border: 3px solid rgba(255,255,255,0.3);
+  border: 3px solid rgba(54, 154, 255, 0.3);
   border-radius: 50%;
-  border-top-color: white;
+  border-top-color: #2f2cdc;
   animation: spin 1s ease-in-out infinite;
   margin: 20px auto;
 }
@@ -541,6 +541,49 @@ const storage = firebase.storage();
   }
 }
 
+    /* Loading overlay para el procesamiento de imágenes */
+#image-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-backdrop {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.loading-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  max-width: 300px;
+}
+
+.loading-content p {
+  margin-top: 15px;
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 }
   </style>
@@ -1168,6 +1211,31 @@ async function compressImage(file, maxSizeKB = 100, quality = 0.8) {
   });
 }
 
+    function showImageLoading() {
+  let loadingOverlay = document.getElementById('image-loading-overlay');
+  if (!loadingOverlay) {
+    loadingOverlay = document.createElement('div');
+    loadingOverlay.id = 'image-loading-overlay';
+    loadingOverlay.innerHTML = `
+      <div class="loading-backdrop">
+        <div class="loading-content">
+          <div class="loading-spinner"></div>
+          <p>Procesando imagen...</p>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(loadingOverlay);
+  }
+  loadingOverlay.style.display = 'flex';
+}
+
+function hideImageLoading() {
+  const loadingOverlay = document.getElementById('image-loading-overlay');
+  if (loadingOverlay) {
+    loadingOverlay.style.display = 'none';
+  }
+}
+    
 async function selectImage(itemIndex, listId) {
   console.log('Seleccionando imagen para item:', itemIndex, 'en lista:', listId);
   const input = document.createElement('input');
@@ -1177,6 +1245,7 @@ async function selectImage(itemIndex, listId) {
 input.onchange = async e => {
     const file = e.target.files[0];
     if (!file) return;
+   showImageLoading();
     
     console.log('Archivo seleccionado:', file.name, 'Tamaño original:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
     
@@ -1231,6 +1300,8 @@ input.onchange = async e => {
       }
     } catch (error) {
       console.error("Error al guardar imagen:", error);
+    }finally {
+      hideImageLoading(); // ← AÑADIR ESTA LÍNEA (reemplaza o añade el finally)
     }
   };
   input.click();
@@ -1614,6 +1685,7 @@ async function selectImageForArticle(articleName) {
 input.onchange = async e => {
     const file = e.target.files[0];
     if (!file) return;
+   showImageLoading();
     
     console.log('Archivo seleccionado:', file.name, 'Tamaño original:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
     
@@ -1674,6 +1746,8 @@ input.onchange = async e => {
       }
     } catch (error) {
       console.error("Error al guardar imagen del artículo:", error);
+    }finally {
+      hideImageLoading(); // ← AÑADIR ESTA LÍNEA (reemplaza o añade el finally)
     }
   };
   input.click();
@@ -1998,21 +2072,33 @@ if ('serviceWorker' in navigator) {
 
   // Escuchar cambios en el Service Worker
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (updateAvailable) {
+if (updateAvailable) {
+    setTimeout(() => {
       window.location.reload();
-    }
+    }, 3000);
+  }
   });
 }
 
 // Función para mostrar notificación de actualización
 function showUpdateNotification() {
-  // Opción 1: Alerta simple
-  if (confirm('¡Hay una nueva versión disponible! ¿Quieres actualizar ahora?')) {
-    updateApp();
-  }
-  
-  // Opción 2: Notificación personalizada (comenta la alerta de arriba si usas esto)
   /*
+  // Opción 1: Alerta simple
+  // Mostrar notificación
+  alert('¡Nueva versión disponible! Actualizando...');
+  // Actualizar después de 3 segundos
+  setTimeout(() => {
+    updateApp();
+  }, 3000);*/
+  
+    // Opción 2: Notificación personalizada 
+  // Limpiar notificación anterior si existe
+  const existingNotification = document.getElementById('update-notification');
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+
+  // Crear elemento de notificación
   const notification = document.createElement('div');
   notification.id = 'update-notification';
   notification.innerHTML = `
@@ -2024,51 +2110,34 @@ function showUpdateNotification() {
       color: white;
       padding: 15px 20px;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999;
       font-family: Arial, sans-serif;
+      max-width: 300px;
+      font-size: 14px;
+      line-height: 1.4;
     ">
-      <p style="margin: 0 0 10px 0;">¡Nueva versión disponible!</p>
-      <button onclick="updateApp()" style="
-        background: white;
-        color: #4CAF50;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-right: 10px;
-      ">Actualizar</button>
-      <button onclick="dismissUpdate()" style="
-        background: transparent;
-        color: white;
-        border: 1px solid white;
-        padding: 8px 15px;
-        border-radius: 4px;
-        cursor: pointer;
-      ">Más tarde</button>
+      <strong>¡Nueva versión disponible!</strong><br>
+      Actualizando aplicación...
     </div>
   `;
+  
+  // Agregar al DOM
   document.body.appendChild(notification);
-  */
+
+updateApp();
 }
+
+ 
 
 // Función para actualizar la app
 function updateApp() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistration().then(registration => {
       if (registration && registration.waiting) {
-        // Enviar mensaje al service worker para que se active
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       }
     });
-  }
-}
-
-// Función para cerrar la notificación (si usas la opción 2)
-function dismissUpdate() {
-  const notification = document.getElementById('update-notification');
-  if (notification) {
-    notification.remove();
   }
 }
 
@@ -2227,12 +2296,26 @@ function showOnboarding() {
 
 // Inicializar cuando carga la página
 document.addEventListener('DOMContentLoaded', initOnboarding);
+
+function showVersion() {
+  if (navigator.serviceWorker.controller) {
+    // Escuchar respuesta del SW
+    navigator.serviceWorker.addEventListener('message', event => {
+      document.getElementById('version-display').textContent = `Versión ${event.data}`;
+    });
     
+    // Pedir versión al SW
+    navigator.serviceWorker.controller.postMessage('GET_VERSION');
+  }
+}
+
+// Llamar cuando se carga la página
+document.addEventListener('DOMContentLoaded', showVersion);
 
   </script>
 
   <footer style="text-align: center; margin-top: 40px; padding: 20px; font-size: 10px; border-top: 1px solid #eee;">
-  <a href="privacy-policy.html" style="color: #666; text-decoration: none;">Privacy Policy</a>
+  <a href="privacy-policy.html" style="color: #666; text-decoration: none;">Privacy Policy | <span id="version-display">Versión 1.10.12</span> | © 2025 Lista de la Compra</a>
 </footer>
   
 </body>
