@@ -971,8 +971,7 @@ if (userData.list3Name) {
 authView.style.display = 'none';
 appView.classList.add('active');
 loadLists();
-      // Aquí puedes cargar listas desde Firestore más adelante.
-    } catch (error) {
+          } catch (error) {
       // Mostrar mensajes más amigables según el tipo de error
       if (error.code === 'auth/invalid-credential' || 
           error.code === 'auth/user-not-found' || 
@@ -1072,20 +1071,26 @@ checkbox.type = 'checkbox';
 checkbox.checked = item.checked;
 checkbox.onchange = async () => {
   item.checked = checkbox.checked;
-  
+
+
+
   // Reordenar la lista: no marcados primero, marcados al final
   const reorderedList = data[listId].sort((a, b) => {
-    if (a.checked === b.checked) return 0;
-    return a.checked ? 1 : -1; // Los marcados (true) van al final
-  });
+  if (a.checked !== b.checked) {
+    return a.checked ? 1 : -1; // Los marcados van al final
+  }
+  return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); // Orden alfabético
+});
   
   await saveItemToFirebase(listId, reorderedList);
   loadLists(); // Recargar para mostrar el nuevo orden
 };
         const span = document.createElement('span');
-        span.textContent = item.name;
-        span.className = 'editable' + (item.checked ? ' checked' : '');
-        el.append(checkbox, img, span);
+span.textContent = item.name;
+span.className = 'editable' + (item.checked ? ' checked' : '');
+span.style.cursor = 'pointer';
+span.onclick = () => editArticleNameFromList(item.name, index, listId);
+el.append(checkbox, img, span);
         container.appendChild(el);
       });
     });
@@ -1106,9 +1111,9 @@ async function saveItemToFirebase(listId, items) {
 }
 
 function reorderList(list) {
-  // Separar elementos marcados y no marcados
-  const unchecked = list.filter(item => !item.checked);
-  const checked = list.filter(item => item.checked);
+  // Separar elementos marcados y no marcados, ordenados alfabéticamente
+  const unchecked = list.filter(item => !item.checked).sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+  const checked = list.filter(item => item.checked).sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
   
   // Devolver primero los no marcados, luego los marcados
   return [...unchecked, ...checked];
@@ -1618,6 +1623,58 @@ async function editArticleName(oldName) {
   }
 }
 
+    async function editArticleNameFromList(oldName, itemIndex, listId) {
+  const newName = prompt('Nuevo nombre del artículo:', oldName);
+  if (!newName || newName.trim() === '' || newName.trim() === oldName) return;
+  
+  try {
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const itemLibrary = userData.itemLibrary || {};
+    const lists = userData.lists || { list1: [], list2: [], list3: [] };
+    
+    const oldNormalizedName = oldName.toLowerCase().trim();
+    const newNormalizedName = newName.trim().toLowerCase();
+    
+    // Verificar si el nuevo nombre ya existe (y no es el mismo artículo)
+    if (itemLibrary[newNormalizedName] && newNormalizedName !== oldNormalizedName) {
+      alert(`Ya existe un artículo con el nombre "${newName.trim()}". Por favor, elige otro nombre.`);
+      return;
+    }
+    
+    // Actualizar en la biblioteca
+    if (itemLibrary[oldNormalizedName]) {
+      const articleData = itemLibrary[oldNormalizedName];
+      itemLibrary[newNormalizedName] = {
+        name: newName.trim(),
+        img: articleData.img
+      };
+      delete itemLibrary[oldNormalizedName];
+    }
+    
+    // Actualizar en todas las listas que contengan este artículo
+    Object.keys(lists).forEach(listKey => {
+      lists[listKey].forEach(item => {
+        if (item.name.toLowerCase().trim() === oldNormalizedName) {
+          item.name = newName.trim();
+        }
+      });
+    });
+    
+    // Guardar cambios en Firebase
+    await db.collection("users").doc(currentUser.uid).update({
+      itemLibrary: itemLibrary,
+      lists: lists
+    });
+    
+    // Recargar las listas para mostrar el cambio
+    loadLists();
+    
+  } catch (error) {
+    console.error("Error al editar nombre del artículo:", error);
+  }
+}
+    
 async function deleteArticle(articleName) {
   if (!confirm(`¿Estás seguro de que quieres borrar "${articleName}"?\n\nEsto también lo eliminará de todas las listas de la compra.`)) return;
   
@@ -2175,7 +2232,8 @@ function showUpdateCompletedNotification() {
       text-align: center;
     ">
       <strong>¡Actualización completada!</strong><br><br>
-      Ahora aparece un mensaje de carga al añadir imagenes.<br><br>
+      Ahora los articulos de las listas se muestran alfabeticamente.<br>
+      Y se puede editar el nombre del articulo desde la lista de la compra.<br><br>
       ¡Gracias a nuestra usuaria Irene por las sugerencias!<br>
       <br><br>
       <button onclick="this.closest('div').parentElement.remove()" style="
