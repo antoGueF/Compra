@@ -2549,6 +2549,7 @@ function showAuthView(mode) {
   
   // Mostrar auth view
   document.getElementById('authView').style.display = 'block';
+  authMode = mode || 'login';
   
   // Configurar modo (login o register)
   if (mode === 'register') {
@@ -2578,13 +2579,6 @@ function useWithoutRegister() {
   // Aquí implementarás la funcionalidad sin registro
   alert('Funcionalidad "usar sin registro" - por implementar');
   // Por ejemplo: crear un usuario temporal o mostrar una versión limitada
-}
-
-// Función para volver a welcome (opcional, por si la necesitas)
-function showWelcomeView() {
-  document.getElementById('authView').style.display = 'none';
-  document.getElementById('welcomeView').style.display = 'block';
-  document.body.classList.add('welcome-active');
 }
 
 function goToWelcome() {
