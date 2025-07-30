@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de la Compra - Offline</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f9f9f9;
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        #appView {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .list-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .list-button {
+            padding: 20px;
+            font-size: 20px;
+            border: 2px solid #888;
+            border-radius: 10px;
+            background: #f3f3f3;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .list-button:hover {
+            background: #e8e8e8;
+        }
+
+        .list-button.disabled {
+            opacity: 0.6;
+            background: #f8f8f8;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .back-btn {
+            background: #ddd;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .menu-btn {
+            background: #ddd;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-btn:hover {
+            background: #ccc;
+        }
+
+        .menu-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            min-width: 150px;
+            z-index: 1000;
+            margin-top: 2px;
+        }
+
+        .menu-dropdown.show {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background: #f5f5f5;
+        }
+
+        .list-container {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        h2.list-title.editable {
+            cursor: pointer;
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        h2.list-title.editable:hover {
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form input[type="text"] {
+            font-size: 18px;
+            padding: 8px;
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form button {
+            font-size: 30px;
+            height: 30px;
+            width: 30px;
+            border-radius: 50%;
+            background-color: #4caf50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .item img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            margin-right: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .item img.default-img {
+            width: 40px;
+            height: 40px;
+            opacity: 0.7;
+            object-fit: contain;
+        }
+
+        .item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .item span.editable {
+            cursor: pointer;
+            font-size: 18px;
+            flex: 1;
+        }
+
+        .item span.checked {
+            text-decoration: line-through;
+            color: gray;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Estilos para alertas/mensajes */
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista de la compra de Anto</h1>
+    
+    <div id="appView">
+        <!-- Vista principal con las 3 listas -->
+        <div id="mainView">
+            <div class="list-selector">
+                <div class="list-button" data-list="lista1">Lista 1</div>
+                <div class="list-button disabled" data-list="lista2">Lista 2</div>
+                <div class="list-button disabled" data-list="lista3">Lista 3</div>
+            </div>
+        </div>
+
+        <!-- Vista de la lista individual -->
+        <div id="listView" class="hidden">
+            <div class="top-bar">
+                <button class="back-btn">←</button>
+                <div class="menu-container">
+                    <button class="menu-btn">≡</button>
+                    <div class="menu-dropdown">
+                        <div class="menu-item" data-action="articles">Artículos</div>
+                        <div class="menu-item" data-action="delete-bought">Borrar comprados</div>
+                        <div class="menu-item" data-action="suggestions">Sugerencias</div>
+                        <div class="menu-item" data-action="account">Cuenta</div>
+                        <div class="menu-item" data-action="close-session">Cerrar sesión</div>
+                        <div class="menu-item" data-action="about">Acerca de</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="list-container">
+                <h2 class="list-title editable" id="listTitle">Lista 1</h2>
+                
+                <div class="form">
+                    <input type="text" id="itemInput" placeholder="Nombre del artículo">
+                    <button id="addItemBtn">+</button>
+                </div>
+
+                <div id="itemsList">
+                    <!-- Los items se añadirán aquí dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estructura de datos para localStorage
+        const STORAGE_KEY = 'shopping_lists_offline';
+        
+        // Estado de la aplicación
+        let currentList = null;
+        let listsData = {
+            lista1: {
+                name: 'Lista 1',
+                items: []
+            },
+            lista2: {
+                name: 'Lista 2', 
+                items: []
+            },
+            lista3: {
+                name: 'Lista 3',
+                items: []
+            }
+        };
+
+        // Referencias a elementos DOM
+        const mainView = document.getElementById('mainView');
+        const listView = document.getElementById('listView');
+        const listTitle = document.getElementById('listTitle');
+        const itemInput = document.getElementById('itemInput');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const itemsList = document.getElementById('itemsList');
+        const backBtn = document.querySelector('.back-btn');
+        const menuBtn = document.querySelector('.menu-btn');
+        const menuDropdown = document.querySelector('.menu-dropdown');
+
+        // Inicializar la aplicación
+        function init() {
+            loadData();
+            updateListButtons();
+            setupEventListeners();
+        }
+
+        // Cargar datos del localStorage
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                listsData = JSON.parse(saved);
+            }
+        }
+
+        // Guardar datos en localStorage
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(listsData));
+        }
+
+        // Actualizar nombres de las listas en los botones
+        function updateListButtons() {
+            document.querySelectorAll('.list-button').forEach(button => {
+                const listId = button.dataset.list;
+                if (listsData[listId]) {
+                    button.textContent = listsData[listId].name;
+                }
+            });
+        }
+
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Botones de listas
+            document.querySelectorAll('.list-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const listId = e.target.dataset.list;
+                    
+                    if (listId === 'lista1') {
+                        openList(listId);
+                    } else {
+                        showMessage('Esta funcionalidad estará disponible próximamente');
+                    }
+                });
+            });
+
+            // Botón volver
+            backBtn.addEventListener('click', () => {
+                closeList();
+            });
+
+            // Menú desplegable
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menuDropdown.classList.toggle('show');
+            });
+
+            // Cerrar menú al hacer click fuera
+            document.addEventListener('click', () => {
+                menuDropdown.classList.remove('show');
+            });
+
+            // Items del menú
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const action = e.target.dataset.action;
+                    handleMenuAction(action);
+                    menuDropdown.classList.remove('show');
+                });
+            });
+
+            // Añadir item
+            addItemBtn.addEventListener('click', addItem);
+            itemInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addItem();
+                }
+            });
+
+            // Editar título de lista
+            listTitle.addEventListener('click', editListTitle);
+        }
+
+        // Abrir una lista específica
+        function openList(listId) {
+            currentList = listId;
+            listTitle.textContent = listsData[listId].name;
+            
+            mainView.classList.add('hidden');
+            listView.classList.remove('hidden');
+            
+            renderItems();
+        }
+
+        // Cerrar lista y volver al menú principal
+        function closeList() {
+            currentList = null;
+            listView.classList.add('hidden');
+            mainView.classList.remove('hidden');
+            itemInput.value = '';
+        }
+
+        // Añadir nuevo item
+        function addItem() {
+            const itemName = itemInput.value.trim();
+            if (!itemName || !currentList) return;
+
+            const newItem = {
+                id: Date.now(),
+                name: itemName,
+                checked: false,
+                image: null
+            };
+
+            listsData[currentList].items.push(newItem);
+            saveData();
+            renderItems();
+            itemInput.value = '';
+        }
+
+        // Renderizar items de la lista actual
+        function renderItems() {
+            if (!currentList) return;
+
+            const items = listsData[currentList].items;
+            itemsList.innerHTML = '';
+
+            items.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                
+                itemDiv.innerHTML = `
+                    <input type="checkbox" ${item.checked ? 'checked' : ''} 
+                           onchange="toggleItem(${item.id})">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='9' r='7'/%3E%3Cpath d='m13 13 6 6'/%3E%3C/svg%3E" 
+                         class="default-img" alt="Buscar imagen">
+                    <span class="editable ${item.checked ? 'checked' : ''}" 
+                          onclick="editItem(${item.id})">${item.name}</span>
+                `;
+                
+                itemsList.appendChild(itemDiv);
+            });
+        }
+
+        // Toggle estado de item (comprado/no comprado)
+        function toggleItem(itemId) {
+            if (!currentList) return;
+
+            const item = listsData[currentList].items.find(i => i.id === itemId);
+            if (item) {
+                item.checked = !item.checked;
+                saveData();
+                renderItems();
+            }
+        }
+
+        // Editar nombre de item
+        function editItem(itemId) {
+            if (!currentList) return;
+
+            const item = listsData[currentList].items.find(i => i.id === itemId);
+            if (!item) return;
+
+            const newName = prompt('Editar artículo:', item.name);
+            if (newName && newName.trim()) {
+                item.name = newName.trim();
+                saveData();
+                renderItems();
+            }
+        }
+
+        // Editar título de la lista
+        function editListTitle() {
+            if (!currentList || currentList !== 'lista1') return;
+
+            const newName = prompt('Editar nombre de la lista:', listsData[currentList].name);
+            if (newName && newName.trim()) {
+                listsData[currentList].name = newName.trim();
+                listTitle.textContent = newName.trim();
+                saveData();
+                updateListButtons();
+            }
+        }
+
+        // Manejar acciones del menú
+        function handleMenuAction(action) {
+            switch(action) {
+                case 'delete-bought':
+                    deleteBoughtItems();
+                    break;
+                case 'articles':
+                case 'suggestions':
+                case 'account':
+                case 'close-session':
+                case 'about':
+                    showMessage('Esta funcionalidad estará disponible próximamente');
+                    break;
+            }
+        }
+
+        // Borrar items comprados
+        function deleteBoughtItems() {
+            if (!currentList) return;
+
+            const boughtCount = listsData[currentList].items.filter(item => item.checked).length;
+            
+            if (boughtCount === 0) {
+                showMessage('No hay artículos comprados para borrar');
+                return;
+            }
+
+            if (confirm(`¿Borrar ${boughtCount} artículo(s) comprado(s)?`)) {
+                listsData[currentList].items = listsData[currentList].items.filter(item => !item.checked);
+                saveData();
+                renderItems();
+                showMessage(`${boughtCount} artículo(s) borrado(s)`);
+            }
+        }
+
+        // Mostrar mensaje temporal
+        function showMessage(message) {
+            // Remover mensaje anterior si existe
+            const existingAlert = document.querySelector('.alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-info';
+            alert.textContent = message;
+            
+            // Insertar después del título
+            const container = listView.classList.contains('hidden') ? mainView : listView.querySelector('.list-container');
+            container.insertBefore(alert, container.firstChild);
+
+            // Quitar el mensaje después de 3 segundos
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
