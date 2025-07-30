@@ -1137,400 +1137,6 @@ function logout() {
     mainTitle.textContent = 'Lista de la compra by AKOBU';
 }
 
-
-    // =============================================================================
-// SISTEMA DE ABSTRACCIÓN DE DATOS
-// =============================================================================
-
-// Enum para modos de funcionamiento
-const AppMode = {
-  ONLINE: 'online',
-  OFFLINE: 'offline'
-};
-
-// Estado global de la aplicación
-let currentAppMode = AppMode.ONLINE;
-let currentUser = null;
-
-// =============================================================================
-// INTERFAZ COMÚN - DataService
-// =============================================================================
-
-class DataService {
-  constructor() {
-    this.adapter = null;
-  }
-
-  // Inicializar el servicio con el modo apropiado
-  init(mode) {
-    currentAppMode = mode;
-    if (mode === AppMode.ONLINE) {
-      this.adapter = new FirebaseAdapter();
-    } else {
-      this.adapter = new LocalStorageAdapter();
-    }
-    return this.adapter.init();
-  }
-
-  // Métodos de autenticación
-  async login(email, password) {
-    return await this.adapter.login(email, password);
-  }
-
-  async register(email, password, username) {
-    return await this.adapter.register(email, password, username);
-  }
-
-  async logout() {
-    return await this.adapter.logout();
-  }
-
-  getCurrentUser() {
-    return this.adapter.getCurrentUser();
-  }
-
-  onAuthStateChanged(callback) {
-    return this.adapter.onAuthStateChanged(callback);
-  }
-
-  // Métodos de datos
-  async getUserData() {
-    return await this.adapter.getUserData();
-  }
-
-  async getLists() {
-    return await this.adapter.getLists();
-  }
-
-  async saveList(listId, items) {
-    return await this.adapter.saveList(listId, items);
-  }
-
-  async getItemLibrary() {
-    return await this.adapter.getItemLibrary();
-  }
-
-  async saveItemLibrary(itemLibrary) {
-    return await this.adapter.saveItemLibrary(itemLibrary);
-  }
-
-  async updateUserData(data) {
-    return await this.adapter.updateUserData(data);
-  }
-
-  async saveImage(file, path) {
-    return await this.adapter.saveImage(file, path);
-  }
-
-  async deleteImage(imageUrl) {
-    return await this.adapter.deleteImage(imageUrl);
-  }
-
-  // Métodos específicos para modo offline
-  isOfflineMode() {
-    return currentAppMode === AppMode.OFFLINE;
-  }
-
-  // Método para obtener estructura de listas según el modo
-  getListStructure() {
-    return this.adapter.getListStructure();
-  }
-}
-
-// =============================================================================
-// ADAPTADOR FIREBASE (modo online)
-// =============================================================================
-
-class FirebaseAdapter {
-  constructor() {
-    this.user = null;
-  }
-
-  async init() {
-    // Firebase ya está inicializado globalmente
-    return true;
-  }
-
-  async login(email, password) {
-    try {
-      const userCredential = await auth.signInWithEmailAndPassword(email, password);
-      this.user = userCredential.user;
-      return { success: true, user: this.user };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  }
-
-  async register(email, password, username) {
-    try {
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      this.user = userCredential.user;
-      
-      // Crear documento de usuario
-      await db.collection("users").doc(this.user.uid).set({
-        username: username,
-        email: email,
-        lists: { list1: [], list2: [], list3: [] },
-        itemLibrary: {}
-      });
-      
-      return { success: true, user: this.user };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  }
-
-  async logout() {
-    try {
-      await auth.signOut();
-      this.user = null;
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  }
-
-  getCurrentUser() {
-    return this.user || auth.currentUser;
-  }
-
-  onAuthStateChanged(callback) {
-    return auth.onAuthStateChanged((user) => {
-      this.user = user;
-      callback(user);
-    });
-  }
-
-  async getUserData() {
-    if (!this.user) return null;
-    
-    try {
-      const doc = await db.collection("users").doc(this.user.uid).get();
-      return doc.data();
-    } catch (error) {
-      console.error("Error al obtener datos del usuario:", error);
-      throw error;
-    }
-  }
-
-  async getLists() {
-    const userData = await this.getUserData();
-    return userData?.lists || { list1: [], list2: [], list3: [] };
-  }
-
-  async saveList(listId, items) {
-    if (!this.user) return;
-    
-    try {
-      await db.collection("users").doc(this.user.uid).update({
-        [`lists.${listId}`]: items
-      });
-    } catch (error) {
-      console.error("Error al guardar lista:", error);
-      throw error;
-    }
-  }
-
-  async getItemLibrary() {
-    const userData = await this.getUserData();
-    return userData?.itemLibrary || {};
-  }
-
-  async saveItemLibrary(itemLibrary) {
-    if (!this.user) return;
-    
-    try {
-      await db.collection("users").doc(this.user.uid).update({
-        itemLibrary: itemLibrary
-      });
-    } catch (error) {
-      console.error("Error al guardar biblioteca:", error);
-      throw error;
-    }
-  }
-
-  async updateUserData(data) {
-    if (!this.user) return;
-    
-    try {
-      await db.collection("users").doc(this.user.uid).update(data);
-    } catch (error) {
-      console.error("Error al actualizar datos:", error);
-      throw error;
-    }
-  }
-
-  async saveImage(file, path) {
-    if (!this.user) return null;
-    
-    try {
-      const imageRef = storage.ref(`images/${this.user.uid}/${path}`);
-      const snapshot = await imageRef.put(file);
-      return await snapshot.ref.getDownloadURL();
-    } catch (error) {
-      console.error("Error al guardar imagen:", error);
-      throw error;
-    }
-  }
-
-  async deleteImage(imageUrl) {
-    try {
-      if (imageUrl) {
-        const imageRef = storage.refFromURL(imageUrl);
-        await imageRef.delete();
-      }
-    } catch (error) {
-      console.warn("Error al eliminar imagen:", error);
-    }
-  }
-
-  getListStructure() {
-    return ['list1', 'list2', 'list3'];
-  }
-}
-
-// =============================================================================
-// ADAPTADOR LOCALSTORAGE (modo offline)
-// =============================================================================
-
-class LocalStorageAdapter {
-  constructor() {
-    this.storageKey = 'shoppingApp_offlineData';
-    this.user = { uid: 'offline_user', email: 'offline@local.com' };
-  }
-
-  async init() {
-    // Inicializar datos por defecto si no existen
-    if (!localStorage.getItem(this.storageKey)) {
-      const defaultData = {
-        username: 'Usuario sin registro',
-        list: [],
-        itemLibrary: {},
-        listName: 'Mi lista'
-      };
-      localStorage.setItem(this.storageKey, JSON.stringify(defaultData));
-    }
-    return true;
-  }
-
-  async login(email, password) {
-    // En modo offline, cualquier login es válido
-    return { success: true, user: this.user };
-  }
-
-  async register(email, password, username) {
-    // En modo offline, actualizar el nombre de usuario
-    const data = this.getData();
-    data.username = username;
-    this.saveData(data);
-    return { success: true, user: this.user };
-  }
-
-  async logout() {
-    // En modo offline, solo limpiar el estado
-    return { success: true };
-  }
-
-  getCurrentUser() {
-    return this.user;
-  }
-
-  onAuthStateChanged(callback) {
-    // En modo offline, siempre hay un usuario
-    setTimeout(() => callback(this.user), 0);
-    return () => {}; // Función de cleanup vacía
-  }
-
-  getData() {
-    const data = localStorage.getItem(this.storageKey);
-    return data ? JSON.parse(data) : null;
-  }
-
-  saveData(data) {
-    localStorage.setItem(this.storageKey, JSON.stringify(data));
-  }
-
-  async getUserData() {
-    const data = this.getData();
-    // Adaptar estructura offline a estructura online
-    return {
-      username: data.username,
-      lists: { list1: data.list, list2: [], list3: [] }, // Solo list1 tiene datos
-      itemLibrary: data.itemLibrary,
-      list1Name: data.listName,
-      list2Name: 'Lista 2',
-      list3Name: 'Lista 3'
-    };
-  }
-
-  async getLists() {
-    const data = this.getData();
-    return { list1: data.list, list2: [], list3: [] };
-  }
-
-  async saveList(listId, items) {
-    if (listId !== 'list1') return; // Solo permitir list1 en modo offline
-    
-    const data = this.getData();
-    data.list = items;
-    this.saveData(data);
-  }
-
-  async getItemLibrary() {
-    const data = this.getData();
-    return data.itemLibrary;
-  }
-
-  async saveItemLibrary(itemLibrary) {
-    const data = this.getData();
-    data.itemLibrary = itemLibrary;
-    this.saveData(data);
-  }
-
-  async updateUserData(updateData) {
-    const data = this.getData();
-    
-    // Mapear actualizaciones de Firebase a estructura offline
-    if (updateData.username) data.username = updateData.username;
-    if (updateData.list1Name) data.listName = updateData.list1Name;
-    if (updateData['lists.list1']) data.list = updateData['lists.list1'];
-    if (updateData.itemLibrary) data.itemLibrary = updateData.itemLibrary;
-    
-    this.saveData(data);
-  }
-
-  async saveImage(file, path) {
-    // En modo offline, convertir imagen a base64
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        // Guardar imagen como base64
-        const base64 = e.target.result;
-        resolve(base64);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  async deleteImage(imageUrl) {
-    // En modo offline, las imágenes base64 se eliminan automáticamente
-    // cuando se elimina la referencia
-    return true;
-  }
-
-  getListStructure() {
-    return ['list1']; // Solo una lista en modo offline
-  }
-}
-
-// =============================================================================
-// INSTANCIA GLOBAL DEL SERVICIO
-// =============================================================================
-
-const dataService = new DataService();
-    
-
 function showList(viewId) {
   closeAllMenus(); // Cerrar todos los menús al cambiar de vista
   document.getElementById('welcomeView').style.display = 'none';
@@ -1556,64 +1162,56 @@ function showList(viewId) {
 }
 
     async function loadLists() {
-  const currentUser = dataService.getCurrentUser();
   if (!currentUser) return;
   
   try {
-    const userData = await dataService.getUserData();
-    const lists = userData?.lists || { list1: [], list2: [], list3: [] };
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const data = userData.lists || { list1: [], list2: [], list3: [] };
     
-    // Obtener estructura de listas según el modo
-    const listStructure = dataService.getListStructure();
-    
-    listStructure.forEach(listId => {
-      const container = document.getElementById(listId);
-      if (!container) return;
-      
-      container.innerHTML = '';
-      const orderedList = reorderList(lists[listId] || []);
-      
-      orderedList.forEach((item, index) => {
-        const el = document.createElement('div');
-        el.className = 'item';
-        
-        const img = document.createElement('img');
-        img.src = item.img || 'https://cdn-icons-png.flaticon.com/512/685/685655.png';
-        img.className = item.img ? '' : 'default-img';
-        img.onclick = () => {
-          if (!item.img) {
-            selectImage(index, listId);
-          } else {
-            document.getElementById('modalImage').src = item.img;
-            document.getElementById('modal').style.display = 'flex';
-          }
-        };
-        
+['list1', 'list2', 'list3'].forEach(listId => {
+  const container = document.getElementById(listId);
+  container.innerHTML = '';
+  const orderedList = reorderList(data[listId] || []);
+  orderedList.forEach((item, index) => {
+  const el = document.createElement('div');
+  el.className = 'item';
+  const img = document.createElement('img');
+  img.src = item.img || 'https://cdn-icons-png.flaticon.com/512/685/685655.png';
+  img.className = item.img ? '' : 'default-img';
+  img.onclick = () => {
+    if (!item.img) {
+      selectImage(index, listId);
+    } else {
+      document.getElementById('modalImage').src = item.img;
+      document.getElementById('modal').style.display = 'flex';
+    }
+  };
         const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = item.checked;
-        checkbox.onchange = async () => {
-          item.checked = checkbox.checked;
-          
-          // Reordenar la lista
-          const reorderedList = lists[listId].sort((a, b) => {
-            if (a.checked !== b.checked) {
-              return a.checked ? 1 : -1;
-            }
-            return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-          });
-          
-          await dataService.saveList(listId, reorderedList);
-          loadLists();
-        };
-        
+checkbox.type = 'checkbox';
+checkbox.checked = item.checked;
+checkbox.onchange = async () => {
+  item.checked = checkbox.checked;
+
+
+
+  // Reordenar la lista: no marcados primero, marcados al final
+  const reorderedList = data[listId].sort((a, b) => {
+  if (a.checked !== b.checked) {
+    return a.checked ? 1 : -1; // Los marcados van al final
+  }
+  return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); // Orden alfabético
+});
+  
+  await saveItemToFirebase(listId, reorderedList);
+  loadLists(); // Recargar para mostrar el nuevo orden
+};
         const span = document.createElement('span');
-        span.textContent = item.name;
-        span.className = 'editable' + (item.checked ? ' checked' : '');
-        span.style.cursor = 'pointer';
-        span.onclick = () => editArticleNameFromList(item.name, index, listId);
-        
-        el.append(checkbox, img, span);
+span.textContent = item.name;
+span.className = 'editable' + (item.checked ? ' checked' : '');
+span.style.cursor = 'pointer';
+span.onclick = () => editArticleNameFromList(item.name, index, listId);
+el.append(checkbox, img, span);
         container.appendChild(el);
       });
     });
@@ -1622,6 +1220,16 @@ function showList(viewId) {
   }
 }
 
+async function saveItemToFirebase(listId, items) {
+  if (!currentUser) return;
+  try {
+    await db.collection("users").doc(currentUser.uid).update({
+      [`lists.${listId}`]: items
+    });
+  } catch (error) {
+    console.error("Error al guardar en Firebase:", error);
+  }
+}
 
 function reorderList(list) {
   // Separar elementos marcados y no marcados, ordenados alfabéticamente
@@ -1636,47 +1244,42 @@ async function addItem(e, listId) {
   e.preventDefault();
   const input = document.getElementById(`name-${listId}`);
   const name = input.value.trim();
-  const currentUser = dataService.getCurrentUser();
-  
   if (!name || !currentUser) return;
   
-  // En modo offline, solo permitir list1
-  if (dataService.isOfflineMode() && listId !== 'list1') {
-    alert('En modo sin registro solo puedes usar una lista');
-    return;
-  }
-  
   try {
-    const userData = await dataService.getUserData();
-    const lists = userData?.lists || { list1: [], list2: [], list3: [] };
-    const currentList = lists[listId] || [];
-    const itemLibrary = userData?.itemLibrary || {};
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const currentList = userData.lists[listId] || [];
+    const itemLibrary = userData.itemLibrary || {};
     
     // Crear el nuevo item
     const newItem = { name, checked: false };
     
     // Si el artículo ya existe en la biblioteca, usar su imagen
-    const normalizedName = name.toLowerCase().trim();
-    if (itemLibrary[normalizedName] && itemLibrary[normalizedName].img) {
-      newItem.img = itemLibrary[normalizedName].img;
-      console.log('Usando imagen guardada para:', name);
-    }
-    
-    // Guardar el artículo en la biblioteca
-    itemLibrary[normalizedName] = {
-      name: name,
-      img: newItem.img || null
-    };
-    
-    currentList.unshift(newItem);
+const normalizedName = name.toLowerCase().trim();
+if (itemLibrary[normalizedName] && itemLibrary[normalizedName].img) {
+  newItem.img = itemLibrary[normalizedName].img;
+  console.log('Usando imagen guardada para:', name);
+}
+
+// Siempre guardar el artículo en la biblioteca (sin imagen si no la tiene)
+itemLibrary[normalizedName] = {
+  name: name,
+  img: newItem.img || null
+};
+
+currentList.unshift(newItem);
     
     // Reordenar la lista antes de guardar
-    const reorderedList = reorderList(currentList);
-    
-    // Guardar tanto la lista como la biblioteca
-    await dataService.saveList(listId, reorderedList);
-    await dataService.saveItemLibrary(itemLibrary);
-    
+const reorderedList = reorderList(currentList);
+
+console.log('Guardando itemLibrary:', itemLibrary);
+await db.collection("users").doc(currentUser.uid).update({
+  [`lists.${listId}`]: reorderedList,
+  itemLibrary: itemLibrary
+});
+console.log('Guardado exitoso');  
+
     input.value = '';
     loadLists();
   } catch (error) {
@@ -1764,52 +1367,67 @@ async function selectImage(itemIndex, listId) {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
-  
-  input.onchange = async e => {
+  <!--  input.capture = 'environment'; -->
+input.onchange = async e => {
     const file = e.target.files[0];
     if (!file) return;
+   showImageLoading();
     
-    showImageLoading();
+    console.log('Archivo seleccionado:', file.name, 'Tamaño original:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
     
     try {
-      let imageUrl;
+      // Comprimir la imagen antes de subirla
+      const compressedFile = await compressImage(file, 50); // 50KB máximo
+      console.log('Imagen comprimida:', (compressedFile.size / 1024).toFixed(2) + 'KB');
       
-      if (dataService.isOfflineMode()) {
-        // En modo offline, guardar como base64
-        imageUrl = await dataService.saveImage(file, `${listId}/${itemIndex}_${Date.now()}`);
-      } else {
-        // En modo online, comprimir y subir a Firebase
-        const compressedFile = await compressImage(file, 50);
-        imageUrl = await dataService.saveImage(compressedFile, `${listId}/${itemIndex}_${Date.now()}`);
-      }
+      // Crear una referencia única para la imagen
+      const imageRef = storage.ref(`images/${currentUser.uid}/${listId}/${itemIndex}_${Date.now()}`);
       
-      // Obtener datos actuales
-      const userData = await dataService.getUserData();
-      const lists = userData?.lists || { list1: [], list2: [], list3: [] };
-      const currentList = lists[listId] || [];
-      const itemLibrary = userData?.itemLibrary || {};
+      // Subir la imagen comprimida a Firebase Storage
+      console.log('Subiendo imagen comprimida a Storage...');
+      const snapshot = await imageRef.put(compressedFile);
       
-      // Actualizar el item específico
+      // Obtener la URL de descarga
+      const downloadURL = await snapshot.ref.getDownloadURL();
+      console.log('URL de imagen obtenida:', downloadURL);
+      
+      // Obtener la lista actual de Firebase
+      const doc = await db.collection("users").doc(currentUser.uid).get();
+      const userData = doc.data();
+      const currentList = userData.lists[listId] || [];
+      const itemLibrary = userData.itemLibrary || {};
+      
+      console.log('Lista actual:', currentList);
+      console.log('Item a actualizar:', currentList[itemIndex]);
+      
+      // Actualizar el item específico usando el índice
       if (currentList[itemIndex]) {
-        currentList[itemIndex].img = imageUrl;
+        currentList[itemIndex].img = downloadURL;
         
-        // Guardar también en la biblioteca
+        // Guardar también en la biblioteca del usuario
         const normalizedName = currentList[itemIndex].name.toLowerCase().trim();
         itemLibrary[normalizedName] = {
           name: currentList[itemIndex].name,
-          img: imageUrl
+          img: downloadURL
         };
         
-        // Guardar cambios
-        await dataService.saveList(listId, currentList);
-        await dataService.saveItemLibrary(itemLibrary);
+        console.log('Item actualizado con URL de imagen y guardado en biblioteca');
         
+        // Guardar tanto la lista como la biblioteca
+        await db.collection("users").doc(currentUser.uid).update({
+          [`lists.${listId}`]: currentList,
+          itemLibrary: itemLibrary
+        });
+        
+        console.log('Guardado en Firebase');
+        
+        // Recargar las listas para mostrar la nueva imagen
         loadLists();
       }
     } catch (error) {
       console.error("Error al guardar imagen:", error);
-    } finally {
-      hideImageLoading();
+    }finally {
+      hideImageLoading(); // ← AÑADIR ESTA LÍNEA (reemplaza o añade el finally)
     }
   };
   input.click();
@@ -1826,35 +1444,35 @@ async function editListTitle(element) {
   input.value = currentTitle;
   input.style.fontSize = '24px';
   input.style.width = '100%';
-  
+
   input.onblur = async () => {
     const newTitle = input.value.trim() || currentTitle;
     element.textContent = newTitle;
-    
+
     const buttonId = element.getAttribute('data-button-id');
     const button = document.getElementById(buttonId);
     if (button) button.textContent = newTitle;
-    
-    // Guardar cambios
-    const currentUser = dataService.getCurrentUser();
+
+    // Guardar en Firebase
     if (currentUser && newTitle !== currentTitle) {
       try {
-        const updateData = {};
-        if (buttonId === 'list1Button') updateData.list1Name = newTitle;
-        else if (buttonId === 'list2Button') updateData.list2Name = newTitle;
-        else if (buttonId === 'list3Button') updateData.list3Name = newTitle;
-        
-        await dataService.updateUserData(updateData);
+        const listKey = buttonId === 'list1Button' ? 'list1Name' : 
+                buttonId === 'list2Button' ? 'list2Name' : 
+                'list3Name';
+        await db.collection("users").doc(currentUser.uid).update({
+          [listKey]: newTitle
+        });
       } catch (error) {
         console.error("Error al guardar el nombre de la lista:", error);
       }
     }
-    
+
+    // Volver a activar la edición si se hace clic de nuevo
     element.onclick = () => editListTitle(element);
   };
-  
+
   element.textContent = '';
-  element.onclick = null;
+  element.onclick = null; // quitar el evento mientras se edita
   element.appendChild(input);
   input.focus();
 }
@@ -1956,15 +1574,20 @@ document.addEventListener('click', function(event) {
 });
 
 async function loadArticles() {
-  const currentUser = dataService.getCurrentUser();
   if (!currentUser) return;
   
   try {
-    const itemLibrary = await dataService.getItemLibrary();
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const itemLibrary = userData.itemLibrary || {};
+
+        console.log('userData:', userData);
+    console.log('itemLibrary:', itemLibrary);
     
     const container = document.getElementById('articlesList');
     container.innerHTML = '';
     
+    // Convertir el objeto itemLibrary en array y ordenar alfabéticamente
     const articles = Object.values(itemLibrary).sort((a, b) => a.name.localeCompare(b.name));
     
     if (articles.length === 0) {
@@ -1972,81 +1595,82 @@ async function loadArticles() {
       return;
     }
     
-    articles.forEach(article => {
-      const el = document.createElement('div');
-      el.className = 'item';
-      
-      const img = document.createElement('img');
-      img.src = article.img || 'https://cdn-icons-png.flaticon.com/512/685/685655.png';
-      img.className = article.img ? '' : 'default-img';
-      img.onclick = () => {
-        if (!article.img) {
-          selectImageForArticle(article.name);
-        } else {
-          document.getElementById('modalImage').src = article.img;
-          document.getElementById('modal').style.display = 'flex';
-        }
-      };
-      
-      const span = document.createElement('span');
-      span.textContent = article.name;
-      span.className = 'editable';
-      
-      // Crear el menú de edición
-      const menuContainer = document.createElement('div');
-      menuContainer.className = 'menu-container';
-      menuContainer.style.marginLeft = 'auto';
-      
-      const editBtn = document.createElement('button');
-      editBtn.innerHTML = '✎';
-      editBtn.className = 'menu-btn';
-      editBtn.style.minWidth = '35px';
-      editBtn.style.height = '35px';
-      editBtn.style.fontSize = '16px';
-      editBtn.onclick = (e) => {
-        e.stopPropagation();
-        toggleArticleMenu(menuContainer);
-      };
-      
-      const dropdown = document.createElement('div');
-      dropdown.className = 'menu-dropdown';
-      
-      const changePhotoItem = document.createElement('div');
-      changePhotoItem.className = 'menu-item';
-      changePhotoItem.textContent = 'Cambiar foto';
-      changePhotoItem.onclick = () => {
-        selectImageForArticle(article.name);
-        closeAllMenus();
-      };
-      
-      const editNameItem = document.createElement('div');
-      editNameItem.className = 'menu-item';
-      editNameItem.textContent = 'Editar nombre';
-      editNameItem.onclick = () => {
-        editArticleName(article.name);
-        closeAllMenus();
-      };
-      
-      const deleteItem = document.createElement('div');
-      deleteItem.className = 'menu-item';
-      deleteItem.textContent = 'Borrar artículo';
-      deleteItem.onclick = () => {
-        deleteArticle(article.name);
-        closeAllMenus();
-      };
-      
-      dropdown.append(changePhotoItem, editNameItem, deleteItem);
-      menuContainer.append(editBtn, dropdown);
-      
-      el.append(img, span, menuContainer);
-      container.appendChild(el);
-    });
+articles.forEach(article => {
+  const el = document.createElement('div');
+  el.className = 'item';
+  
+  const img = document.createElement('img');
+  img.src = article.img || 'https://cdn-icons-png.flaticon.com/512/685/685655.png';
+  img.className = article.img ? '' : 'default-img';
+  img.onclick = () => {
+    if (!article.img) {
+      selectImageForArticle(article.name);
+    } else {
+      document.getElementById('modalImage').src = article.img;
+      document.getElementById('modal').style.display = 'flex';
+    }
+  };
+  
+  const span = document.createElement('span');
+  span.textContent = article.name;
+  span.className = 'editable';
+  
+  // Crear el menú de edición
+  const menuContainer = document.createElement('div');
+  menuContainer.className = 'menu-container';
+  menuContainer.style.marginLeft = 'auto';
+  
+  const editBtn = document.createElement('button');
+  editBtn.innerHTML = '✎';
+  editBtn.className = 'menu-btn';
+  editBtn.style.minWidth = '35px';
+  editBtn.style.height = '35px';
+  editBtn.style.fontSize = '16px';
+  editBtn.onclick = (e) => {
+    e.stopPropagation();
+    toggleArticleMenu(menuContainer);
+  };
+  
+  const dropdown = document.createElement('div');
+  dropdown.className = 'menu-dropdown';
+  
+  const changePhotoItem = document.createElement('div');
+  changePhotoItem.className = 'menu-item';
+  changePhotoItem.textContent = 'Cambiar foto';
+  changePhotoItem.onclick = () => {
+    selectImageForArticle(article.name);
+    closeAllMenus();
+  };
+  
+  const editNameItem = document.createElement('div');
+  editNameItem.className = 'menu-item';
+  editNameItem.textContent = 'Editar nombre';
+  editNameItem.onclick = () => {
+    editArticleName(article.name);
+    closeAllMenus();
+  };
+  
+  const deleteItem = document.createElement('div');
+  deleteItem.className = 'menu-item';
+  deleteItem.textContent = 'Borrar artículo';
+  deleteItem.onclick = () => {
+    deleteArticle(article.name);
+    closeAllMenus();
+  };
+  
+  dropdown.append(changePhotoItem, editNameItem, deleteItem);
+  menuContainer.append(editBtn, dropdown);
+  
+  el.append(img, span, menuContainer);
+  container.appendChild(el);
+});
     
-    console.log('Artículos cargados:', articles.length);
+     console.log('Artículos cargados:', articles.length);
   } catch (error) {
     console.error("Error al cargar artículos:", error);
   }
 }
+
 function toggleArticleMenu(menuContainer) {
   const dropdown = menuContainer.querySelector('.menu-dropdown');
   
@@ -2065,14 +1689,15 @@ async function editArticleName(oldName) {
   if (!newName || newName.trim() === '' || newName.trim() === oldName) return;
   
   try {
-    const userData = await dataService.getUserData();
-    const lists = userData?.lists || { list1: [], list2: [], list3: [] };
-    const itemLibrary = userData?.itemLibrary || {};
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const itemLibrary = userData.itemLibrary || {};
+    const lists = userData.lists || { list1: [], list2: [],list3: [] };
     
     const oldNormalizedName = oldName.toLowerCase().trim();
     const newNormalizedName = newName.trim().toLowerCase();
     
-    // Verificar si el nuevo nombre ya existe
+    // Verificar si el nuevo nombre ya existe (y no es el mismo artículo)
     if (itemLibrary[newNormalizedName] && newNormalizedName !== oldNormalizedName) {
       alert(`Ya existe un artículo con el nombre "${newName.trim()}". Por favor, elige otro nombre.`);
       return;
@@ -2088,32 +1713,25 @@ async function editArticleName(oldName) {
       delete itemLibrary[oldNormalizedName];
     }
     
-    // Actualizar en todas las listas
-    const listStructure = dataService.getListStructure();
-    listStructure.forEach(listKey => {
-      if (lists[listKey]) {
-        lists[listKey].forEach(item => {
-          if (item.name.toLowerCase().trim() === oldNormalizedName) {
-            item.name = newName.trim();
-          }
-        });
-      }
+    // Actualizar en todas las listas que contengan este artículo
+    Object.keys(lists).forEach(listKey => {
+      lists[listKey].forEach(item => {
+        if (item.name.toLowerCase().trim() === oldNormalizedName) {
+          item.name = newName.trim();
+        }
+      });
     });
     
-    // Guardar cambios
-    await dataService.saveItemLibrary(itemLibrary);
-    
-    // Actualizar listas
-    for (const listKey of listStructure) {
-      if (lists[listKey]) {
-        await dataService.saveList(listKey, lists[listKey]);
-      }
-    }
+    // Guardar cambios en Firebase
+    await db.collection("users").doc(currentUser.uid).update({
+      itemLibrary: itemLibrary,
+      lists: lists
+    });
     
     console.log('Nombre actualizado correctamente');
     loadArticles();
     
-    // Recargar listas si están visibles
+    // Si estamos viendo alguna lista, recargarla también
     if (document.getElementById('list1View').style.display === 'block' || 
         document.getElementById('list2View').style.display === 'block' || 
         document.getElementById('list3View').style.display === 'block') {
@@ -2126,19 +1744,20 @@ async function editArticleName(oldName) {
   }
 }
 
-async function editArticleNameFromList(oldName, itemIndex, listId) {
+    async function editArticleNameFromList(oldName, itemIndex, listId) {
   const newName = prompt('Nuevo nombre del artículo:', oldName);
   if (!newName || newName.trim() === '' || newName.trim() === oldName) return;
   
   try {
-    const userData = await dataService.getUserData();
-    const lists = userData?.lists || { list1: [], list2: [], list3: [] };
-    const itemLibrary = userData?.itemLibrary || {};
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const itemLibrary = userData.itemLibrary || {};
+    const lists = userData.lists || { list1: [], list2: [], list3: [] };
     
     const oldNormalizedName = oldName.toLowerCase().trim();
     const newNormalizedName = newName.trim().toLowerCase();
     
-    // Verificar si el nuevo nombre ya existe
+    // Verificar si el nuevo nombre ya existe (y no es el mismo artículo)
     if (itemLibrary[newNormalizedName] && newNormalizedName !== oldNormalizedName) {
       alert(`Ya existe un artículo con el nombre "${newName.trim()}". Por favor, elige otro nombre.`);
       return;
@@ -2154,34 +1773,26 @@ async function editArticleNameFromList(oldName, itemIndex, listId) {
       delete itemLibrary[oldNormalizedName];
     }
     
-    // Actualizar en todas las listas
-    const listStructure = dataService.getListStructure();
-    listStructure.forEach(listKey => {
-      if (lists[listKey]) {
-        lists[listKey].forEach(item => {
-          if (item.name.toLowerCase().trim() === oldNormalizedName) {
-            item.name = newName.trim();
-          }
-        });
-      }
+    // Actualizar en todas las listas que contengan este artículo
+    Object.keys(lists).forEach(listKey => {
+      lists[listKey].forEach(item => {
+        if (item.name.toLowerCase().trim() === oldNormalizedName) {
+          item.name = newName.trim();
+        }
+      });
     });
     
-    // Guardar cambios
-    await dataService.saveItemLibrary(itemLibrary);
+    // Guardar cambios en Firebase
+    await db.collection("users").doc(currentUser.uid).update({
+      itemLibrary: itemLibrary,
+      lists: lists
+    });
     
-    // Actualizar listas
-    for (const listKey of listStructure) {
-      if (lists[listKey]) {
-        await dataService.saveList(listKey, lists[listKey]);
-      }
-    }
-    
-    console.log('Nombre actualizado correctamente');
+    // Recargar las listas para mostrar el cambio
     loadLists();
     
   } catch (error) {
     console.error("Error al editar nombre del artículo:", error);
-    alert("Error al cambiar el nombre del artículo");
   }
 }
     
@@ -2189,22 +1800,25 @@ async function deleteArticle(articleName) {
   if (!confirm(`¿Estás seguro de que quieres borrar "${articleName}"?\n\nEsto también lo eliminará de todas las listas de la compra.`)) return;
   
   try {
-    const userData = await dataService.getUserData();
-    const lists = userData?.lists || { list1: [], list2: [], list3: [] };
-    const itemLibrary = userData?.itemLibrary || {};
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const itemLibrary = userData.itemLibrary || {};
+    const lists = userData.lists || { list1: [], list2: [],list3: [] };
     
     const normalizedName = articleName.toLowerCase().trim();
     
-    // Obtener la URL de la imagen antes de eliminar
+    // Obtener la URL de la imagen antes de eliminar el artículo
     const imageUrl = itemLibrary[normalizedName]?.img;
     
-    // Eliminar imagen si existe
+    // Si el artículo tiene imagen, eliminarla de Storage
     if (imageUrl) {
       try {
-        await dataService.deleteImage(imageUrl);
-        console.log('Imagen eliminada:', imageUrl);
+        const imageRef = storage.refFromURL(imageUrl);
+        await imageRef.delete();
+        console.log('Imagen eliminada de Storage:', imageUrl);
       } catch (imageError) {
-        console.warn('Error al eliminar imagen:', imageError);
+        console.warn('Error al eliminar imagen de Storage:', imageError);
+        // Continuar aunque falle el borrado de la imagen
       }
     }
     
@@ -2212,29 +1826,22 @@ async function deleteArticle(articleName) {
     delete itemLibrary[normalizedName];
     
     // Eliminar de todas las listas
-    const listStructure = dataService.getListStructure();
-    listStructure.forEach(listKey => {
-      if (lists[listKey]) {
-        lists[listKey] = lists[listKey].filter(item => 
-          item.name.toLowerCase().trim() !== normalizedName
-        );
-      }
+    Object.keys(lists).forEach(listKey => {
+      lists[listKey] = lists[listKey].filter(item => 
+        item.name.toLowerCase().trim() !== normalizedName
+      );
     });
     
-    // Guardar cambios
-    await dataService.saveItemLibrary(itemLibrary);
-    
-    // Actualizar listas
-    for (const listKey of listStructure) {
-      if (lists[listKey]) {
-        await dataService.saveList(listKey, lists[listKey]);
-      }
-    }
+    // Guardar cambios en Firebase
+    await db.collection("users").doc(currentUser.uid).update({
+      itemLibrary: itemLibrary,
+      lists: lists
+    });
     
     console.log('Artículo eliminado correctamente');
     loadArticles();
     
-    // Recargar listas si están visibles
+    // Si estamos viendo alguna lista, recargarla también
     if (document.getElementById('list1View').style.display === 'block' || 
         document.getElementById('list2View').style.display === 'block' || 
         document.getElementById('list3View').style.display === 'block') {
@@ -2253,57 +1860,62 @@ async function selectImageForArticle(articleName) {
   input.type = 'file';
   input.accept = 'image/*';
   
-  input.onchange = async e => {
+input.onchange = async e => {
     const file = e.target.files[0];
     if (!file) return;
+   showImageLoading();
     
-    showImageLoading();
+    console.log('Archivo seleccionado:', file.name, 'Tamaño original:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
     
     try {
-      let imageUrl;
+      // Comprimir la imagen antes de subirla
+      const compressedFile = await compressImage(file, 50); // 50KB máximo
+      console.log('Imagen comprimida:', (compressedFile.size / 1024).toFixed(2) + 'KB');
       
-      if (dataService.isOfflineMode()) {
-        // En modo offline, guardar como base64
-        imageUrl = await dataService.saveImage(file, `articles/${articleName}_${Date.now()}`);
-      } else {
-        // En modo online, comprimir y subir a Firebase
-        const compressedFile = await compressImage(file, 50);
-        imageUrl = await dataService.saveImage(compressedFile, `articles/${articleName}_${Date.now()}`);
-      }
+      // Crear una referencia única para la imagen
+      const imageRef = storage.ref(`images/${currentUser.uid}/articles/${articleName}_${Date.now()}`);
       
-      // Obtener datos actuales
-      const userData = await dataService.getUserData();
-      const lists = userData?.lists || { list1: [], list2: [], list3: [] };
-      const itemLibrary = userData?.itemLibrary || {};
+      // Subir la imagen comprimida a Firebase Storage
+      console.log('Subiendo imagen comprimida a Storage...');
+      const snapshot = await imageRef.put(compressedFile);
       
-      // Actualizar en la biblioteca
+      // Obtener la URL de descarga
+      const downloadURL = await snapshot.ref.getDownloadURL();
+      console.log('URL de imagen obtenida:', downloadURL);
+      
+      // Obtener los datos actuales del usuario
+      const doc = await db.collection("users").doc(currentUser.uid).get();
+      const userData = doc.data();
+      const itemLibrary = userData.itemLibrary || {};
+      
+      // Actualizar la imagen del artículo en la biblioteca
       const normalizedName = articleName.toLowerCase().trim();
       itemLibrary[normalizedName] = itemLibrary[normalizedName] || { name: articleName };
-      itemLibrary[normalizedName].img = imageUrl;
-      
-      // Actualizar en todas las listas que contengan este artículo
-      const listStructure = dataService.getListStructure();
-      listStructure.forEach(listKey => {
-        if (lists[listKey]) {
-          lists[listKey].forEach(item => {
-            if (item.name.toLowerCase().trim() === normalizedName) {
-              item.img = imageUrl;
-            }
-          });
-        }
+      itemLibrary[normalizedName].img = downloadURL;
+
+      // Obtener las listas y actualizar todas las que contengan este artículo
+      const lists = userData.lists || { list1: [], list2: [], list3: []  };
+
+      Object.keys(lists).forEach(listKey => {
+        lists[listKey].forEach(item => {
+          if (item.name.toLowerCase().trim() === normalizedName) {
+            item.img = downloadURL;
+            console.log('Actualizando imagen en lista:', listKey, 'para artículo:', item.name);
+          }
+        });
       });
+
+      console.log('Artículo actualizado con nueva imagen');
+
+      // Guardar tanto la biblioteca como las listas actualizadas
+      await db.collection("users").doc(currentUser.uid).update({
+        itemLibrary: itemLibrary,
+        lists: lists
+      });
+        
+      console.log('Guardado en Firebase');
       
-      // Guardar cambios
-      await dataService.saveItemLibrary(itemLibrary);
-      
-      // Actualizar listas si es necesario
-      for (const listKey of listStructure) {
-        if (lists[listKey]) {
-          await dataService.saveList(listKey, lists[listKey]);
-        }
-      }
-      
-      // Recargar vistas
+      // Recargar tanto la vista de artículos como las listas si estamos en una vista de lista
       loadArticles();
       if (document.getElementById('list1View').style.display === 'block' || 
           document.getElementById('list2View').style.display === 'block' || 
@@ -2312,24 +1924,25 @@ async function selectImageForArticle(articleName) {
       }
     } catch (error) {
       console.error("Error al guardar imagen del artículo:", error);
-    } finally {
-      hideImageLoading();
+    }finally {
+      hideImageLoading(); // ← AÑADIR ESTA LÍNEA (reemplaza o añade el finally)
     }
   };
   input.click();
 }
 
 async function clearCompletedItems(listId) {
-  const currentUser = dataService.getCurrentUser();
   if (!currentUser) return;
   
+  // Cerrar el menú primero
   closeAllMenus();
   
   try {
-    const userData = await dataService.getUserData();
-    const lists = userData?.lists || { list1: [], list2: [], list3: [] };
-    const currentList = lists[listId] || [];
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const currentList = userData.lists[listId] || [];
     
+    // Contar cuántos artículos se van a borrar
     const completedItems = currentList.filter(item => item.checked);
     
     if (completedItems.length === 0) {
@@ -2341,9 +1954,13 @@ async function clearCompletedItems(listId) {
       return;
     }
     
+    // Filtrar solo los artículos no marcados (borrar los marcados)
     const remainingItems = currentList.filter(item => !item.checked);
     
-    await dataService.saveList(listId, remainingItems);
+    // Guardar la lista actualizada en Firebase
+    await db.collection("users").doc(currentUser.uid).update({
+      [`lists.${listId}`]: remainingItems
+    });
     
     console.log(`${completedItems.length} artículos comprados eliminados de ${listId}`);
     loadLists();
@@ -2355,104 +1972,100 @@ async function clearCompletedItems(listId) {
 }
 
 // Detector de estado de autenticación con splash screen
-async function initializeAuth() {
-  const authCallback = async (user) => {
-    console.log('Estado de autenticación cambió:', user ? 'Logueado' : 'No logueado');
+auth.onAuthStateChanged(async (user) => {
+  console.log('Estado de autenticación cambió:', user ? 'Logueado' : 'No logueado');
+  
+  // Función para ocultar splash y mostrar la vista correcta
+const showFinalView = () => {
+  clearSplashTimeout(); // Limpiar timeout de seguridad
+  if (splashView) splashView.style.display = 'none';
+  
+  if (user) {
+    // Usuario logueado
+    document.getElementById('welcomeView').style.display = 'none';
+  document.getElementById('authView').style.display = 'none';
+  document.body.classList.remove('welcome-active');
+  appView.classList.add('active');
+  showList('selectorView');
+} else {
+    // No hay usuario  
+     document.getElementById('welcomeView').style.display = 'block';
+  document.getElementById('authView').style.display = 'none';
+  document.body.classList.add('welcome-active');
+  appView.classList.remove('active');
+}
+};
+  
+  if (user) {
+    // Usuario está logueado
+    console.log('Usuario detectado:', user.email);
+    currentUser = user;
     
-    const showFinalView = () => {
-      clearSplashTimeout();
-      if (splashView) splashView.style.display = 'none';
+    try {
+      // Cargar datos del usuario
+      const doc = await db.collection("users").doc(user.uid).get();
+      const userData = doc.data();
       
-      if (user) {
-        document.getElementById('welcomeView').style.display = 'none';
-        document.getElementById('authView').style.display = 'none';
-        document.body.classList.remove('welcome-active');
-        appView.classList.add('active');
-        showList('selectorView');
-      } else {
-        document.getElementById('welcomeView').style.display = 'block';
-        document.getElementById('authView').style.display = 'none';
-        document.body.classList.add('welcome-active');
-        appView.classList.remove('active');
+      // Actualizar el título con el nombre del usuario
+      mainTitle.textContent = `Lista de la compra de ${userData.username}`;
+      mainTitle.style.display = 'block';
+      
+      // PRIMERO: Resetear TODOS los nombres a valores por defecto
+document.querySelector('[data-button-id="list1Button"]').textContent = 'Lista 1';
+document.getElementById('list1Button').textContent = 'Lista 1';
+document.querySelector('[data-button-id="list2Button"]').textContent = 'Lista 2';
+document.getElementById('list2Button').textContent = 'Lista 2';
+document.querySelector('[data-button-id="list3Button"]').textContent = 'Lista 3';
+document.getElementById('list3Button').textContent = 'Lista 3';
+
+// DESPUÉS: Cargar nombres personalizados si existen
+      
+      if (userData.list1Name) {
+        document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
+        document.getElementById('list1Button').textContent = userData.list1Name;
       }
-    };
-    
-    if (user) {
-      console.log('Usuario detectado:', user.email);
-      currentUser = user;
-      
-      try {
-        const userData = await dataService.getUserData();
-        
-        // Actualizar título
-        const mainTitle = document.getElementById('mainTitle');
-        if (mainTitle) {
-          mainTitle.textContent = `Lista de la compra de ${userData.username}`;
-          mainTitle.style.display = 'block';
-        }
-        
-        // Resetear nombres de listas
-        document.querySelector('[data-button-id="list1Button"]').textContent = 'Lista 1';
-        document.getElementById('list1Button').textContent = 'Lista 1';
-        document.querySelector('[data-button-id="list2Button"]').textContent = 'Lista 2';
-        document.getElementById('list2Button').textContent = 'Lista 2';
-        document.querySelector('[data-button-id="list3Button"]').textContent = 'Lista 3';
-        document.getElementById('list3Button').textContent = 'Lista 3';
-        
-        // Cargar nombres personalizados
-        if (userData.list1Name) {
-          document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
-          document.getElementById('list1Button').textContent = userData.list1Name;
-        }
-        if (userData.list2Name) {
-          document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
-          document.getElementById('list2Button').textContent = userData.list2Name;
-        }
-        if (userData.list3Name) {
-          document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
-          document.getElementById('list3Button').textContent = userData.list3Name;
-        }
-        
-        // Mostrar vista
-        if (isInitialLoad) {
-          setTimeout(() => {
-            showFinalView();
-            isInitialLoad = false;
-          }, 1500);
-        } else {
-          showFinalView();
-        }
-        
-      } catch (error) {
-        console.error("Error al cargar datos del usuario:", error);
-        await dataService.logout();
+      if (userData.list2Name) {
+        document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
+        document.getElementById('list2Button').textContent = userData.list2Name;
       }
-    } else {
-      console.log('No hay usuario logueado');
-      currentUser = null;
-      
-      const mainTitle = document.getElementById('mainTitle');
-      if (mainTitle) {
-        mainTitle.textContent = 'Lista de la compra by AKOBU';
-        mainTitle.style.display = 'block';
+       if (userData.list3Name) {
+        document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
+        document.getElementById('list3Button').textContent = userData.list3Name;
       }
       
-      // Mostrar vista
+      // Mostrar vista después del delay solo en carga inicial
       if (isInitialLoad) {
         setTimeout(() => {
           showFinalView();
           isInitialLoad = false;
-        }, 1500);
+        }, 1500); // 1.5 segundos de splash
       } else {
-        showFinalView();
+        showFinalView(); // Sin delay si no es carga inicial
       }
+      
+    } catch (error) {
+      console.error("Error al cargar datos del usuario:", error);
+      auth.signOut(); // Si hay error, hacer logout
     }
-  };
-  
-  // Configurar el listener de autenticación
-  dataService.onAuthStateChanged(authCallback);
-}
+  } else {
+    // No hay usuario logueado
+    console.log('No hay usuario logueado');
+    currentUser = null;
+    mainTitle.textContent = 'Lista de la compra by AKOBU';
+    mainTitle.style.display = 'block';
     
+    // Mostrar vista después del delay solo en carga inicial
+    if (isInitialLoad) {
+      setTimeout(() => {
+        showFinalView();
+        isInitialLoad = false;
+      }, 1500); // 1.5 segundos de splash
+    } else {
+      showFinalView(); // Sin delay si no es carga inicial
+    }
+  }
+});
+
 async function changeUsername() {
   const newUsername = document.getElementById('currentUsername').value.trim();
   if (!newUsername || !currentUser) return;
@@ -2962,69 +2575,17 @@ function showAuthView(mode) {
   document.getElementById('authMessage').textContent = '';
 }
 
-async function useWithoutRegister() {
-  try {
-    // Inicializar en modo offline
-    await dataService.init(AppMode.OFFLINE);
-    
-    // Simular login automático
-    const result = await dataService.login('offline@local.com', 'password');
-    
-    if (result.success) {
-      console.log('Modo offline activado');
-      
-      // Ocultar vista de bienvenida
-      document.getElementById('welcomeView').style.display = 'none';
-      document.getElementById('authView').style.display = 'none';
-      document.body.classList.remove('welcome-active');
-      
-      // Mostrar vista de app
-      const appView = document.getElementById('appView');
-      if (appView) appView.classList.add('active');
-      
-      // Actualizar título
-      const mainTitle = document.getElementById('mainTitle');
-      if (mainTitle) {
-        mainTitle.textContent = 'Lista de la compra (Sin registro)';
-        mainTitle.style.display = 'block';
-      }
-      
-      // Ocultar botones de listas 2 y 3 en modo offline
-      const list2Button = document.getElementById('list2Button');
-      const list3Button = document.getElementById('list3Button');
-      if (list2Button) list2Button.style.display = 'none';
-      if (list3Button) list3Button.style.display = 'none';
-      
-      // Mostrar vista de selector
-      showList('selectorView');
-      
-    } else {
-      console.error('Error al inicializar modo offline');
-    }
-  } catch (error) {
-    console.error('Error al activar modo offline:', error);
-  }
+function useWithoutRegister() {
+  // Aquí implementarás la funcionalidad sin registro
+  alert('Funcionalidad "usar sin registro" - por implementar');
+  // Por ejemplo: crear un usuario temporal o mostrar una versión limitada
 }
-    
+
 function goToWelcome() {
     document.getElementById('authView').style.display = 'none';
     document.getElementById('welcomeView').style.display = 'block';
 }
 
-    async function initializeApp() {
-  try {
-    // Por defecto, inicializar en modo online
-    await dataService.init(AppMode.ONLINE);
-    
-    // Configurar autenticación
-    await initializeAuth();
-    
-    console.log('Aplicación inicializada en modo online');
-  } catch (error) {
-    console.error('Error al inicializar aplicación:', error);
-  }
-}
-    document.addEventListener('DOMContentLoaded', initializeApp);
     
   </script>
 
