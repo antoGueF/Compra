@@ -359,7 +359,7 @@
                     if (listId === 'lista1') {
                         openList(listId);
                     } else {
-                        showMessage('Esta funcionalidad estará disponible próximamente');
+                        showMessage('Regístrate para poder usar mas listas de la compra', true);
                     }
                 });
             });
@@ -538,26 +538,29 @@
         }
 
         // Mostrar mensaje temporal
-        function showMessage(message) {
-            // Remover mensaje anterior si existe
-            const existingAlert = document.querySelector('.alert');
-            if (existingAlert) {
-                existingAlert.remove();
-            }
+        function showMessage(message, isPopup = false) {
+    if (isPopup) {
+        alert(message);
+        return;
+    }
+    
+    // Código existente para mensajes normales...
+    const existingAlert = document.querySelector('.alert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
 
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-info';
-            alert.textContent = message;
-            
-            // Insertar después del título
-            const container = listView.classList.contains('hidden') ? mainView : listView.querySelector('.list-container');
-            container.insertBefore(alert, container.firstChild);
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-info';
+    alert.textContent = message;
+    
+    const container = listView.classList.contains('hidden') ? mainView : listView.querySelector('.list-container');
+    container.insertBefore(alert, container.firstChild);
 
-            // Quitar el mensaje después de 3 segundos
-            setTimeout(() => {
-                alert.remove();
-            }, 3000);
-        }
+    setTimeout(() => {
+        alert.remove();
+    }, 3000);
+}
 
         // Inicializar cuando se carga la página
         document.addEventListener('DOMContentLoaded', init);
