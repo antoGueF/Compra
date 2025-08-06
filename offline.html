@@ -989,6 +989,11 @@ document.addEventListener('click', (e) => {
                             
                             saveData();
                             renderAllArticles();
+                            
+                            // Si estamos viendo una lista, también actualizarla
+                            if (currentList && !listView.classList.contains('hidden')) {
+                                renderItems();
+                            }
                         }
                     } catch (error) {
                         alert('Error al procesar la imagen');
