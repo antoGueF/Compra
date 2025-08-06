@@ -788,6 +788,7 @@ body.welcome-active {
           <button class="menu-btn" onclick="toggleMenu()">☰</button>
           <div class="menu-dropdown" id="menuDropdown">
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
             <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
@@ -808,6 +809,7 @@ body.welcome-active {
           <div class="menu-dropdown" id="menuDropdown2">
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
             <div class="menu-item" onclick="clearCompletedItems('list1')">Borrar comprados</div>
+            <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
             <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
@@ -833,6 +835,7 @@ body.welcome-active {
           <div class="menu-dropdown" id="menuDropdown3">
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
             <div class="menu-item" onclick="clearCompletedItems('list2')">Borrar comprados</div>
+            <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
             <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
@@ -858,6 +861,7 @@ body.welcome-active {
           <div class="menu-dropdown" id="menuDropdown6">
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
             <div class="menu-item" onclick="clearCompletedItems('list3')">Borrar comprados</div>
+            <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
             <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
@@ -882,6 +886,7 @@ body.welcome-active {
           <button class="menu-btn" onclick="toggleMenu()">☰</button>
           <div class="menu-dropdown" id="menuDropdown4">
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
             <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
@@ -901,6 +906,7 @@ body.welcome-active {
           <button class="menu-btn" onclick="toggleMenu()">☰</button>
           <div class="menu-dropdown" id="menuDropdown5">
             <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
             <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
             <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
             <div class="menu-item" onclick="logout()">Cerrar sesión</div>
@@ -2215,6 +2221,10 @@ function goToSuggestions() {
     
     window.location.href = `suggestions.html?user=${encodeURIComponent(username)}`;
 }
+
+  function goToBlog() {
+
+  }
 
     
 // Registro y gestión del Service Worker
