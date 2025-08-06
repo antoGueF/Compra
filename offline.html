@@ -619,6 +619,7 @@ document.addEventListener('click', (e) => {
             if (previousView === 'list' && currentList) {
                 // Volver a la lista
                 listView.classList.remove('hidden');
+                renderItems();
             } else {
                 // Volver al menú principal
                 mainView.classList.remove('hidden');
@@ -991,7 +992,7 @@ document.addEventListener('click', (e) => {
                             renderAllArticles();
                             
                             // Si estamos viendo una lista, también actualizarla
-                            if (currentList && !listView.classList.contains('hidden')) {
+                            if (currentList) {
                                 renderItems();
                             }
                         }
