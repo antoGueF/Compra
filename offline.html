@@ -1224,6 +1224,20 @@ function showMessage(message, isPopup = false, buttonText = 'OK') {
 
         // Inicializar cuando se carga la página
         document.addEventListener('DOMContentLoaded', init);
+
+        function goToSuggestions() {
+    let username = 'Usuario';
+    
+    // Intentar obtener el nombre del usuario actual
+    if (currentUser && currentUser.displayName) {
+        username = currentUser.displayName;
+    } else if (currentUser && currentUser.email) {
+        username = currentUser.email.split('@')[0]; // Usar parte antes del @
+    }
+    
+    window.location.href = `suggestions.html?user=${encodeURIComponent(username)}`;
+}
+        
     </script>
 </body>
 </html>
