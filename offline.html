@@ -547,8 +547,10 @@ document.addEventListener('click', (e) => {
             closeList();
         } else if (!articlesView.classList.contains('hidden')) {
             closeArticlesView();
+        } else if (!mainView.classList.contains('hidden')) {
+            // Volver a la página de inicio cuando estemos en la vista de las tres listas
+            window.location.href = 'index.html';
         }
-        // Para el botón de mainView, de momento no hace nada
     }
 });
 
