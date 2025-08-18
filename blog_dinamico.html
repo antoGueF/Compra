@@ -188,7 +188,7 @@
     
     <div id="appView">
         <div class="top-bar">
-            <button onclick="history.back()" class="back-btn">←</button>
+            <button onclick="goBack()" class="back-btn">←</button>
         </div>
 
         <div id="blogContainer" class="blog-container">
@@ -283,17 +283,32 @@
             return articleDiv;
         }
 
-        // Función de búsqueda (para implementar más tarde)
-        function searchArticles(query) {
-            // TODO: Implementar búsqueda
-            console.log('Buscando:', query);
+// Al cargar la página del blog
+document.addEventListener('DOMContentLoaded', function() {
+    // Solo guardar el origen si es la primera vez que se entra al blog en esta sesión
+    if (!sessionStorage.getItem('blogOrigin') && document.referrer) {
+        // Filtrar para que solo guarde orígenes válidos de tu app
+        const referrer = document.referrer;
+        if (referrer.includes('index.html') || 
+            referrer.includes('lista.html') || 
+            referrer.includes(window.location.origin)) {
+            sessionStorage.setItem('blogOrigin', referrer);
         }
+    }
+    
+    loadBlogArticles(); // tu función existente
+});
 
-        // Función para filtrar por categoría (para implementar más tarde)
-        function filterByCategory(category) {
-            // TODO: Implementar filtro por categoría
-            console.log('Filtrar por categoría:', category);
-        }
+function goBack() {
+    const origin = sessionStorage.getItem('blogOrigin');
+    if (origin) {
+        sessionStorage.removeItem('blogOrigin');
+        window.location.href = origin;
+    } else {
+        // Fallback si no hay origen guardado
+        window.location.href = 'index.html';
+    }
+}
     </script>
 </body>
 </html>
