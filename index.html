@@ -697,28 +697,15 @@ body.welcome-active {
     </section>
 
     <!-- Blog Section -->
-    <section style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); margin-bottom: 20px;">
-      <h2 style="text-align: center; font-size: 24px; margin-bottom: 20px; color: #333;">Últimos consejos</h2>
-      <div>
-        <article style="padding: 15px 0; border-bottom: 1px solid #eee;">
-          <h3 style="font-size: 18px; margin-bottom: 8px; color: #333;">Cómo organizar tu lista de la compra por zonas del supermercado</h3>
-          <p style="color: #666; margin-bottom: 8px; font-size: 16px;">Aprende a estructurar tu lista siguiendo el layout típico de los supermercados para ser más eficiente.</p>
-          <span style="color: #999; font-size: 14px;">8 Enero 2025</span>
-        </article>
-        
-        <article style="padding: 15px 0; border-bottom: 1px solid #eee;">
-          <h3 style="font-size: 18px; margin-bottom: 8px; color: #333;">5 trucos para no olvidar productos importantes</h3>
-          <p style="color: #666; margin-bottom: 8px; font-size: 16px;">Consejos prácticos para asegurarte de que siempre tienes lo esencial en casa.</p>
-          <span style="color: #999; font-size: 14px;">5 Enero 2025</span>
-        </article>
-        
-        <article style="padding: 15px 0;">
-          <h3 style="font-size: 18px; margin-bottom: 8px; color: #333;">Planificación de menús: la clave del ahorro</h3>
-          <p style="color: #666; margin-bottom: 8px; font-size: 16px;">Descubre cómo planificar tus comidas semanales puede reducir tu gasto en alimentación.</p>
-          <span style="color: #999; font-size: 14px;">3 Enero 2025</span>
-        </article>
-      </div>
-    </section>
+<section style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); margin-bottom: 20px;">
+  <h2 style="text-align: center; font-size: 24px; margin-bottom: 20px; color: #333;">Últimos consejos</h2>
+  <div id="blogPreview">
+    <div class="loading">Cargando artículos...</div>
+  </div>
+  <div style="text-align: center; margin-top: 20px;">
+    <a href="blog.html" style="display: inline-block; background: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Ver todos los artículos</a>
+  </div>
+</section>
 
     
   </main>
@@ -2596,6 +2583,58 @@ function goToWelcome() {
     document.getElementById('welcomeView').style.display = 'block';
 }
 
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadBlogPreview();
+});
+
+async function loadBlogPreview() {
+    const container = document.getElementById('blogPreview');
+    
+    try {
+        const response = await fetch('blog-articles.json');
+        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+        
+        const data = await response.json();
+        renderBlogPreview(data.articles);
+        
+    } catch (error) {
+        console.error('Error cargando artículos:', error);
+        container.innerHTML = '<p style="color: #666; text-align: center;">No se pudieron cargar los últimos artículos.</p>';
+    }
+}
+
+function renderBlogPreview(articles) {
+    const container = document.getElementById('blogPreview');
+    
+    // Ordenar por fecha y tomar solo los 3 más recientes
+    const recentArticles = articles
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 3);
+    
+    container.innerHTML = '';
+    
+    recentArticles.forEach((article, index) => {
+        const date = new Date(article.date);
+        const formattedDate = date.toLocaleDateString('es-ES', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        
+        const articleElement = document.createElement('article');
+        articleElement.style.cssText = `padding: 15px 0; ${index < 2 ? 'border-bottom: 1px solid #eee;' : ''}`;
+        
+        articleElement.innerHTML = `
+            <h3 style="font-size: 18px; margin-bottom: 8px; color: #333;">${article.title}</h3>
+            <p style="color: #666; margin-bottom: 8px; font-size: 16px;">${article.excerpt}</p>
+            <span style="color: #999; font-size: 14px;">${formattedDate}</span>
+        `;
+        
+        container.appendChild(articleElement);
+    });
+}
+</script>
     
   </script>
 
