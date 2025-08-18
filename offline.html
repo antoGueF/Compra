@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de la Compra - Offline</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f9f9f9;
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        #appView {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .list-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .list-button {
+            padding: 20px;
+            font-size: 20px;
+            border: 2px solid #888;
+            border-radius: 10px;
+            background: #f3f3f3;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .list-button:hover {
+            background: #e8e8e8;
+        }
+
+        .list-button.disabled {
+            opacity: 0.6;
+            background: #f8f8f8;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .back-btn {
+            background: #ddd;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .menu-btn {
+            background: #ddd;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-btn:hover {
+            background: #ccc;
+        }
+
+        .menu-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            min-width: 150px;
+            z-index: 1000;
+            margin-top: 2px;
+        }
+
+        .menu-dropdown.show {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background: #f5f5f5;
+        }
+
+        .list-container {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        h2.list-title.editable {
+            cursor: pointer;
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form input[type="text"] {
+            font-size: 18px;
+            padding: 8px;
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form button {
+            font-size: 30px;
+            height: 30px;
+            width: 30px;
+            border-radius: 50%;
+            background-color: #4caf50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .item img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            margin-right: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .item img.default-img {
+            width: 40px;
+            height: 40px;
+            opacity: 0.7;
+            object-fit: contain;
+        }
+
+        .item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .item span.editable {
+            cursor: pointer;
+            font-size: 18px;
+            flex: 1;
+        }
+
+        .item span.checked {
+            text-decoration: line-through;
+            color: gray;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Estilos para alertas/mensajes */
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        /* Popup personalizado */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 300px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.popup-content button {
+    margin-top: 15px;
+    padding: 8px 16px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.article-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+            padding: 0;
+        }
+
+        .article-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            margin-right: 10px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .article-item img.default-img {
+            width: 40px;
+            height: 40px;
+            opacity: 0.7;
+            object-fit: contain;
+        }
+
+        .article-item span {
+            font-size: 18px;
+            flex: 1;
+        }
+
+        .article-menu-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .article-menu-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            min-width: 150px;
+            z-index: 1000;
+            margin-top: 2px;
+        }
+
+        .article-menu-dropdown.show {
+            display: block;
+        }
+
+        .article-menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .article-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .article-menu-item:hover {
+            background: #f5f5f5;
+        }
+
+        .article-menu-item.delete:hover {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Lista de la compra Sin Registro</h1>
+    
+    <div id="appView">
+        <!-- Vista principal con las 3 listas -->
+        <div id="mainView">
+    <div class="top-bar">
+        <button class="back-btn">←</button>
+        <div class="menu-container">
+            <button class="menu-btn">≡</button>
+            <div class="menu-dropdown">
+                <div class="menu-item" data-action="articles">Artículos</div>
+                <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
+                <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
+                <div class="menu-item" onclick="goToAbout()">Acerca de</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="list-selector">
+        <div class="list-button" data-list="lista1">Lista 1</div>
+        <div class="list-button disabled" data-list="lista2">Lista 2</div>
+        <div class="list-button disabled" data-list="lista3">Lista 3</div>
+    </div>
+</div>
+
+        <!-- Vista de la lista individual -->
+        <div id="listView" class="hidden">
+            <div class="top-bar">
+                <button class="back-btn">←</button>
+                <div class="menu-container">
+                    <button class="menu-btn">≡</button>
+                    <div class="menu-dropdown">
+                        <div class="menu-item" data-action="articles">Artículos</div>
+                        <div class="menu-item" data-action="delete-bought">Borrar comprados</div>
+                        <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
+                        <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
+                        <div class="menu-item" onclick="goToAbout()">Acerca de</div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="list-container">
+                <h2 class="list-title editable" id="listTitle">Lista 1</h2>
+                
+                <div class="form">
+                    <input type="text" id="itemInput" placeholder="Nombre del artículo">
+                    <button id="addItemBtn">+</button>
+                </div>
+
+                <div id="itemsList">
+                    <!-- Los items se añadirán aquí dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista de todos los artículos -->
+        <div id="articlesView" class="hidden">
+            <div class="top-bar">
+                <button class="back-btn">←</button>
+                <div class="menu-container">
+                    <button class="menu-btn">≡</button>
+                    <div class="menu-dropdown">
+                        <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
+                        <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
+                        <div class="menu-item" onclick="goToAbout()">Acerca de</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="list-container">
+                <h2 style="margin-top: 0; margin-bottom: 20px; font-size: 24px;">Todos los Artículos</h2>
+                
+                <div id="allArticlesList">
+                    <!-- Los artículos se añadirán aquí dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+        <!-- Modal para mostrar imágenes -->
+    <div id="imageModal" class="popup-overlay" style="display: none;" onclick="closeImageModal()">
+        <div class="popup-content" style="max-width: 90%; max-height: 90%; padding: 0; background: transparent; box-shadow: none;">
+            <img id="modalImage" style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 8px;">
+        </div>
+    </div>
+
+    <script>
+        // Estructura de datos para localStorage
+        const STORAGE_KEY = 'shopping_lists_offline';
+        
+        // Estado de la aplicación
+        let currentList = null;
+        let previousView = null;
+        let allArticles = [];
+        let listsData = {
+            lista1: {
+                name: 'Lista 1',
+                items: []
+            },
+            lista2: {
+                name: 'Lista 2', 
+                items: []
+            },
+            lista3: {
+                name: 'Lista 3',
+                items: []
+            }
+        };
+
+        // Referencias a elementos DOM
+        const mainView = document.getElementById('mainView');
+        const listView = document.getElementById('listView');
+        const articlesView = document.getElementById('articlesView');
+        const listTitle = document.getElementById('listTitle');
+        const itemInput = document.getElementById('itemInput');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const itemsList = document.getElementById('itemsList');
+        const allArticlesList = document.getElementById('allArticlesList');
+        const backBtn = document.querySelector('.back-btn');
+        const menuBtn = document.querySelector('.menu-btn');
+        const menuDropdown = document.querySelector('.menu-dropdown');
+
+
+        // Inicializar la aplicación
+        function init() {
+            loadData();
+            updateListButtons();
+            setupEventListeners();
+        }
+
+        // Cargar datos del localStorage
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const data = JSON.parse(saved);
+                listsData = data.lists || listsData;
+                allArticles = data.articles || [];
+            }
+        }
+
+        // Guardar datos en localStorage
+        function saveData() {
+            try {
+                const dataToSave = {
+                    lists: listsData,
+                    articles: allArticles
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+            } catch (error) {
+                alert('Error: No se pudieron guardar las imágenes. El almacenamiento está lleno. Registrate para usar el almacenamiento en la nube.');
+            }
+        }
+
+        // Actualizar nombres de las listas en los botones
+        function updateListButtons() {
+            document.querySelectorAll('.list-button').forEach(button => {
+                const listId = button.dataset.list;
+                if (listsData[listId]) {
+                    button.textContent = listsData[listId].name;
+                }
+            });
+        }
+
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Botones de listas
+            document.querySelectorAll('.list-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const listId = e.target.dataset.list;
+                    
+                    if (listId === 'lista1') {
+                        openList(listId);
+                    } else {
+                        showMessage('Regístrate para poder usar mas listas de la compra', true);
+                    }
+                });
+            });
+
+            // Cerrar menús al hacer clic fuera
+document.addEventListener('click', (e) => {
+    // Cerrar menús principales
+    if (!e.target.closest('.menu-container')) {
+        document.querySelectorAll('.menu-dropdown').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+    
+    // Cerrar menús de artículos
+    if (!e.target.closest('.article-menu-container')) {
+        document.querySelectorAll('.article-menu-dropdown').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+// Botones volver (delegación de eventos)
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('back-btn')) {
+        if (!listView.classList.contains('hidden')) {
+            closeList();
+        } else if (!articlesView.classList.contains('hidden')) {
+            closeArticlesView();
+        } else if (!mainView.classList.contains('hidden')) {
+            // Volver a la página de inicio cuando estemos en la vista de las tres listas
+            window.location.href = 'index.html';
+        }
+    }
+});
+
+// Menús desplegables (delegación de eventos)
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('menu-btn')) {
+        e.stopPropagation();
+        e.preventDefault();
+        const dropdown = e.target.nextElementSibling;
+        dropdown.classList.toggle('show');
+        
+        // Cerrar otros menús
+        document.querySelectorAll('.menu-dropdown').forEach(menu => {
+            if (menu !== dropdown) {
+                menu.classList.remove('show');
+            }
+        });
+    }
+});
+
+// Items del menú (delegación de eventos)
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('menu-item')) {
+        const action = e.target.dataset.action;
+        handleMenuAction(action);
+        // Cerrar todos los menús
+        document.querySelectorAll('.menu-dropdown').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});
+
+            // Añadir item
+            addItemBtn.addEventListener('click', addItem);
+            itemInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addItem();
+                }
+            });
+
+            // Editar título de lista
+            listTitle.addEventListener('click', editListTitle);
+        }
+
+        // Abrir una lista específica
+        function openList(listId) {
+            currentList = listId;
+            listTitle.textContent = listsData[listId].name;
+            
+            mainView.classList.add('hidden');
+            listView.classList.remove('hidden');
+            
+            renderItems();
+        }
+
+        // Cerrar lista y volver al menú principal
+        function closeList() {
+            currentList = null;
+            listView.classList.add('hidden');
+            mainView.classList.remove('hidden');
+            itemInput.value = '';
+        }
+
+        // Cerrar vista de artículos y volver a la vista anterior
+        function closeArticlesView() {
+            articlesView.classList.add('hidden');
+            
+            if (previousView === 'list' && currentList) {
+                // Volver a la lista
+                listView.classList.remove('hidden');
+                renderItems();
+            } else {
+                // Volver al menú principal
+                mainView.classList.remove('hidden');
+            }
+            
+            previousView = null; // Limpiar la variable
+        }
+
+        // Añadir nuevo item
+        function addItem() {
+            const itemName = itemInput.value.trim();
+            if (!itemName || !currentList) return;
+
+            const newItem = {
+                id: Date.now(),
+                name: itemName,
+                checked: false,
+                image: null
+            };
+
+            listsData[currentList].items.push(newItem);
+            
+            // Añadir a todos los artículos sin imagen inicialmente
+            addToAllArticles(itemName, null);
+            
+            saveData();
+            renderItems();
+            itemInput.value = '';
+        }
+
+        // Añadir artículo a la lista de todos los artículos
+        function addToAllArticles(itemName, itemImage = null) {
+            const normalizedName = itemName.toLowerCase().trim();
+            let existingArticle = allArticles.find(article => 
+                article.name.toLowerCase().trim() === normalizedName
+            );
+            
+            if (!existingArticle) {
+                allArticles.push({
+                    id: Date.now() + Math.random(),
+                    name: itemName,
+                    image: itemImage
+                });
+            } else if (itemImage && !existingArticle.image) {
+                // Si el artículo existe pero no tiene imagen, añadir la imagen
+                existingArticle.image = itemImage;
+            }
+        }
+
+        // Abrir vista de todos los artículos
+        function openArticlesView() {
+            // Recordar desde dónde venimos
+            if (!mainView.classList.contains('hidden')) {
+                previousView = 'main';
+            } else if (!listView.classList.contains('hidden')) {
+                previousView = 'list';
+            }
+            
+            mainView.classList.add('hidden');
+            listView.classList.add('hidden');
+            articlesView.classList.remove('hidden');
+            renderAllArticles();
+        }
+
+        // Renderizar todos los artículos
+        function renderAllArticles() {
+            const sortedArticles = [...allArticles].sort((a, b) => 
+                a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+            );
+
+            allArticlesList.innerHTML = '';
+
+            sortedArticles.forEach(article => {
+                const articleDiv = document.createElement('div');
+                articleDiv.className = 'article-item';
+                
+                // Crear imagen
+                const img = document.createElement('img');
+                img.src = article.image || 'https://cdn-icons-png.flaticon.com/512/685/685655.png';
+                img.className = article.image ? '' : 'default-img';
+                img.onclick = () => {
+                    if (!article.image) {
+                        selectImageForArticle(article.name);
+                    } else {
+                        showImageModal(article.image);
+                    }
+                };
+                
+                // Crear nombre
+                const span = document.createElement('span');
+                span.textContent = article.name;
+                
+                // Crear contenedor del menú
+                const menuContainer = document.createElement('div');
+                menuContainer.className = 'article-menu-container';
+                
+                // Crear botón del menú
+                const menuBtn = document.createElement('button');
+                menuBtn.innerHTML = '✎';
+                menuBtn.className = 'menu-btn';
+                menuBtn.style.minWidth = '35px';
+                menuBtn.style.height = '35px';
+                menuBtn.style.fontSize = '16px';
+                menuBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    toggleArticleMenu(menuContainer);
+                };
+                
+                // Crear menú desplegable
+                const dropdown = document.createElement('div');
+                dropdown.className = 'article-menu-dropdown';
+                dropdown.innerHTML = `
+                    <div class="article-menu-item" onclick="changeArticleImage('${article.name}')">
+                        Cambiar foto
+                    </div>
+                    <div class="article-menu-item" onclick="editArticleName('${article.name}')">
+                        Editar nombre
+                    </div>
+                    <div class="article-menu-item delete" onclick="deleteArticle('${article.name}')">
+                        Borrar artículo
+                    </div>
+                `;
+                
+                menuContainer.appendChild(menuBtn);
+                menuContainer.appendChild(dropdown);
+                
+                articleDiv.appendChild(img);
+                articleDiv.appendChild(span);
+                articleDiv.appendChild(menuContainer);
+                allArticlesList.appendChild(articleDiv);
+            });
+        }
+
+        // Toggle menú de artículo
+        function toggleArticleMenu(menuContainer) {
+            const dropdown = menuContainer.querySelector('.article-menu-dropdown');
+            const isVisible = dropdown.classList.contains('show');
+            
+            // Cerrar todos los menús
+            document.querySelectorAll('.article-menu-dropdown').forEach(menu => {
+                menu.classList.remove('show');
+            });
+            
+            // Abrir/cerrar el menú actual
+            if (!isVisible) {
+                dropdown.classList.add('show');
+            }
+        }
+
+        // Cambiar imagen del artículo
+        function changeArticleImage(articleName) {
+            selectImageForArticle(articleName);
+        }
+
+        // Editar nombre del artículo
+        function editArticleName(articleName) {
+            const article = allArticles.find(a => a.name === articleName);
+            if (!article) return;
+
+            const newName = prompt('Editar nombre del artículo:', article.name);
+            if (newName && newName.trim() && newName.trim() !== article.name) {
+                const oldName = article.name;
+                const trimmedName = newName.trim();
+                
+                // Actualizar nombre en todos los artículos
+                article.name = trimmedName;
+                
+                // Actualizar en todas las listas donde aparezca
+                Object.keys(listsData).forEach(listKey => {
+                    listsData[listKey].items.forEach(item => {
+                        if (item.name.toLowerCase() === oldName.toLowerCase()) {
+                            item.name = trimmedName;
+                        }
+                    });
+                });
+                
+                saveData();
+                renderAllArticles();
+                
+                // Si estamos en una lista, actualizar también
+                if (currentList) {
+                    renderItems();
+                }
+            }
+        }
+
+        // Borrar artículo
+        function deleteArticle(articleName) {
+            if (confirm(`¿Estás seguro de que quieres borrar "${articleName}"?\n\nEsto también lo eliminará de todas las listas donde aparezca.`)) {
+                // Eliminar de todos los artículos
+                const articleIndex = allArticles.findIndex(a => a.name === articleName);
+                if (articleIndex !== -1) {
+                    allArticles.splice(articleIndex, 1);
+                }
+                
+                // Eliminar de todas las listas
+                Object.keys(listsData).forEach(listKey => {
+                    listsData[listKey].items = listsData[listKey].items.filter(item => 
+                        item.name.toLowerCase() !== articleName.toLowerCase()
+                    );
+                });
+                
+                saveData();
+                renderAllArticles();
+                
+                // Si estamos en una lista, actualizar también
+                if (currentList) {
+                    renderItems();
+                }
+                
+                showMessage('Artículo eliminado');
+            }
+        }
+
+        // Añadir artículo desde la vista de todos los artículos a la lista actual
+        function addArticleToCurrentList(articleName) {
+            if (!currentList) {
+                showMessage('Primero selecciona una lista');
+                return;
+            }
+
+            // Verificar si ya existe en la lista actual
+            const exists = listsData[currentList].items.some(item => 
+                item.name.toLowerCase() === articleName.toLowerCase()
+            );
+
+            if (exists) {
+                showMessage('Este artículo ya está en la lista');
+                return;
+            }
+
+            // Buscar la imagen del artículo
+            const article = allArticles.find(a => a.name === articleName);
+            const articleImage = article ? article.image : null;
+
+            const newItem = {
+                id: Date.now(),
+                name: articleName,
+                checked: false,
+                image: articleImage
+            };
+
+            listsData[currentList].items.push(newItem);
+            saveData();
+            
+            // Volver automáticamente a la lista después de añadir
+            if (previousView === 'list') {
+                closeArticlesView();
+                renderItems(); // Actualizar la vista de la lista
+            } else {
+                showMessage('Artículo añadido a la lista');
+            }
+        }
+
+        // Función para comprimir imagen (versión mejorada)
+        async function compressImage(file, maxSizeKB = 100, quality = 0.8) {
+            return new Promise((resolve) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                img.onload = () => {
+                    // Calcular nuevas dimensiones manteniendo la proporción
+                    const maxWidth = 800;
+                    const maxHeight = 600;
+                    let { width, height } = img;
+                    
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height = (height * maxWidth) / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width = (width * maxHeight) / height;
+                            height = maxHeight;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    // Dibujar la imagen redimensionada
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Convertir a blob y ajustar calidad si es necesario
+                    const tryCompress = (currentQuality) => {
+                        canvas.toBlob((blob) => {
+                            if (blob.size <= maxSizeKB * 1024 || currentQuality <= 0.1) {
+                                // Convertir blob a base64
+                                const reader = new FileReader();
+                                reader.onload = () => resolve(reader.result);
+                                reader.readAsDataURL(blob);
+                            } else {
+                                // Si aún es muy grande, reducir más la calidad
+                                tryCompress(currentQuality - 0.1);
+                            }
+                        }, 'image/jpeg', currentQuality);
+                    };
+                    
+                    tryCompress(quality);
+                };
+                
+                img.src = URL.createObjectURL(file);
+            });
+        }
+        
+       // Seleccionar imagen para un item específico
+        async function selectImageForItem(itemId) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.capture = 'environment';
+            
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    try {
+                        const compressedData = await compressImage(file, 150);
+                        
+                        const item = listsData[currentList].items.find(i => i.id === itemId);
+                        if (item) {
+                            item.image = compressedData;
+                            
+                            // También actualizar en todos los artículos
+                            const article = allArticles.find(a => a.name.toLowerCase() === item.name.toLowerCase());
+                            if (article) {
+                                article.image = compressedData;
+                            }
+                            
+                            saveData();
+                            renderItems();
+                        }
+                    } catch (error) {
+                        alert('Error al procesar la imagen');
+                    }
+                }
+            };
+            
+            input.click();
+        }
+
+        // Seleccionar imagen para un artículo
+        async function selectImageForArticle(articleName) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.capture = 'environment';
+            
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    try {
+                        const compressedData = await compressImage(file, 150);
+                        
+                        const article = allArticles.find(a => a.name === articleName);
+                        if (article) {
+                            article.image = compressedData;
+                            
+                            // También actualizar en todas las listas
+                            Object.keys(listsData).forEach(listKey => {
+                                listsData[listKey].items.forEach(item => {
+                                    if (item.name.toLowerCase() === articleName.toLowerCase()) {
+                                        item.image = compressedData;
+                                    }
+                                });
+                            });
+                            
+                            saveData();
+                            renderAllArticles();
+                            
+                            // Si estamos viendo una lista, también actualizarla
+                            if (currentList) {
+                                renderItems();
+                            }
+                        }
+                    } catch (error) {
+                        alert('Error al procesar la imagen');
+                    }
+                }
+            };
+            
+            input.click();
+        }
+
+        // Mostrar imagen en modal
+        function showImageModal(imageSrc) {
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('imageModal').style.display = 'flex';
+        }
+        
+        // Cerrar modal de imagen
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Renderizar items de la lista actual
+
+function renderItems() {
+    if (!currentList) return;
+
+    let items = [...listsData[currentList].items];
+    
+    const uncheckedItems = items.filter(item => !item.checked);
+    const checkedItems = items.filter(item => item.checked);
+    
+    uncheckedItems.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+    checkedItems.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+    
+    const sortedItems = [...uncheckedItems, ...checkedItems];
+    
+    itemsList.innerHTML = '';
+
+    sortedItems.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'item';
+        
+        itemDiv.innerHTML = `
+            <input type="checkbox" ${item.checked ? 'checked' : ''} 
+                   onchange="toggleItem(${item.id})">
+            <img src="${item.image || 'https://cdn-icons-png.flaticon.com/512/685/685655.png'}" 
+                 class="${item.image ? '' : 'default-img'}"
+                 onclick="${item.image ? `showImageModal('${item.image}')` : `selectImageForItem(${item.id})`}"
+                 style="width: 40px; height: 40px; object-fit: cover; margin-right: 10px; border-radius: 6px; cursor: pointer;">
+            <span class="editable ${item.checked ? 'checked' : ''}" 
+                  onclick="editItem(${item.id})">${item.name}</span>
+        `;
+        
+        itemsList.appendChild(itemDiv);
+    });
+}
+
+        // Toggle estado de item (comprado/no comprado)
+        function toggleItem(itemId) {
+            if (!currentList) return;
+
+            const item = listsData[currentList].items.find(i => i.id === itemId);
+            if (item) {
+                item.checked = !item.checked;
+                saveData();
+                renderItems();
+            }
+        }
+
+        // Editar nombre de item
+        function editItem(itemId) {
+            if (!currentList) return;
+
+            const item = listsData[currentList].items.find(i => i.id === itemId);
+            if (!item) return;
+
+            const oldName = item.name;
+            const newName = prompt('Editar artículo:', item.name);
+            
+            if (newName && newName.trim() && newName.trim() !== oldName) {
+                const trimmedName = newName.trim();
+                
+                // Actualizar el nombre en la lista actual
+                item.name = trimmedName;
+                
+                // Buscar y actualizar en todos los artículos
+                const article = allArticles.find(a => a.name.toLowerCase() === oldName.toLowerCase());
+                if (article) {
+                    article.name = trimmedName;
+                    
+                    // También actualizar en todas las otras listas donde aparezca
+                    Object.keys(listsData).forEach(listKey => {
+                        listsData[listKey].items.forEach(listItem => {
+                            if (listItem.name.toLowerCase() === oldName.toLowerCase() && listItem.id !== itemId) {
+                                listItem.name = trimmedName;
+                            }
+                        });
+                    });
+                } else {
+                    // Si no existe en todos los artículos, añadirlo con el nuevo nombre
+                    addToAllArticles(trimmedName, item.image);
+                }
+                
+                saveData();
+                renderItems();
+            }
+        }
+
+        // Editar título de la lista
+
+function editListTitle() {
+    if (!currentList || currentList !== 'lista1') return;
+
+    const currentName = listsData[currentList].name;
+    
+    // Crear input temporal
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentName;
+    input.style.fontSize = '24px';
+    input.style.margin = '0';
+    input.style.padding = '5px';
+    input.style.border = '2px solid #4caf50';
+    input.style.borderRadius = '4px';
+    input.style.width = '100%';
+    input.style.boxSizing = 'border-box';
+    
+    // Reemplazar título temporalmente
+    listTitle.style.display = 'none';
+    listTitle.parentNode.insertBefore(input, listTitle);
+    input.focus();
+    input.select();
+    
+    // Función para guardar cambios
+    const saveTitle = () => {
+        const newName = input.value.trim();
+        if (newName && newName !== currentName) {
+            listsData[currentList].name = newName;
+            listTitle.textContent = newName;
+            saveData();
+            updateListButtons();
+        }
+        input.remove();
+        listTitle.style.display = 'block';
+    };
+    
+    // Eventos para guardar
+    input.addEventListener('blur', saveTitle);
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            saveTitle();
+        }
+    });
+}
+
+        // Manejar acciones del menú
+        function handleMenuAction(action) {
+            switch(action) {
+                case 'articles':
+                    openArticlesView();
+                    break;
+                case 'delete-bought':
+                    deleteBoughtItems();
+                    break;
+                case 'suggestions':
+                case 'account':
+                case 'close-session':
+                case 'about':
+                    showMessage('Esta funcionalidad estará disponible próximamente');
+                    break;
+            }
+        }
+
+        // Borrar items comprados
+function deleteBoughtItems() {
+    if (!currentList) return;
+
+    const boughtCount = listsData[currentList].items.filter(item => item.checked).length;
+    
+    if (boughtCount === 0) {
+        alert('No hay artículos comprados para borrar.');
+        return;
+    }
+
+    if (confirm(`¿Estás seguro de que quieres borrar ${boughtCount} artículo(s) comprado(s)?`)) {
+        listsData[currentList].items = listsData[currentList].items.filter(item => !item.checked);
+        saveData();
+        renderItems();
+    
+    }
+}
+
+        // Mostrar mensaje temporal o popup
+function showMessage(message, isPopup = false, buttonText = 'OK') {
+    if (isPopup) {
+        const overlay = document.createElement('div');
+        overlay.className = 'popup-overlay';
+        overlay.innerHTML = `
+            <div class="popup-content">
+                <p>${message}</p>
+                <button onclick="this.parentElement.parentElement.remove()">${buttonText}</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        return;
+    }
+    
+    // Código existente para mensajes normales...
+    const existingAlert = document.querySelector('.alert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-info';
+    alert.textContent = message;
+    
+    const container = listView.classList.contains('hidden') ? mainView : listView.querySelector('.list-container');
+    container.insertBefore(alert, container.firstChild);
+
+    setTimeout(() => {
+        alert.remove();
+    }, 3000);
+}
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', init);
+
+// Ir a página de sugerencias
+function goToSuggestions() {
+    window.location.href = 'suggestions.html';
+}
+
+// Ir a página acerca de
+function goToAbout() {
+    window.location.href = 'about.html';
+}
+    function goToBlog() {
+
+    window.location.href = 'blog_dinamico.html';
+  }  
+
+        
+function showVersion() {
+  if (navigator.serviceWorker.controller) {
+    // Escuchar respuesta del SW
+    navigator.serviceWorker.addEventListener('message', event => {
+      document.getElementById('version-display').textContent = `Versión ${event.data}`;
+    });
+    
+    // Pedir versión al SW
+    navigator.serviceWorker.controller.postMessage('GET_VERSION');
+  }
+}
+
+// Llamar cuando se carga la página
+document.addEventListener('DOMContentLoaded', showVersion);
+
+        
+    </script>
+
+    <footer style="text-align: center; margin-top: 40px; padding: 20px; font-size: 10px; border-top: 1px solid #eee;">
+  <a href="privacy-policy.html" style="color: #666; text-decoration: none;">Privacy Policy | <span id="version-display">Versión 1.10.12</span> | © 2025 Lista de la Compra</a>
+</footer>
+    
+</body>
+</html>

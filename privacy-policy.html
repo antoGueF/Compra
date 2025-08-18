@@ -402,25 +402,42 @@
             </div>
         </div>
 
-        <div class="version-info">
-            <p>Privacy Policy | © 2025 Lista de la Compra</p>
-            <p>Desarrollado con ❤️ para proteger tu privacidad</p>
-        </div>
-    </div>
 
 <script>
     // Configurar título con nombre de usuario desde URL
     function setupTitle() {
-        // Obtener parámetros de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const username = urlParams.get('user') || 'Usuario';
-        
-        const mainTitle = document.getElementById('mainTitle');
-        mainTitle.textContent = `Lista de la compra by AKOBU; // ✅ Usar username, no userData.username
-    }
+    // Obtener parámetros de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('user') || 'Usuario';
+    
+    const mainTitle = document.getElementById('mainTitle');
+    mainTitle.textContent = `Lista de la compra by AKOBU`;
+}
 
     // Ejecutar cuando se carga la página
     setupTitle();
+
+    
+function showVersion() {
+  if (navigator.serviceWorker.controller) {
+    // Escuchar respuesta del SW
+    navigator.serviceWorker.addEventListener('message', event => {
+      document.getElementById('version-display').textContent = `Versión ${event.data}`;
+    });
+    
+    // Pedir versión al SW
+    navigator.serviceWorker.controller.postMessage('GET_VERSION');
+  }
+}
+
+// Llamar cuando se carga la página
+document.addEventListener('DOMContentLoaded', showVersion);
+
 </script>
+
+          <footer style="text-align: center; margin-top: 40px; padding: 20px; font-size: 10px; border-top: 1px solid #eee;">
+  <a href="privacy-policy.html" style="color: #666; text-decoration: none;">Privacy Policy | <span id="version-display">Versión 1.10.12</span> | © 2025 Lista de la Compra</a>
+</footer>
+
 </body>
 </html>

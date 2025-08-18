@@ -203,12 +203,25 @@
         <div class="about-section">
             <h2>Cómo usar la aplicación</h2>
             <p>
-                <strong>1. Inicia sesión</strong> con tu cuenta registrada<br>
+                <strong>1. Inicia sesión</strong> con tu cuenta registrada o entra sin registrar.<br>
                 <strong>2. Selecciona una lista</strong> <br>
                 <strong>3. Añade artículos</strong> escribiendo el nombre y pulsando +<br>
                 <strong>4. Sube imágenes</strong> haciendo clic en el icono del artículo<br>
                 <strong>5. Marca como comprado</strong> cuando recojas cada artículo<br>
                 <strong>6. Usa el menú</strong> para borrar comprados o ir a otras secciones
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>Historial de versiones</h2>
+            <p>
+                <strong>v1.02.50 - 18/08/2025</strong> <br>
+                - Nueva pagina de inicio.<br>
+                - Nuevo blog.<br>
+                - Se puede usar la app sin registrarse.<br>
+               <strong>v1.01.36 - 09/07/2025</strong> <br>
+                - Los articulos de las listas se muestran alfabeticamente.<br>
+                - Se puede editar el nombre del articulo desde la lista de la compra<br>
             </p>
         </div>
 
@@ -238,6 +251,22 @@
 
     // Ejecutar cuando se carga la página
     setupTitle();
+
+    function showVersion() {
+  if (navigator.serviceWorker.controller) {
+    // Escuchar respuesta del SW
+    navigator.serviceWorker.addEventListener('message', event => {
+      document.getElementById('version-display').textContent = `Versión ${event.data}`;
+    });
+    
+    // Pedir versión al SW
+    navigator.serviceWorker.controller.postMessage('GET_VERSION');
+  }
+}
+
+// Llamar cuando se carga la página
+document.addEventListener('DOMContentLoaded', showVersion);
+    
 </script>
 </body>
 </html>
