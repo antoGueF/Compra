@@ -1240,7 +1240,24 @@ function goToAbout() {
     function goToBlog() {
 
     window.location.href = 'blog_dinamico.html';
-  }      
+  }  
+
+        
+function showVersion() {
+  if (navigator.serviceWorker.controller) {
+    // Escuchar respuesta del SW
+    navigator.serviceWorker.addEventListener('message', event => {
+      document.getElementById('version-display').textContent = `Versión ${event.data}`;
+    });
+    
+    // Pedir versión al SW
+    navigator.serviceWorker.controller.postMessage('GET_VERSION');
+  }
+}
+
+// Llamar cuando se carga la página
+document.addEventListener('DOMContentLoaded', showVersion);
+
         
     </script>
 
