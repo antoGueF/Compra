@@ -406,13 +406,13 @@
 <script>
     // Configurar título con nombre de usuario desde URL
     function setupTitle() {
-        // Obtener parámetros de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const username = urlParams.get('user') || 'Usuario';
-        
-        const mainTitle = document.getElementById('mainTitle');
-        mainTitle.textContent = `Lista de la compra by AKOBU; // ✅ Usar username, no userData.username
-    }
+    // Obtener parámetros de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('user') || 'Usuario';
+    
+    const mainTitle = document.getElementById('mainTitle');
+    mainTitle.textContent = `Lista de la compra by AKOBU`;
+}
 
     // Ejecutar cuando se carga la página
     setupTitle();
