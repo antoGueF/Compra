@@ -356,6 +356,7 @@
             <button class="menu-btn">≡</button>
             <div class="menu-dropdown">
                 <div class="menu-item" data-action="articles">Artículos</div>
+                <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
                 <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
                 <div class="menu-item" onclick="goToAbout()">Acerca de</div>
             </div>
@@ -378,6 +379,7 @@
                     <div class="menu-dropdown">
                         <div class="menu-item" data-action="articles">Artículos</div>
                         <div class="menu-item" data-action="delete-bought">Borrar comprados</div>
+                        <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
                         <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
                         <div class="menu-item" onclick="goToAbout()">Acerca de</div>
                     </div>
@@ -407,6 +409,7 @@
                 <div class="menu-container">
                     <button class="menu-btn">≡</button>
                     <div class="menu-dropdown">
+                        <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
                         <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
                         <div class="menu-item" onclick="goToAbout()">Acerca de</div>
                     </div>
@@ -1234,6 +1237,10 @@ function goToSuggestions() {
 function goToAbout() {
     window.location.href = 'about.html';
 }
+    function goToBlog() {
+
+    window.location.href = 'blog_dinamico.html';
+  }      
         
     </script>
 
