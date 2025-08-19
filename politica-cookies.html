@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de la Compra - Política de Cookies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f9f9f9;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .menu-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .menu-btn {
+            background: #ddd;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-btn:hover {
+            background: #ccc;
+        }
+
+        .menu-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            min-width: 150px;
+            z-index: 1000;
+            margin-top: 2px;
+        }
+
+        .menu-dropdown.show {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background: #f5f5f5;
+        }
+
+        .back-btn {
+            background: #ddd;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .about-container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgb(0 0 0 / 0.1);
+        }
+
+        .about-section {
+            margin-bottom: 25px;
+        }
+
+        .about-section h2 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .about-section h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #444;
+            margin-top: 20px;
+        }
+
+        .about-section h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #555;
+            margin-top: 18px;
+        }
+
+        .about-section p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            color: #555;
+        }
+
+        .feature-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .contact-info {
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .contact-info p {
+            margin: 8px 0;
+        }
+
+        .version-info {
+            text-align: center;
+            color: #888;
+            font-size: 16px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .date-info {
+            background: #f0f8ff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border-left: 4px solid #2196f3;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+
+        .definition-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .definition-list li {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 6px;
+            border-left: 3px solid #ddd;
+        }
+
+        .definition-list strong {
+            color: #333;
+        }
+
+        .highlight-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .cookie-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+        }
+
+        .cookie-table th,
+        .cookie-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .cookie-table th {
+            background: #f5f5f5;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .cookie-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .cookie-category {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .cookie-category h4 {
+            margin-top: 0;
+            color: #2e7d32;
+        }
+
+        a {
+            color: #2196f3;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Título principal encima de todo -->
+    <h1 id="mainTitle">Lista de la compra by AKOBU</h1>
+    
+    <div class="about-container">
+        <!-- Top bar con menú igual que tus otras vistas -->
+        <div class="top-bar">
+            <button class="back-btn" onclick="history.back()">←</button>
+        </div>
+
+        <div class="about-section">
+            <h2>Política de Cookies</h2>
+            <div class="date-info">
+                Última actualización: 19 de agosto de 2025
+            </div>
+            <p>
+                Esta Política de Cookies explica qué son las cookies y cómo las utilizamos en nuestro servicio "Lista de la Compra by AKOBU". Te recomendamos que leas esta política para entender qué tipos de cookies utilizamos, la información que recogemos usando cookies y cómo se usa dicha información.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>¿Qué son las cookies?</h2>
+            <p>
+                Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo (ordenador, tablet o móvil) cuando visitas una página web. Las cookies permiten que la web funcione de manera más eficiente y proporcionen información a los propietarios de la web.
+            </p>
+            <p>
+                Las cookies pueden ser "persistentes" o "de sesión". Las cookies persistentes permanecen en tu dispositivo cuando te desconectas, mientras que las cookies de sesión se eliminan tan pronto como cierras el navegador web.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>¿Cómo utilizamos las cookies?</h2>
+            <p>
+                Utilizamos cookies por varias razones que se detallan a continuación. Desafortunadamente, en la mayoría de los casos no hay opciones estándar de la industria para deshabilitar las cookies sin deshabilitar completamente la funcionalidad y las características que agregan a este sitio.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>Tipos de cookies que utilizamos</h2>
+
+            <div class="cookie-category">
+                <h4>🔒 Cookies Esenciales (Siempre activas)</h4>
+                <p>Estas cookies son necesarias para el funcionamiento básico de la aplicación y no pueden ser desactivadas.</p>
+                
+                <table class="cookie-table">
+                    <thead>
+                        <tr>
+                            <th>Cookie</th>
+                            <th>Propósito</th>
+                            <th>Duración</th>
+                            <th>Proveedor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>firebase:authUser</td>
+                            <td>Mantener la sesión de usuario autenticado</td>
+                            <td>Hasta que se cierre sesión</td>
+                            <td>Firebase/Google</td>
+                        </tr>
+                        <tr>
+                            <td>firebase:host</td>
+                            <td>Configuración de conexión con Firebase</td>
+                            <td>Sesión</td>
+                            <td>Firebase/Google</td>
+                        </tr>
+                        <tr>
+                            <td>cookieConsent</td>
+                            <td>Recordar tus preferencias de cookies</td>
+                            <td>1 año</td>
+                            <td>Propio</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="cookie-category">
+                <h4>📊 Cookies de Análisis (Opcionales)</h4>
+                <p>Nos ayudan a entender cómo interactúas con la aplicación para mejorarla. Puedes rechazarlas.</p>
+                
+                <table class="cookie-table">
+                    <thead>
+                        <tr>
+                            <th>Cookie</th>
+                            <th>Propósito</th>
+                            <th>Duración</th>
+                            <th>Proveedor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>_ga</td>
+                            <td>Distinguir usuarios únicos</td>
+                            <td>2 años</td>
+                            <td>Google Analytics</td>
+                        </tr>
+                        <tr>
+                            <td>_ga_*</td>
+                            <td>Mantener el estado de la sesión</td>
+                            <td>2 años</td>
+                            <td>Google Analytics</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="cookie-category">
+                <h4>📺 Cookies de Publicidad (Opcionales)</h4>
+                <p>Se utilizan para mostrarte anuncios relevantes. Puedes rechazarlas y verás anuncios menos personalizados.</p>
+                
+                <table class="cookie-table">
+                    <thead>
+                        <tr>
+                            <th>Cookie</th>
+                            <th>Propósito</th>
+                            <th>Duración</th>
+                            <th>Proveedor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>IDE</td>
+                            <td>Publicidad personalizada</td>
+                            <td>1 año</td>
+                            <td>Google AdSense</td>
+                        </tr>
+                        <tr>
+                            <td>DSID</td>
+                            <td>Identificar navegador para anuncios</td>
+                            <td>2 semanas</td>
+                            <td>Google AdSense</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <h2>Tus opciones respecto a las cookies</h2>
+            
+            <h3>Gestionar consentimiento</h3>
+            <p>
+                Cuando visitas nuestra aplicación por primera vez, te pedimos tu consentimiento para usar cookies opcionales (análisis y publicidad). Puedes:
+            </p>
+            <ul class="feature-list">
+                <li><strong>Aceptar todas:</strong> Permites cookies de análisis y publicidad personalizada</li>
+                <li><strong>Solo esenciales:</strong> Solo usamos cookies necesarias para el funcionamiento</li>
+            </ul>
+
+            <h3>Cambiar tus preferencias</h3>
+            <p>
+                Puedes cambiar tus preferencias de cookies en cualquier momento:
+            </p>
+            <ul class="feature-list">
+                <li>Borrando las cookies de tu navegador (tendrás que volver a elegir)</li>
+                <li>Configurando tu navegador para rechazar cookies de terceros</li>
+                <li>Contactándonos para eliminar tus datos</li>
+            </ul>
+
+            <div class="highlight-box">
+                <p><strong>Importante:</strong> Si desactivas las cookies esenciales, es posible que no puedas usar todas las funcionalidades de la aplicación, especialmente el inicio de sesión y la sincronización de listas.</p>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <h2>Cookies de terceros</h2>
+            <p>
+                Algunos de nuestros socios pueden establecer cookies en tu dispositivo cuando usas nuestro servicio:
+            </p>
+            
+            <h3>Google Firebase</h3>
+            <p>
+                Utilizamos Firebase para la autenticación de usuarios y almacenamiento de datos. Firebase puede establecer cookies para mantener tu sesión activa y sincronizar tus datos.
+            </p>
+            
+            <h3>Google Analytics</h3>
+            <p>
+                Solo si das tu consentimiento, utilizamos Google Analytics para entender cómo usas la aplicación y mejorar tu experiencia.
+            </p>
+            
+            <h3>Google AdSense</h3>
+            <p>
+                Solo si das tu consentimiento, mostramos anuncios a través de Google AdSense que pueden usar cookies para personalizar los anuncios que ves.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>Cómo controlar las cookies desde tu navegador</h2>
+            <p>
+                La mayoría de navegadores web aceptan cookies automáticamente, pero puedes modificar la configuración para rechazarlas si lo prefieres:
+            </p>
+            
+            <ul class="feature-list">
+                <li><strong>Chrome:</strong> Configuración → Privacidad y seguridad → Cookies</li>
+                <li><strong>Firefox:</strong> Opciones → Privacidad y Seguridad → Cookies</li>
+                <li><strong>Safari:</strong> Preferencias → Privacidad → Cookies</li>
+                <li><strong>Edge:</strong> Configuración → Privacidad, búsqueda y servicios → Cookies</li>
+            </ul>
+        </div>
+
+        <div class="about-section">
+            <h2>Cambios en esta Política de Cookies</h2>
+            <p>
+                Podemos actualizar nuestra Política de Cookies de vez en cuando. Te notificaremos cualquier cambio publicando la nueva Política de Cookies en esta página y actualizando la fecha de "última actualización".
+            </p>
+            <p>
+                Te recomendamos que revises esta Política de Cookies periódicamente para estar informado de cualquier cambio.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>Información de contacto</h2>
+            <div class="contact-info">
+                <p><strong>¿Tienes preguntas sobre nuestras cookies?</strong></p>
+                <p>Si tienes alguna pregunta sobre esta Política de Cookies, puedes contactarnos en:</p>
+                <p><strong>Responsable:</strong> Antonio Javier Guerrero Fernández</p>
+                <p><strong>Dirección:</strong> Córdoba, 14014, España</p>
+                <p><strong>Email:</strong> optimizaexcel@gmail.com</p>
+                <p><strong>Web:</strong> <a href="https://listacomprabyakobu.netlify.app/">https://listacomprabyakobu.netlify.app/</a></p>
+            </div>
+        </div>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 20px; font-size: 10px; border-top: 1px solid #eee;">
+            <a href="privacy-policy.html" style="color: #666; text-decoration: none;">Política de Privacidad</a> | 
+            <a href="politica-cookies.html" style="color: #666; text-decoration: none;">Política de Cookies</a> | 
+            <a href="aviso-legal.html" style="color: #666; text-decoration: none;">Aviso Legal</a> | 
+            <span id="version-display">Versión 1.10.12</span> | © 2025 Lista de la Compra
+        </footer>
+
+    </div>
+
+<script>
+    // Configurar título con nombre de usuario desde URL
+    function setupTitle() {
+        const mainTitle = document.getElementById('mainTitle');
+        mainTitle.textContent = `Lista de la compra by AKOBU`;
+    }
+
+    // Ejecutar cuando se carga la página
+    setupTitle();
+
+    function showVersion() {
+        if (navigator.serviceWorker.controller) {
+            // Escuchar respuesta del SW
+            navigator.serviceWorker.addEventListener('message', event => {
+                document.getElementById('version-display').textContent = `Versión ${event.data}`;
+            });
+            
+            // Pedir versión al SW
+            navigator.serviceWorker.controller.postMessage('GET_VERSION');
+        }
+    }
+
+    // Llamar cuando se carga la página
+    document.addEventListener('DOMContentLoaded', showVersion);
+</script>
+
+</body>
+</html>

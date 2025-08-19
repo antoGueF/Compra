@@ -2,6 +2,66 @@
 <html lang="es">
 <head>
 
+<!-- ✅ PASO 1: AÑADIR ESTO ANTES DE FIREBASE (Google Consent Mode) -->
+<script>
+  // Configurar Google Consent Mode v2 ANTES de cargar Firebase
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  
+  // Configuración por defecto - TODO DENEGADO excepto lo esencial
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',           // Publicidad bloqueada
+    'analytics_storage': 'denied',    // Analytics bloqueado
+    'personalization_storage': 'denied', // Personalización bloqueada
+    'functionality_storage': 'granted',   // Funcionalidad permitida (esencial)
+    'security_storage': 'granted',        // Seguridad permitida (esencial)
+  });
+
+  // Funciones para manejar el consentimiento
+  function acceptAllCookies() {
+    gtag('consent', 'update', {
+      'ad_storage': 'granted',
+      'analytics_storage': 'granted',
+      'personalization_storage': 'granted'
+    });
+    
+    // Guardar la decisión del usuario
+    localStorage.setItem('cookieConsent', 'accepted');
+    hideCookieBanner();
+  }
+
+  function rejectCookies() {
+    // Mantener todo denegado (ya está así por defecto)
+    localStorage.setItem('cookieConsent', 'rejected');
+    hideCookieBanner();
+  }
+
+  function hideCookieBanner() {
+    document.getElementById('cookieBanner').style.display = 'none';
+  }
+
+  // Verificar si ya se ha dado consentimiento
+  function checkCookieConsent() {
+    const consent = localStorage.getItem('cookieConsent');
+    if (consent === 'accepted') {
+      acceptAllCookies();
+    } else if (consent === 'rejected') {
+      // Ya está todo denegado por defecto, solo ocultar banner
+      hideCookieBanner();
+    } else {
+      // Mostrar banner si no hay decisión previa
+      document.getElementById('cookieBanner').style.display = 'block';
+    }
+  }
+</script>
+
+<!-- ✅ PASO 2: Google Analytics (añadir DESPUÉS del Consent Mode) -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M3Z4FJJZ4W"></script>
+<script>
+  gtag('config', 'G-M3Z4FJJZ4W');
+</script>
+  
 <script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore-compat.js"></script>
@@ -636,6 +696,47 @@ const storage = firebase.storage();
 body.welcome-active {
   background: #f9f9f9;
 }
+
+     #cookieBanner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    z-index: 9999;
+    display: none; /* Oculto por defecto */
+  }
+  
+  .cookie-buttons {
+    margin-top: 15px;
+  }
+  
+  .cookie-btn {
+    margin: 0 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .accept-btn {
+    background: #27ae60;
+    color: white;
+  }
+  
+  .reject-btn {
+    background: #95a5a6;
+    color: white;
+  }
+  
+  .cookie-btn:hover {
+    opacity: 0.8;
+  }
   </style>
 
       <!-- Código de AdSense -->
@@ -644,6 +745,18 @@ body.welcome-active {
   
 </head>
 <body>
+  
+  <div id="cookieBanner">
+  <p>
+    🍪 Utilizamos cookies para mejorar tu experiencia, mostrar publicidad personalizada y analizar el tráfico. 
+    <br>
+    <small>Puedes aceptar todas las cookies o rechazar las no esenciales. <a href="/politica-cookies.html" target="_blank" style="color: #007bff; text-decoration: underline;">Más información</a></small>
+  </p>
+  <div class="cookie-buttons">
+    <button class="cookie-btn accept-btn" onclick="acceptAllCookies()">Aceptar todas</button>
+    <button class="cookie-btn reject-btn" onclick="rejectCookies()">Solo esenciales</button>
+  </div>
+</div>
 
   <h1>Lista de la compra by AKOBU</h1>
 
@@ -2648,12 +2761,19 @@ function renderBlogPreview(articles) {
         container.appendChild(articleElement);
     });
 }
+    // Verificar consentimiento cuando carga la página
+  document.addEventListener('DOMContentLoaded', function() {
+    checkCookieConsent();
+  });
 
   </script>
 
-  <footer style="text-align: center; margin-top: 40px; padding: 20px; font-size: 10px; border-top: 1px solid #eee;">
-  <a href="privacy-policy.html" style="color: #666; text-decoration: none;">Privacy Policy | <span id="version-display">Versión 1.10.12</span> | © 2025 Lista de la Compra</a>
-</footer>
+        <footer style="text-align: center; margin-top: 40px; padding: 20px; font-size: 10px; border-top: 1px solid #eee;">
+            <a href="privacy-policy.html" style="color: #666; text-decoration: none;">Política de Privacidad</a> | 
+            <a href="politica-cookies.html" style="color: #666; text-decoration: none;">Política de Cookies</a> | 
+            <a href="aviso-legal.html" style="color: #666; text-decoration: none;">Aviso Legal</a> | 
+            <span id="version-display">Versión 1.10.12</span> | © 2025 Lista de la Compra
+        </footer>
   
 </body>
 </html>

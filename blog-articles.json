@@ -32,6 +32,261 @@
   "category": "Consejos",
   "tags": ["ahorro", "supermercado", "compras"],
   "author": "Equipo Lista de la Compra"
+},
+  
+  {
+    "id": "trucos-ahorrar-supermercado",
+    "title": "Trucos para ahorrar en el supermercado sin renunciar a la calidad",
+    "excerpt": "Ahorrar en la compra no significa comer peor. Descubre algunos consejos para llenar tu carrito de forma más inteligente.",
+    "content": "<p>Ahorrar en la compra no significa comer peor. Aquí algunos consejos que funcionan:</p><h3>🌱 Compra productos de temporada</h3><p>Son más baratos, frescos y con mejor sabor.</p><h3>🏷️ Aprovecha marcas blancas</h3><p>En productos básicos como arroz, leche o papel higiénico suelen ser iguales en calidad.</p><h3>🍽️ Haz la compra con el estómago lleno</h3><p>Evita los antojos innecesarios y compras impulsivas.</p><h3>📊 Compara precios por kilo o litro</h3><p>A veces el envase grande no compensa tanto como parece.</p><h3>❄️ Usa congelados y conservas</h3><p>Son más baratos, duran más y mantienen gran parte de los nutrientes.</p><p>La clave está en planificar y comprar con criterio, no en llenar el carrito porque “estaba de oferta”.</p>",
+    "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=200&fit=crop",
+    "date": "2025-08-18",
+    "category": "Consejos",
+    "tags": ["ahorro", "supermercado", "compras"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+    "id": "planificar-menu-semanal",
+    "title": "Cómo planificar tu menú semanal y ahorrar tiempo y dinero",
+    "excerpt": "Organizar los menús de la semana te ayuda a gastar menos, comer mejor y evitar desperdicios.",
+    "content": "<p>Planificar los menús semanales no solo es bueno para tu bolsillo, también lo es para tu salud. Aquí algunas ideas:</p><h3>📝 Haz una lista antes de comprar</h3><p>Anota lo que vas a cocinar cada día y los ingredientes que necesitas. Evitarás compras innecesarias.</p><h3>🥗 Prioriza comidas versátiles</h3><p>Ingredientes como pollo, arroz o legumbres se pueden usar en varias recetas diferentes.</p><h3>🍳 Cocina en tandas</h3><p>Dedica unas horas del domingo a cocinar varias raciones y congélalas. Tendrás comida lista durante la semana.</p><h3>♻️ Aprovecha sobras</h3><p>Convierte un pollo asado en croquetas, tacos o ensaladas al día siguiente.</p><p>Un buen menú semanal es la mejor herramienta contra el desperdicio y el gasto excesivo.</p>",
+    "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=200&fit=crop",
+    "date": "2025-08-19",
+    "category": "Organización",
+    "tags": ["menú", "planificación", "ahorro"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+    "id": "recetas-congelador",
+    "title": "10 recetas fáciles para aprovechar tu congelador",
+    "excerpt": "El congelador no es solo para guardar sobras. Descubre recetas prácticas y deliciosas que puedes preparar y congelar.",
+    "content": "<p>El congelador es un aliado en la cocina y puede ayudarte a ahorrar mucho tiempo y dinero. Aquí algunas ideas:</p><h3>🍝 Lasaña casera</h3><p>Prepara varias raciones, congélalas en porciones y tendrás comida lista en minutos.</p><h3>🥟 Empanadas y croquetas</h3><p>Ideales para congelar y sacar en cualquier momento.</p><h3>🍲 Sopas y cremas</h3><p>Cocina una olla grande, reparte en tuppers y congela. Perfecto para cenas rápidas.</p><h3>🥩 Carnes marinadas</h3><p>Guarda filetes ya condimentados en bolsas de congelación. Solo tendrás que cocinarlos.</p><p>El truco está en congelar en porciones pequeñas y etiquetar con fecha y nombre.</p>",
+    "image": "https://images.unsplash.com/photo-1589927986089-35812388d1f4?w=600&h=200&fit=crop",
+    "date": "2025-08-19",
+    "category": "Recetas",
+    "tags": ["recetas", "congelador", "ahorro"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+    "id": "apps-ahorro-compra",
+    "title": "Las mejores apps para ahorrar en la compra",
+    "excerpt": "Complementa tu lista de la compra con apps que te ayudan a comparar precios y aprovechar ofertas.",
+    "content": "<p>Hoy en día el móvil puede ser tu mejor aliado para ahorrar en el supermercado. Estas apps son especialmente útiles:</p><h3>📱 Comparadores de precios</h3><p>Te muestran en qué supermercado es más barato lo que buscas.</p><h3>💸 Apps de cashback</h3><p>Algunas aplicaciones te devuelven parte del dinero de tus compras.</p><h3>🛒 Gestores de listas</h3><p>Aplicaciones como Lista de la Compra te ayudan a organizar productos, categorizar y evitar olvidos.</p><h3>📊 Control de gastos</h3><p>Llevar un registro de tus compras semanales te permite detectar dónde gastas de más.</p><p>La tecnología puede ser tu aliada para ahorrar tiempo y dinero cada mes.</p>",
+    "image": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=200&fit=crop",
+    "date": "2025-08-19",
+    "category": "Tecnología",
+    "tags": ["apps", "ahorro", "compras"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+    "id": "comprar-a-granel",
+    "title": "Ventajas de comprar a granel: más barato y sostenible",
+    "excerpt": "Cada vez más supermercados ofrecen secciones de venta a granel. Descubre por qué merece la pena.",
+    "content": "<p>Comprar a granel es una tendencia en alza y tiene múltiples ventajas:</p><h3>💰 Ahorro económico</h3><p>Pagas solo por la cantidad que necesitas y evitas envases innecesarios.</p><h3>🌍 Menos residuos</h3><p>Reducir envases plásticos ayuda al medio ambiente.</p><h3>🥜 Variedad de productos</h3><p>Puedes probar pequeñas cantidades de frutos secos, especias o legumbres sin comprometerte a grandes paquetes.</p><h3>⚖️ Control de cantidades</h3><p>Perfecto para hogares pequeños o para evitar desperdicios.</p><p>El granel no solo es más barato, también es más responsable.</p>",
+    "image": "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=600&h=200&fit=crop",
+    "date": "2025-08-19",
+    "category": "Consumo Responsable",
+    "tags": ["granel", "ahorro", "sostenibilidad"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+    "id": "organizar-despensa",
+    "title": "Cómo organizar tu despensa para aprovechar al máximo tus compras",
+    "excerpt": "Una despensa ordenada es la clave para ahorrar, cocinar mejor y evitar desperdicios.",
+    "content": "<p>Organizar la despensa es un hábito sencillo que marca la diferencia en el día a día:</p><h3>📦 Clasifica por categorías</h3><p>Agrupa cereales, legumbres, enlatados y especias en zonas específicas.</p><h3>🔄 Aplica el método FIFO</h3><p>Primero en entrar, primero en salir. Coloca delante los productos más antiguos.</p><h3>📝 Etiqueta y fecha</h3><p>Pon etiquetas en frascos y bolsas para no olvidar qué contienen ni cuándo caducan.</p><h3>🍴 Ten un inventario</h3><p>Anota lo que tienes para evitar comprar de más y aprovechar al máximo tus recursos.</p><p>Una despensa bien organizada es el primer paso para un hogar eficiente y sin desperdicios.</p>",
+    "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=200&fit=crop",
+    "date": "2025-08-19",
+    "category": "Organización",
+    "tags": ["despensa", "organización", "hogar"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+    "id": "evitar-desperdicio-alimentos",
+    "title": "Cómo evitar el desperdicio de alimentos en casa",
+    "excerpt": "El desperdicio de comida es dinero tirado. Con unos pequeños hábitos puedes ahorrar y ayudar al planeta.",
+    "content": "<p>Cada hogar desperdicia kilos de comida al año. Estos trucos te ayudarán a reducirlo:</p><h3>📅 Revisa fechas de caducidad</h3><p>Organiza tu despensa y nevera para consumir primero lo que caduca antes.</p><h3>🥘 Cocina con sobras</h3><p>Haz croquetas, sopas o salteados con lo que quede en la nevera.</p><h3>🥶 Congela a tiempo</h3><p>No esperes a que algo se ponga malo, congélalo y dale una segunda vida.</p><h3>📝 Haz listas realistas</h3><p>Compra lo que realmente necesitas según tu menú semanal.</p>",
+    "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=200&fit=crop",
+    "date": "2025-08-19",
+    "category": "Consumo Responsable",
+    "tags": ["desperdicio", "ahorro", "hogar"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+    "id": "recetas-baratas-saludables",
+    "title": "5 recetas baratas y saludables para toda la semana",
+    "excerpt": "Comer sano no significa gastar mucho. Estas recetas fáciles y económicas te ayudarán a equilibrar tu dieta.",
+    "content": "<p>Ideas para cocinar barato y saludable:</p><h3>🥗 Ensalada de garbanzos</h3><p>Con tomate, pepino, cebolla y aceite de oliva.</p><h3>🍲 Sopa de verduras</h3><p>Aprovecha restos de la nevera para un plato nutritivo.</p><h3>🍝 Pasta integral con verduras</h3><p>Económica, llena de fibra y muy saciante.</p><h3>🌮 Tortillas de maíz con pollo</h3><p>Usa pollo desmenuzado de otra comida y añade vegetales.</p><h3>🥔 Puré de patatas casero</h3><p>Un clásico barato y fácil de combinar con todo.</p>",
+    "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&h=200&fit=crop",
+    "date": "2025-08-19",
+    "category": "Recetas",
+    "tags": ["recetas", "salud", "ahorro"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+    "id": "productos-siempre-despensa",
+    "title": "10 productos que no deben faltar en tu despensa",
+    "excerpt": "Tener una despensa básica y bien surtida evita imprevistos y ayuda a cocinar siempre algo rápido.",
+    "content": "<p>Estos son los imprescindibles:</p><ul><li>Arroz y pasta</li><li>Legumbres secas o en conserva</li><li>Aceite de oliva</li><li>Harina</li><li>Leche o bebida vegetal</li><li>Huevos</li><li>Tomate triturado</li><li>Especias variadas</li><li>Azúcar o miel</li><li>Café o té</li></ul><p>Con estos básicos, siempre podrás improvisar una comida.</p>",
+    "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=200&fit=crop",
+    "date": "2025-08-19",
+    "category": "Organización",
+    "tags": ["despensa", "cocina", "hogar"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+    "id": "supermercados-low-cost",
+    "title": "Supermercados low-cost: ¿merecen la pena?",
+    "excerpt": "Las cadenas de descuento ofrecen precios bajos, pero ¿realmente ahorras tanto? Analizamos pros y contras.",
+    "content": "<p>Los supermercados de descuento tienen ventajas:</p><h3>✅ Pros</h3><ul><li>Precios más bajos en productos básicos</li><li>Menos marcas, menos tentaciones</li><li>Buena relación calidad-precio en frescos</li></ul><h3>❌ Contras</h3><ul><li>Menor variedad de productos</li><li>Algunas marcas pueden tener menos calidad</li><li>Falta de servicios extra (envío, apps avanzadas)</li></ul><p>La clave es combinar: comprar básicos en low-cost y completar en otros supermercados.</p>",
+    "image": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600&h=200&fit=crop",
+    "date": "2025-08-19",
+    "category": "Consumo Responsable",
+    "tags": ["supermercado", "ahorro", "comparativa"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+    "id": "comprar-online-vs-tienda",
+    "title": "Comprar online vs en tienda física: ¿qué sale más barato?",
+    "excerpt": "La compra online crece cada año, pero ¿realmente compensa frente a la tienda tradicional?",
+    "content": "<p>Ventajas de comprar online:</p><ul><li>Ahorro de tiempo y desplazamiento</li><li>Mayor facilidad para comparar precios</li><li>Evitas compras impulsivas</li></ul><p>Ventajas de la compra física:</p><ul><li>Puedes elegir frescos tú mismo</li><li>Aprovechas ofertas en tienda</li><li>No pagas gastos de envío</li></ul><p>El mejor método depende de tu estilo de vida y del acceso a supermercados en tu zona.</p>",
+    "image": "https://images.unsplash.com/photo-1607083206968-13611e3d76c7?w=600&h=200&fit=crop",
+    "date": "2025-08-19",
+    "category": "Consumo Responsable",
+    "tags": ["compras", "online", "ahorro"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+    "id": "frutas-verduras-temporada",
+    "title": "Calendario de frutas y verduras de temporada",
+    "excerpt": "Comprar de temporada es más barato, más sano y más sostenible. Conoce qué productos elegir cada mes.",
+    "content": "<p>Beneficios de comprar de temporada:</p><h3>🍎 Más sabor</h3><p>Frutas y verduras recogidas en su momento óptimo.</p><h3>💰 Precios más bajos</h3><p>Mayor abundancia = menor coste.</p><h3>🌍 Menor huella ecológica</h3><p>Menos transporte y menos energía en producción.</p><p>Ejemplo: En verano aprovecha tomates, calabacines, melocotones y sandías; en invierno, coles, cítricos y legumbres secas.</p>",
+    "image": "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=600&h=200&fit=crop",
+    "date": "2025-08-19",
+    "category": "Consejos",
+    "tags": ["frutas", "verduras", "ahorro"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+    "id": "batch-cooking",
+    "title": "Batch cooking: cocina una vez, come toda la semana",
+    "excerpt": "El batch cooking te permite ahorrar tiempo y dinero cocinando en una sola sesión semanal.",
+    "content": "<p>Pasos básicos del batch cooking:</p><h3>1️⃣ Planifica el menú</h3><p>Elige 3-4 platos base para combinar.</p><h3>2️⃣ Cocina en tandas</h3><p>Dedica unas horas a preparar todo.</p><h3>3️⃣ Guarda bien</h3><p>Usa tuppers herméticos y etiqueta con fechas.</p><h3>4️⃣ Combina y varía</h3><p>Un mismo arroz puede ser ensalada, salteado o guarnición.</p>",
+    "image": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=600&h=200&fit=crop",
+    "date": "2025-08-19",
+    "category": "Organización",
+    "tags": ["batch cooking", "ahorro", "cocina"],
+    "author": "Equipo Lista de la Compra"
+  },
+  {
+  "id": "productos-que-no-faltan-despensa",
+  "title": "15 productos básicos que nunca deben faltar en tu despensa",
+  "excerpt": "Tener una despensa bien surtida es la clave para improvisar comidas rápidas y ahorrar tiempo.",
+  "content": "<p>Una despensa básica y organizada evita salidas de última hora al supermercado. Estos son los imprescindibles:</p><h3>🍚 Arroz y pasta</h3><p>Versátiles, económicos y de larga duración.</p><h3>🥫 Conservas de atún y tomate</h3><p>Resuelven comidas rápidas con pocos ingredientes.</p><h3>🌱 Legumbres secas o en bote</h3><p>Fuente de proteínas baratas y saludables.</p><h3>🥛 Leche (UHT o en polvo)</h3><p>Dura meses y siempre viene bien.</p><h3>🥔 Patatas y cebollas</h3><p>Ingredientes básicos que resisten varios días.</p><p>Con estos productos siempre tendrás una base para preparar platos completos.</p>",
+  "image": "https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=600&h=200&fit=crop",
+  "date": "2025-08-19",
+  "category": "Organización",
+  "tags": ["despensa", "básicos", "hogar"],
+  "author": "Equipo Lista de la Compra"
+},
+    {
+  "id": "recetas-5-ingredientes",
+  "title": "Recetas fáciles con solo 5 ingredientes",
+  "excerpt": "Comer rico y variado no requiere complicarse. Aquí tienes recetas rápidas con pocos ingredientes.",
+  "content": "<p>A veces menos es más. Estas recetas sencillas requieren solo 5 ingredientes:</p><h3>🍝 Espaguetis al aglio e olio</h3><p>Pasta, ajo, aceite, guindilla y perejil.</p><h3>🥔 Tortilla de patatas</h3><p>Patatas, huevos, cebolla, aceite y sal.</p><h3>🍲 Crema de calabaza</h3><p>Calabaza, cebolla, caldo, nata y sal.</p><h3>🥗 Ensalada caprese</h3><p>Tomate, mozzarella, albahaca, aceite y sal.</p><p>Perfecto para días de poco tiempo o cuando la despensa está justa.</p>",
+  "image": "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&h=200&fit=crop",
+  "date": "2025-08-19",
+  "category": "Recetas",
+  "tags": ["recetas", "rápidas", "ingredientes"],
+  "author": "Equipo Lista de la Compra"
+},
+    {
+  "id": "como-evitar-compras-impulsivas",
+  "title": "Cómo evitar compras impulsivas en el supermercado",
+  "excerpt": "Los supermercados están diseñados para hacerte gastar más. Aprende a resistir la tentación.",
+  "content": "<p>Controlar las compras impulsivas es fundamental para ahorrar:</p><h3>🛒 Lleva lista y cíñete a ella</h3><p>No metas nada que no esté escrito previamente.</p><h3>🥤 Evita pasillos innecesarios</h3><p>Si no necesitas refrescos o dulces, ni te acerques a esa zona.</p><h3>⏰ Compra en poco tiempo</h3><p>Cuanto más rato pases, más probable es que gastes de más.</p><h3>🍎 Concéntrate en productos frescos</h3><p>Frutas, verduras y básicos llenan más y son más sanos.</p><p>Con disciplina ahorrarás y mejorarás tu dieta.</p>",
+  "image": "https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=600&h=200&fit=crop",
+  "date": "2025-08-19",
+  "category": "Consejos",
+  "tags": ["compras", "ahorro", "psicología"],
+  "author": "Equipo Lista de la Compra"
+},
+    {
+  "id": "batch-cooking-principiantes",
+  "title": "Batch cooking para principiantes",
+  "excerpt": "Cocinar una vez y comer toda la semana: organiza tu tiempo y gana en salud.",
+  "content": "<p>El batch cooking es la moda de cocinar en pocas horas para toda la semana. Tips básicos:</p><h3>🥦 Escoge ingredientes base</h3><p>Verduras, legumbres y cereales que combinen fácilmente.</p><h3>🍗 Prepara proteínas en tandas</h3><p>Pechuga, pescado o tofu listos para varias recetas.</p><h3>🥫 Usa envases herméticos</h3><p>Conserva todo en tuppers de vidrio o plástico BPA free.</p><h3>🕑 Dedica 2-3 horas el domingo</h3><p>Así tendrás tu semana resuelta.</p><p>Con organización ahorrarás dinero y evitarás recurrir a comida rápida.</p>",
+  "image": "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=600&h=200&fit=crop",
+  "date": "2025-08-19",
+  "category": "Organización",
+  "tags": ["batch cooking", "organización", "recetas"],
+  "author": "Equipo Lista de la Compra"
+},
+    {
+  "id": "productos-ecologicos-vale-la-pena",
+  "title": "¿Vale la pena comprar productos ecológicos?",
+  "excerpt": "Los alimentos ecológicos suelen ser más caros. Te contamos cuándo merece la pena invertir en ellos.",
+  "content": "<p>Los productos ecológicos son cada vez más populares, pero ¿realmente compensan?</p><h3>🌍 Impacto ambiental</h3><p>Menos pesticidas y más respeto por el suelo.</p><h3>🥦 Salud y sabor</h3><p>Algunas frutas y verduras tienen mejor sabor y nutrientes.</p><h3>💸 Precio</h3><p>No siempre son accesibles, pero puedes priorizar en productos frescos como manzanas o espinacas.</p><p>La clave está en equilibrar calidad, presupuesto y valores personales.</p>",
+  "image": "https://images.unsplash.com/photo-1571091655789-405eb7a3a3a8?w=600&h=200&fit=crop",
+  "date": "2025-08-19",
+  "category": "Consumo Responsable",
+  "tags": ["ecológico", "supermercado", "consumo"],
+  "author": "Equipo Lista de la Compra"
+},
+    {
+  "id": "recetas-sobras",
+  "title": "Recetas creativas para aprovechar sobras",
+  "excerpt": "No tires la comida: con creatividad, las sobras pueden convertirse en platos deliciosos.",
+  "content": "<p>Reutilizar la comida es una forma fácil de ahorrar y cuidar el planeta:</p><h3>🍗 Pollo asado → croquetas o fajitas</h3><p>Un clásico que nunca falla.</p><h3>🥖 Pan duro → tostadas o pudín</h3><p>El pan se puede transformar en mil cosas.</p><h3>🥔 Puré → tortitas de patata</h3><p>Fácil de hacer y muy sabroso.</p><p>La clave está en no ver las sobras como restos, sino como ingredientes de una nueva receta.</p>",
+  "image": "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600&h=200&fit=crop",
+  "date": "2025-08-19",
+  "category": "Recetas",
+  "tags": ["recetas", "sobras", "ahorro"],
+  "author": "Equipo Lista de la Compra"
+},
+    {
+  "id": "supermercado-online-o-fisico",
+  "title": "¿Comprar online o en el supermercado físico?",
+  "excerpt": "Cada formato tiene ventajas y desventajas. Te ayudamos a decidir cuál te conviene.",
+  "content": "<p>Las compras online son cada vez más populares, pero no siempre son la mejor opción:</p><h3>💻 Online</h3><p>Comodidad, comparación de precios rápida y ahorro de tiempo.</p><h3>🏬 Físico</h3><p>Mejor control de la calidad de frescos y posibilidad de aprovechar ofertas de última hora.</p><h3>⚖️ Combina ambos</h3><p>Haz la compra grande online y complementa con frescos en tienda.</p><p>Así optimizas tiempo y presupuesto.</p>",
+  "image": "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600&h=200&fit=crop",
+  "date": "2025-08-19",
+  "category": "Consejos",
+  "tags": ["supermercado", "online", "compras"],
+  "author": "Equipo Lista de la Compra"
+},
+    {
+  "id": "como-leer-etiquetas",
+  "title": "Cómo leer etiquetas de los productos del supermercado",
+  "excerpt": "Descubre qué significan realmente los ingredientes y valores nutricionales de lo que compras.",
+  "content": "<p>Leer etiquetas es fundamental para elegir mejor:</p><h3>📊 Tabla nutricional</h3><p>Fíjate en calorías, grasas, azúcar y sal.</p><h3>📝 Lista de ingredientes</h3><p>Cuanto más corta y simple, mejor.</p><h3>🥛 Aditivos y alérgenos</h3><p>Detecta conservantes, colorantes y posibles alérgenos.</p><p>Con práctica sabrás identificar productos saludables de un vistazo.</p>",
+  "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=200&fit=crop",
+  "date": "2025-08-19",
+  "category": "Educación",
+  "tags": ["etiquetas", "nutrición", "supermercado"],
+  "author": "Equipo Lista de la Compra"
+},
+    {
+  "id": "lista-compra-saludable",
+  "title": "Ejemplo de lista de la compra saludable",
+  "excerpt": "Una lista básica para quienes quieren mejorar su alimentación sin gastar de más.",
+  "content": "<p>Armar una lista de la compra saludable no es complicado:</p><h3>🥦 Verduras y frutas</h3><p>Base de cualquier dieta equilibrada.</p><h3>🍗 Proteínas magras</h3><p>Pechuga de pollo, pescado, huevos y legumbres.</p><h3>🍞 Cereales integrales</h3><p>Arroz, avena, pan y pasta integrales.</p><h3>🥛 Lácteos bajos en grasa</h3><p>Leche, yogur y quesos ligeros.</p><p>Una lista así te ayudará a mantener una dieta sana y económica.</p>",
+  "image": "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=600&h=200&fit=crop",
+  "date": "2025-08-19",
+  "category": "Salud",
+  "tags": ["lista", "saludable", "alimentación"],
+  "author": "Equipo Lista de la Compra"
+},
+    {
+  "id": "errores-comunes-compra",
+  "title": "10 errores comunes al hacer la compra",
+  "excerpt": "Muchas veces gastamos de más por simples descuidos. Aquí tienes los errores más habituales.",
+  "content": "<p>Evita estos errores para ahorrar en cada compra:</p><h3>🚫 Ir sin lista</h3><p>Es la receta perfecta para el gasto excesivo.</p><h3>⏰ Comprar con prisa</h3><p>No tendrás tiempo de comparar precios.</p><h3>🍫 Comprar con hambre</h3><p>Aumenta la compra de caprichos.</p><h3>🏷️ No mirar precios por kilo</h3><p>A veces lo grande no es lo más barato.</p><h3>❄️ Olvidar revisar la despensa</h3><p>Comprar duplicados es muy común.</p><p>Un poco de atención evita mucho gasto.</p>",
+  "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=200&fit=crop",
+  "date": "2025-08-19",
+  "category": "Consejos",
+  "tags": ["errores", "compra", "ahorro"],
+  "author": "Equipo Lista de la Compra"
 }
+
   ]
 }
