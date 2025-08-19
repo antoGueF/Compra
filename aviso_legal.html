@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de la Compra - Aviso Legal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f9f9f9;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .menu-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .menu-btn {
+            background: #ddd;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-btn:hover {
+            background: #ccc;
+        }
+
+        .menu-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            min-width: 150px;
+            z-index: 1000;
+            margin-top: 2px;
+        }
+
+        .menu-dropdown.show {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background: #f5f5f5;
+        }
+
+        .back-btn {
+            background: #ddd;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .about-container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgb(0 0 0 / 0.1);
+        }
+
+        .about-section {
+            margin-bottom: 25px;
+        }
+
+        .about-section h2 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .about-section h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #444;
+            margin-top: 20px;
+        }
+
+        .about-section h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #555;
+            margin-top: 18px;
+        }
+
+        .about-section p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            color: #555;
+        }
+
+        .feature-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .contact-info {
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .contact-info p {
+            margin: 8px 0;
+        }
+
+        .version-info {
+            text-align: center;
+            color: #888;
+            font-size: 16px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .date-info {
+            background: #f0f8ff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border-left: 4px solid #2196f3;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+
+        .definition-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .definition-list li {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 6px;
+            border-left: 3px solid #ddd;
+        }
+
+        .definition-list strong {
+            color: #333;
+        }
+
+        .highlight-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .legal-data {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .legal-data h3 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #c8e6c9;
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            font-weight: bold;
+            color: #2e7d32;
+            min-width: 150px;
+        }
+
+        .data-value {
+            color: #333;
+            flex: 1;
+            text-align: right;
+        }
+
+        a {
+            color: #2196f3;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 600px) {
+            .data-row {
+                flex-direction: column;
+            }
+            
+            .data-value {
+                text-align: left;
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Título principal encima de todo -->
+    <h1 id="mainTitle">Lista de la compra by AKOBU</h1>
+    
+    <div class="about-container">
+        <!-- Top bar con menú igual que tus otras vistas -->
+        <div class="top-bar">
+            <button class="back-btn" onclick="history.back()">←</button>
+        </div>
+
+        <div class="about-section">
+            <h2>Aviso Legal</h2>
+            <div class="date-info">
+                Última actualización: 19 de agosto de 2025
+            </div>
+            <p>
+                En cumplimiento de lo dispuesto en la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico, te informamos de los datos identificativos del titular de este sitio web.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>Datos identificativos</h2>
+            <div class="legal-data">
+                <h3>📋 Información del Titular</h3>
+                <div class="data-row">
+                    <span class="data-label">Titular:</span>
+                    <span class="data-value">Antonio Javier Guerrero Fernández</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Domicilio:</span>
+                    <span class="data-value">Córdoba, 14014, España</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Email:</span>
+                    <span class="data-value">optimizaexcel@gmail.com</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Sitio web:</span>
+                    <span class="data-value">
+                        <a href="https://listacomprabyakobu.netlify.app/" target="_blank">
+                            https://listacomprabyakobu.netlify.app/
+                        </a>
+                    </span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Actividad:</span>
+                    <span class="data-value">Aplicación web de listas de la compra</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <h2>Objeto y condiciones generales de uso</h2>
+            
+            <h3>Objeto del servicio</h3>
+            <p>
+                El presente sitio web tiene por objeto facilitar a los usuarios una aplicación web (PWA) para crear, gestionar y sincronizar listas de la compra de forma fácil e intuitiva.
+            </p>
+
+            <h3>Condiciones de acceso y uso</h3>
+            <p>
+                El acceso y uso de este sitio web se rige por la legalidad vigente y por el principio de buena fe, comprometiéndose el usuario a hacer un uso adecuado de la web de conformidad con la ley.
+            </p>
+            <p>
+                Queda prohibido el uso del sitio web con fines ilícitos o lesivos, o que de cualquier forma puedan dañar, inutilizar, sobrecargar o deteriorar el sitio web o impedir la normal utilización del mismo.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>Servicios ofrecidos</h2>
+            <p>A través de este sitio web, ofrecemos los siguientes servicios:</p>
+            <ul class="feature-list">
+                <li><strong>Gestión de listas:</strong> Crear, editar y eliminar listas de la compra</li>
+                <li><strong>Gestión de productos:</strong> Añadir, marcar y eliminar productos de las listas</li>
+                <li><strong>Sincronización:</strong> Para usuarios registrados, sincronización en tiempo real</li>
+                <li><strong>Almacenamiento local:</strong> Para usuarios no registrados, almacenamiento en el dispositivo</li>
+                <li><strong>PWA:</strong> Instalación como aplicación móvil</li>
+                <li><strong>Contenido informativo:</strong> Blog y artículos relacionados</li>
+            </ul>
+        </div>
+
+        <div class="about-section">
+            <h2>Responsabilidades y limitaciones</h2>
+            
+            <h3>Responsabilidad del titular</h3>
+            <p>
+                El titular del sitio web no se hace responsable de los daños y perjuicios de toda naturaleza que pudieran derivarse de:
+            </p>
+            <ul class="feature-list">
+                <li>La falta de disponibilidad o continuidad del funcionamiento del sitio web</li>
+                <li>Los errores en el contenido del sitio web</li>
+                <li>La presencia de virus o elementos lesivos en el sitio web</li>
+                <li>El uso ilícito, negligente, fraudulento o contrario al presente Aviso Legal</li>
+                <li>La pérdida de datos por fallos técnicos</li>
+            </ul>
+
+            <h3>Responsabilidad del usuario</h3>
+            <p>El usuario se compromete a:</p>
+            <ul class="feature-list">
+                <li>Usar el servicio de forma responsable y conforme a la ley</li>
+                <li>No realizar actividades ilícitas o que puedan dañar el servicio</li>
+                <li>No intentar acceder a datos de otros usuarios</li>
+                <li>Mantener la confidencialidad de sus credenciales de acceso</li>
+                <li>Comunicar cualquier uso no autorizado de su cuenta</li>
+            </ul>
+
+            <div class="warning-box">
+                <p><strong>⚠️ Importante:</strong> El servicio se ofrece "tal como está". No garantizamos que esté libre de errores o que funcione sin interrupciones. Recomendamos hacer respaldos de tus listas importantes.</p>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <h2>Propiedad intelectual e industrial</h2>
+            <p>
+                Todos los contenidos del sitio web (textos, imágenes, sonidos, bases de datos, diseños, códigos fuente, etc.) son propiedad del titular, salvo indicación expresa en contrario.
+            </p>
+            <p>
+                Quedan expresamente prohibidos la reproducción, distribución, comunicación pública y transformación de los contenidos del sitio web, salvo para uso personal y privado, sin la autorización expresa del titular.
+            </p>
+            
+            <h3>Contenido generado por usuarios</h3>
+            <p>
+                Los usuarios mantienen la propiedad sobre el contenido que generen (listas de la compra, productos, etc.). Al usar el servicio, concedes una licencia limitada para procesar y almacenar dicho contenido con el único fin de prestar el servicio.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>Protección de datos personales</h2>
+            <p>
+                El tratamiento de los datos personales se rige por lo establecido en nuestra <a href="politica-privacidad.html">Política de Privacidad</a>, que forma parte integral de este Aviso Legal.
+            </p>
+            <p>
+                Para más información sobre cookies, consulta nuestra <a href="politica-cookies.html">Política de Cookies</a>.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>Modificaciones</h2>
+            <p>
+                El titular se reserva el derecho de modificar, en cualquier momento y sin previo aviso, la información contenida en el sitio web, así como su configuración y presentación.
+            </p>
+            <p>
+                Las modificaciones de este Aviso Legal serán efectivas desde su publicación en el sitio web.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>Enlaces externos</h2>
+            <p>
+                El sitio web puede contener enlaces a páginas web de terceros. El titular no se hace responsable del contenido de dichas páginas web ni de sus políticas de privacidad.
+            </p>
+            <p>
+                Los enlaces se proporcionan únicamente para tu conveniencia y no implican aprobación del contenido de dichos sitios web.
+            </p>
+        </div>
+
+        <div class="about-section">
+            <h2>Legislación aplicable y jurisdicción</h2>
+            <p>
+                El presente Aviso Legal se rige por la legislación española. Para la resolución de cualquier conflicto que pueda surgir con motivo del acceso o uso del sitio web, el titular y el usuario se someten a los juzgados y tribunales de Córdoba, España.
+            </p>
+
+            <div class="highlight-box">
+                <p><strong>Resolución de conflictos:</strong> En caso de controversia, las partes intentarán resolver las diferencias de forma amistosa. Si no fuera posible, se someterán a la jurisdicción de los tribunales competentes.</p>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <h2>Contacto</h2>
+            <div class="contact-info">
+                <p><strong>¿Tienes alguna pregunta sobre este Aviso Legal?</strong></p>
+                <p>Puedes contactar con nosotros a través de:</p>
+                <p><strong>Email:</strong> optimizaexcel@gmail.com</p>
+                <p><strong>Respuesta:</strong> Intentaremos responder en un plazo máximo de 48 horas laborables.</p>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <div class="date-info">
+                Este Aviso Legal es efectivo a partir del 19 de agosto de 2025
+            </div>
+        </div>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 20px; font-size: 10px; border-top: 1px solid #eee;">
+            <a href="politica-privacidad.html" style="color: #666; text-decoration: none;">Política de Privacidad</a> | 
+            <a href="politica-cookies.html" style="color: #666; text-decoration: none;">Política de Cookies</a> | 
+            <a href="aviso-legal.html" style="color: #666; text-decoration: none;">Aviso Legal</a> | 
+            <span id="version-display">Versión 1.10.12</span> | © 2025 Lista de la Compra
+        </footer>
+
+    </div>
+
+<script>
+    // Configurar título con nombre de usuario desde URL
+    function setupTitle() {
+        const mainTitle = document.getElementById('mainTitle');
+        mainTitle.textContent = `Lista de la compra by AKOBU`;
+    }
+
+    // Ejecutar cuando se carga la página
+    setupTitle();
+
+    function showVersion() {
+        if (navigator.serviceWorker.controller) {
+            // Escuchar respuesta del SW
+            navigator.serviceWorker.addEventListener('message', event => {
+                document.getElementById('version-display').textContent = `Versión ${event.data}`;
+            });
+            
+            // Pedir versión al SW
+            navigator.serviceWorker.controller.postMessage('GET_VERSION');
+        }
+    }
+
+    // Llamar cuando se carga la página
+    document.addEventListener('DOMContentLoaded', showVersion);
+</script>
+
+</body>
+</html>
