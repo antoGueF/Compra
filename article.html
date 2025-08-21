@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artículo - Lista de la Compra</title>
+    <meta name="description" content="Blog sobre listas de compra, ahorro y organización doméstica">
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -276,6 +278,7 @@
             
             // Actualizar título de la página
             document.title = `${article.title} - Lista de la Compra`;
+            document.querySelector('meta[name="description"]').setAttribute("content", article.excerpt);
             
             // Formatear fecha
             const date = new Date(article.date);
