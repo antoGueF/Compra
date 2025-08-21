@@ -1,0 +1,40 @@
+User-agent: *
+Allow: /
+
+# Archivos importantes que Google debe encontrar
+Allow: /index.html
+Allow: /about.html
+Allow: /blog_dinamico.html
+Allow: /article.html
+Allow: /offline.html
+Allow: /suggestions.html
+
+# Páginas legales (importantes para AdSense)
+Allow: /privacy-policy.html
+Allow: /politica-cookies.html
+Allow: /aviso-legal.html
+
+# Bloquear archivos técnicos innecesarios
+Disallow: /sw.js
+Disallow: /blog-articles.json
+Disallow: /*.json$
+
+# Bloquear directorios comunes que no queremos indexar
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /dist/
+Disallow: /build/
+
+# Permitir solo bots legítimos
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# AdSense necesita acceso para revisar el contenido
+User-agent: Mediapartners-Google
+Allow: /
+
+# Ubicación del sitemap
+Sitemap: https://listacomprabyakobu.netlify.app/sitemap.xml
