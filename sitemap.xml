@@ -32,12 +32,174 @@
     <priority>0.9</priority>
   </url>
   
-  <!-- Página de artículos individuales -->
+  <!-- Artículos individuales del blog -->
   <url>
-    <loc>https://listacomprabyakobu.netlify.app/article.html</loc>
-    <lastmod>2025-08-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=lista-compra-eficiente</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=planificacion-menus-semanales</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=trucos-ahorrar-supermercado</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=planificar-menu-semanal</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=recetas-congelador</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=apps-ahorro-compra</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=organizar-despensa</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=evitar-desperdicio-alimentos</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=recetas-baratas-saludables</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=productos-siempre-despensa</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=supermercados-low-cost</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=comprar-online-vs-tienda</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=frutas-verduras-temporada</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=batch-cooking</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=productos-que-no-faltan-despensa</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=recetas-5-ingredientes</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=como-evitar-compras-impulsivas</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=batch-cooking-principiantes</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=productos-ecologicos-vale-la-pena</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=recetas-sobras</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=supermercado-online-o-fisico</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=como-leer-etiquetas</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=lista-compra-saludable</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://listacomprabyakobu.netlify.app/article.html?id=errores-comunes-compra</loc>
+    <lastmod>2025-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   
   <!-- Sugerencias -->
