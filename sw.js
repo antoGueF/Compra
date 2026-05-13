@@ -21,9 +21,12 @@ const urlsToCache = [
   '/icono.png',
   '/privacy-policy.html',
   '/suggestions.html',
+  '/offline.html',
   '/css/styles.css',
+  '/css/offline.css',
   '/js/firebase-config.js',
-  '/js/app.js'
+  '/js/app.js',
+  '/js/offline.js'
 ];
 
 // Instalación del Service Worker
