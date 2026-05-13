@@ -1,5 +1,5 @@
 // sw.js - Service Worker para la app de lista de la compra
-const CACHE_VERSION = 'shopping-list-v1.02.53';
+const CACHE_VERSION = 'shopping-list-v1.03.00';
 const CACHE_NAME = `shopping-list-${CACHE_VERSION}`;
 
 self.addEventListener('message', event => {
@@ -21,12 +21,9 @@ const urlsToCache = [
   '/icono.png',
   '/privacy-policy.html',
   '/suggestions.html',
-  
-
-
-  // Añade aquí todos tus archivos CSS, JS, imágenes, etc.
-  // '/icons/icon-192x192.png',
-  // '/icons/icon-512x512.png'
+  '/css/styles.css',
+  '/js/firebase-config.js',
+  '/js/app.js'
 ];
 
 // Instalación del Service Worker
