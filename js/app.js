@@ -1230,13 +1230,57 @@ async function loadAccountView() {
     // Cargar el nombre de usuario actual
     document.getElementById('currentUsername').value = userData.username || '';
     
+    // Inicializar selector de color
+    setupColorPicker();
+    
   } catch (error) {
     console.error("Error al cargar datos de la cuenta:", error);
   }
 }
 
+// ===== COLOR THEME SYSTEM =====
+const COLOR_THEMES = [
+  { id: 'azul', name: 'Azul', color: '#4A7BC4' },
+  { id: 'verde', name: 'Verde', color: '#5B8C5A' },
+  { id: 'rojo', name: 'Rojo', color: '#D35D5D' },
+  { id: 'purpura', name: 'Púrpura', color: '#8B6FAF' },
+  { id: 'naranja', name: 'Naranja', color: '#E08A4E' },
+  { id: 'rosa', name: 'Rosa', color: '#D46B8D' },
+  { id: 'teal', name: 'Teal', color: '#479E9E' },
+  { id: 'gris', name: 'Gris', color: '#6B7280' },
+  { id: 'lima', name: 'Lima', color: '#7CB342' },
+  { id: 'marino', name: 'Marino', color: '#3D5A80' },
+  { id: 'mostaza', name: 'Mostaza', color: '#D4A843' }
+];
+
+function applyTheme(themeId) {
+  document.documentElement.setAttribute('data-theme', themeId);
+  localStorage.setItem('app-theme', themeId);
+  // Update swatches
+  document.querySelectorAll('.color-swatch').forEach(el => {
+    el.classList.toggle('active', el.dataset.theme === themeId);
+  });
+}
+
+function setupColorPicker() {
+  const grid = document.getElementById('colorPickerGrid');
+  if (!grid) return;
+  const savedTheme = localStorage.getItem('app-theme') || 'azul';
+  // Mark the saved theme as active
+  grid.querySelectorAll('.color-swatch').forEach(el => {
+    el.classList.toggle('active', el.dataset.theme === savedTheme);
+    el.addEventListener('click', () => applyTheme(el.dataset.theme));
+  });
+  // Apply saved theme
+  document.documentElement.setAttribute('data-theme', savedTheme);
+}
+
 // Inicialización - mostrar splash al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
+  // Apply saved theme on load
+  const savedTheme = localStorage.getItem('app-theme') || 'azul';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
   if (splashView) {
     splashView.style.display = 'flex';
   }
@@ -1346,8 +1390,8 @@ function showUpdateNotification() {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: #4CAF50;
-      color: white;
+      background: var(--accent);
+      color: #fff;
       padding: 15px 20px;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -1399,8 +1443,8 @@ function showUpdateCompletedNotification() {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: #2196F3;
-      color: white;
+      background: var(--accent);
+      color: #fff;
       padding: 15px 20px;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -1419,7 +1463,7 @@ function showUpdateCompletedNotification() {
       <!-- <br><br> -->
       <button onclick="this.closest('div').parentElement.remove()" style="
         background: white;
-        color: #2196F3;
+        color: var(--accent);
         border: none;
         padding: 8px 16px;
         border-radius: 4px;
