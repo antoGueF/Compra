@@ -179,15 +179,19 @@ function logout() {
         console.error('Error al cerrar sesión:', error);
     });
     
-    // Opcional: puedes mantener esto para feedback inmediato en la UI
     currentUser = null;
-      // Reset nombres de listas
-    document.querySelector('[data-button-id="list1Button"]').textContent = 'Lista 1';
-    document.getElementById('list1Button').textContent = 'Lista 1';
-    document.querySelector('[data-button-id="list2Button"]').textContent = 'Lista 2';
-    document.getElementById('list2Button').textContent = 'Lista 2';
-    document.querySelector('[data-button-id="list3Button"]').textContent = 'Lista 3';
-    document.getElementById('list3Button').textContent = 'Lista 3';
+    // Reset nombres de listas y ocultar listas extra
+    ['list1','list2','list3','list4','list5'].forEach((id, i) => {
+      const btnId = `${id}Button`;
+      const el = document.getElementById(btnId);
+      if (el) {
+        el.textContent = `Lista ${i+1}`;
+        el.style.display = i < 3 ? 'flex' : 'none';
+        const q = document.querySelector(`[data-button-id="${btnId}"]`);
+        if (q) q.textContent = `Lista ${i+1}`;
+      }
+    });
+    document.getElementById('addListBtn').style.display = 'flex';
     
     appView.classList.remove('active');
     authView.style.display = 'block';
@@ -196,12 +200,14 @@ function logout() {
 }
 
 function showList(viewId) {
-  closeAllMenus(); // Cerrar todos los menús al cambiar de vista
+  closeAllMenus();
   document.getElementById('welcomeView').style.display = 'none';
   document.getElementById('selectorView').style.display = 'none';
   document.getElementById('list1View').style.display = 'none';
   document.getElementById('list2View').style.display = 'none';
   document.getElementById('list3View').style.display = 'none';
+  document.getElementById('list4View').style.display = 'none';
+  document.getElementById('list5View').style.display = 'none';
   document.getElementById('articlesView').style.display = 'none';
   document.getElementById('accountView').style.display = 'none';
   if (viewId === 'selectorView') {
@@ -212,7 +218,7 @@ function showList(viewId) {
   
   if (viewId === 'articlesView') {
     loadArticles();
-  } else if (viewId === 'list1View' || viewId === 'list2View' || viewId === 'list3View') {
+  } else if (viewId.startsWith('list') && viewId.endsWith('View')) {
     loadLists();
   } else if (viewId === 'accountView') {
     loadAccountView();
@@ -227,7 +233,7 @@ async function loadLists() {
     const userData = doc.data();
     const data = userData.lists || { list1: [], list2: [], list3: [] };
     
-['list1', 'list2', 'list3'].forEach(listId => {
+['list1', 'list2', 'list3', 'list4', 'list5'].forEach(listId => {
   const container = document.getElementById(listId);
   container.innerHTML = '';
   const orderedList = reorderList(data[listId] || []);
@@ -516,7 +522,9 @@ async function editListTitle(element) {
       try {
         const listKey = buttonId === 'list1Button' ? 'list1Name' : 
                 buttonId === 'list2Button' ? 'list2Name' : 
-                'list3Name';
+                buttonId === 'list3Button' ? 'list3Name' :
+                buttonId === 'list4Button' ? 'list4Name' :
+                'list5Name';
         await db.collection("users").doc(currentUser.uid).update({
           [listKey]: newTitle
         });
@@ -543,6 +551,8 @@ function toggleMenu(menuId) {
     else if (currentView === 'list1View') menuId = 'menuDropdown2';
     else if (currentView === 'list2View') menuId = 'menuDropdown3';
     else if (currentView === 'list3View') menuId = 'menuDropdown6';
+    else if (currentView === 'list4View') menuId = 'menuDropdown7';
+    else if (currentView === 'list5View') menuId = 'menuDropdown8';
     else if (currentView === 'articlesView') menuId = 'menuDropdown4';
     else if (currentView === 'accountView') menuId = 'menuDropdown5';
   }
@@ -558,6 +568,8 @@ function getCurrentView() {
   if (document.getElementById('list1View').style.display === 'block') return 'list1View';
   if (document.getElementById('list2View').style.display === 'block') return 'list2View';
   if (document.getElementById('list3View').style.display === 'block') return 'list3View';
+  if (document.getElementById('list4View').style.display === 'block') return 'list4View';
+  if (document.getElementById('list5View').style.display === 'block') return 'list5View';
   if (document.getElementById('articlesView').style.display === 'block') return 'articlesView';
   if (document.getElementById('accountView').style.display === 'block') return 'accountView';
   return 'selectorView';
@@ -1029,6 +1041,42 @@ async function clearCompletedItems(listId) {
   }
 }
 
+async function handleAddList() {
+  if (!currentUser) return;
+  try {
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    const userData = doc.data();
+    const lists = userData.lists || {};
+
+    if (!lists.hasOwnProperty('list4') || lists.list4 === null) {
+      await db.collection("users").doc(currentUser.uid).update({
+        'lists.list4': [],
+        'list4Name': 'Lista 4'
+      });
+      document.getElementById('list4Button').style.display = 'flex';
+    } else if (!lists.hasOwnProperty('list5') || lists.list5 === null) {
+      await db.collection("users").doc(currentUser.uid).update({
+        'lists.list5': [],
+        'list5Name': 'Lista 5'
+      });
+      document.getElementById('list5Button').style.display = 'flex';
+    } else {
+      return;
+    }
+
+    const updatedDoc = await db.collection("users").doc(currentUser.uid).get();
+    const updatedData = updatedDoc.data();
+    const updatedLists = updatedData.lists || {};
+    const listCount = Object.keys(updatedLists).filter(k => k.startsWith('list') && updatedLists[k] !== null).length;
+    if (listCount >= 5) {
+      document.getElementById('addListBtn').style.display = 'none';
+    }
+    loadLists();
+  } catch (error) {
+    console.error("Error adding list:", error);
+  }
+}
+
 // Detector de estado de autenticación con splash screen
 auth.onAuthStateChanged(async (user) => {
   console.log('Estado de autenticación cambió:', user ? 'Logueado' : 'No logueado');
@@ -1069,15 +1117,22 @@ const showFinalView = () => {
       mainTitle.style.display = 'block';
       
       // PRIMERO: Resetear TODOS los nombres a valores por defecto
-document.querySelector('[data-button-id="list1Button"]').textContent = 'Lista 1';
-document.getElementById('list1Button').textContent = 'Lista 1';
-document.querySelector('[data-button-id="list2Button"]').textContent = 'Lista 2';
-document.getElementById('list2Button').textContent = 'Lista 2';
-document.querySelector('[data-button-id="list3Button"]').textContent = 'Lista 3';
-document.getElementById('list3Button').textContent = 'Lista 3';
+['list1','list2','list3','list4','list5'].forEach((id, i) => {
+  const btnId = `${id}Button`;
+  const el = document.getElementById(btnId);
+  if (el) {
+    el.textContent = `Lista ${i+1}`;
+    el.style.display = 'none';
+    const q = document.querySelector(`[data-button-id="${btnId}"]`);
+    if (q) q.textContent = `Lista ${i+1}`;
+  }
+});
+// Mostrar las 3 listas base siempre
+document.getElementById('list1Button').style.display = 'flex';
+document.getElementById('list2Button').style.display = 'flex';
+document.getElementById('list3Button').style.display = 'flex';
 
-// DESPUÉS: Cargar nombres personalizados si existen
-      
+// Cargar nombres personalizados y visibilidad
       if (userData.list1Name) {
         document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
         document.getElementById('list1Button').textContent = userData.list1Name;
@@ -1086,10 +1141,30 @@ document.getElementById('list3Button').textContent = 'Lista 3';
         document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
         document.getElementById('list2Button').textContent = userData.list2Name;
       }
-       if (userData.list3Name) {
+      if (userData.list3Name) {
         document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
         document.getElementById('list3Button').textContent = userData.list3Name;
       }
+      if (userData.list4Name) {
+        document.querySelector('[data-button-id="list4Button"]').textContent = userData.list4Name;
+        document.getElementById('list4Button').textContent = userData.list4Name;
+      }
+      if (userData.list5Name) {
+        document.querySelector('[data-button-id="list5Button"]').textContent = userData.list5Name;
+        document.getElementById('list5Button').textContent = userData.list5Name;
+      }
+      
+      // Mostrar listas extra según datos
+      const lists = userData.lists || {};
+      if (lists.hasOwnProperty('list4') && lists.list4 !== null) {
+        document.getElementById('list4Button').style.display = 'flex';
+      }
+      if (lists.hasOwnProperty('list5') && lists.list5 !== null) {
+        document.getElementById('list5Button').style.display = 'flex';
+      }
+      // Ocultar botón añadir si ya hay 5
+      const listCount = Object.keys(lists).filter(k => k.startsWith('list') && lists[k] !== null).length;
+      document.getElementById('addListBtn').style.display = listCount >= 5 ? 'none' : 'flex';
       
       // Mostrar vista después del delay solo en carga inicial
       if (isInitialLoad) {
@@ -1230,57 +1305,13 @@ async function loadAccountView() {
     // Cargar el nombre de usuario actual
     document.getElementById('currentUsername').value = userData.username || '';
     
-    // Inicializar selector de color
-    setupColorPicker();
-    
   } catch (error) {
     console.error("Error al cargar datos de la cuenta:", error);
   }
 }
 
-// ===== COLOR THEME SYSTEM =====
-const COLOR_THEMES = [
-  { id: 'azul', name: 'Azul', color: '#4A7BC4' },
-  { id: 'verde', name: 'Verde', color: '#5B8C5A' },
-  { id: 'rojo', name: 'Rojo', color: '#D35D5D' },
-  { id: 'purpura', name: 'Púrpura', color: '#8B6FAF' },
-  { id: 'naranja', name: 'Naranja', color: '#E08A4E' },
-  { id: 'rosa', name: 'Rosa', color: '#D46B8D' },
-  { id: 'teal', name: 'Teal', color: '#479E9E' },
-  { id: 'gris', name: 'Gris', color: '#6B7280' },
-  { id: 'lima', name: 'Lima', color: '#7CB342' },
-  { id: 'marino', name: 'Marino', color: '#3D5A80' },
-  { id: 'mostaza', name: 'Mostaza', color: '#D4A843' }
-];
-
-function applyTheme(themeId) {
-  document.documentElement.setAttribute('data-theme', themeId);
-  localStorage.setItem('app-theme', themeId);
-  // Update swatches
-  document.querySelectorAll('.color-swatch').forEach(el => {
-    el.classList.toggle('active', el.dataset.theme === themeId);
-  });
-}
-
-function setupColorPicker() {
-  const grid = document.getElementById('colorPickerGrid');
-  if (!grid) return;
-  const savedTheme = localStorage.getItem('app-theme') || 'azul';
-  // Mark the saved theme as active
-  grid.querySelectorAll('.color-swatch').forEach(el => {
-    el.classList.toggle('active', el.dataset.theme === savedTheme);
-    el.addEventListener('click', () => applyTheme(el.dataset.theme));
-  });
-  // Apply saved theme
-  document.documentElement.setAttribute('data-theme', savedTheme);
-}
-
 // Inicialización - mostrar splash al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
-  // Apply saved theme on load
-  const savedTheme = localStorage.getItem('app-theme') || 'azul';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  
   if (splashView) {
     splashView.style.display = 'flex';
   }

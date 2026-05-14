@@ -1,4 +1,3 @@
-/* Same themes as styles.css */
 :root {
   --accent: #4A7BC4;
   --accent-light: #7BA3D6;
@@ -33,18 +32,6 @@
   --font-xl: 22px;
   --font-xxl: 24px;
 }
-
-[data-theme="azul"] { --accent: #4A7BC4; --accent-light: #7BA3D6; --accent-dark: #3A629E; --accent-bg: #E8EDF4; --accent-hover: #3E6BB0; }
-[data-theme="verde"] { --accent: #5B8C5A; --accent-light: #7DA87C; --accent-dark: #4A7349; --accent-bg: #EDF2EB; --accent-hover: #4E7A4D; }
-[data-theme="rojo"] { --accent: #D35D5D; --accent-light: #E28888; --accent-dark: #B84A4A; --accent-bg: #F5ECEC; --accent-hover: #C04E4E; }
-[data-theme="purpura"] { --accent: #8B6FAF; --accent-light: #AD96C9; --accent-dark: #735A93; --accent-bg: #F0ECF5; --accent-hover: #7A60A0; }
-[data-theme="naranja"] { --accent: #E08A4E; --accent-light: #EBAA7A; --accent-dark: #C5733E; --accent-bg: #F5F0EA; --accent-hover: #D07A40; }
-[data-theme="rosa"] { --accent: #D46B8D; --accent-light: #E493AD; --accent-dark: #B85676; --accent-bg: #F5ECF0; --accent-hover: #C55C7D; }
-[data-theme="teal"] { --accent: #479E9E; --accent-light: #74B9B9; --accent-dark: #388282; --accent-bg: #EBF2F2; --accent-hover: #3B8A8A; }
-[data-theme="gris"] { --accent: #6B7280; --accent-light: #9299A6; --accent-dark: #555D6B; --accent-bg: #EDEEF0; --accent-hover: #5A616E; }
-[data-theme="lima"] { --accent: #7CB342; --accent-light: #9FC87A; --accent-dark: #689338; --accent-bg: #F0F5EB; --accent-hover: #6DA03A; }
-[data-theme="marino"] { --accent: #3D5A80; --accent-light: #6A84A8; --accent-dark: #2E4568; --accent-bg: #EAEEF4; --accent-hover: #324E72; }
-[data-theme="mostaza"] { --accent: #D4A843; --accent-light: #E2BF72; --accent-dark: #B88E30; --accent-bg: #F5F2EA; --accent-hover: #C49B37; }
 
 /* ===== BASE ===== */
 body {
@@ -423,54 +410,26 @@ h2.list-title.editable {
   color: #d32f2f;
 }
 
-/* ===== COLOR PICKER ===== */
-.color-picker-section {
-  margin-top: var(--gap-lg);
-}
-
-.color-picker-section h3 {
+/* ===== ADD LIST BUTTON ===== */
+.add-list-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-xs);
+  padding: var(--pad-sm) var(--pad-md);
   font-size: var(--font-base);
   font-weight: 600;
-  margin-bottom: var(--gap-sm);
-  color: var(--text);
-}
-
-.color-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: var(--gap-sm);
-}
-
-.color-swatch {
-  width: 100%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: 3px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--card-bg);
+  border: 1px dashed var(--accent);
+  color: var(--accent);
   cursor: pointer;
-  transition: transform 0.15s, border-color 0.15s;
-}
-
-.color-swatch:hover {
-  transform: scale(1.15);
-}
-
-.color-swatch.active {
-  border-color: var(--text);
-  transform: scale(1.1);
-}
-
-.color-swatch-label {
-  font-size: 9px;
   text-align: center;
-  margin-top: 2px;
-  color: var(--text-secondary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  margin-top: var(--gap-xs);
+  transition: background 0.15s;
 }
 
-.color-swatch-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.add-list-btn:hover {
+  background: var(--accent-bg);
 }
+

@@ -262,7 +262,10 @@
       <div class="list-button" id="list1Button" onclick="showList('list1View')">Lista 1</div>
       <div class="list-button" id="list2Button" onclick="showList('list2View')">Lista 2</div>
       <div class="list-button" id="list3Button" onclick="showList('list3View')">Lista 3</div>
+      <div class="list-button" id="list4Button" onclick="showList('list4View')" style="display:none;">Lista 4</div>
+      <div class="list-button" id="list5Button" onclick="showList('list5View')" style="display:none;">Lista 5</div>
     </div>
+    <div class="add-list-btn" id="addListBtn" onclick="handleAddList()">+ Añadir lista</div>
 
     <div id="list1View" class="view" style="display:none;">
       <div class="top-bar">
@@ -342,6 +345,58 @@
       </div>
     </div>
 
+    <div id="list4View" class="view" style="display:none;">
+      <div class="top-bar">
+        <button class="back-btn" onclick="showList('selectorView')">←</button>
+        <div class="menu-container">
+          <button class="menu-btn" onclick="toggleMenu()">☰</button>
+          <div class="menu-dropdown" id="menuDropdown7">
+            <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="clearCompletedItems('list4')">Borrar comprados</div>
+            <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
+            <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
+            <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
+            <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+            <div class="menu-item" onclick="goToAbout()">Acerca de</div>
+          </div>
+        </div>
+      </div>
+      <div class="list-container">
+        <h2 class="list-title editable" data-button-id="list4Button" onclick="editListTitle(this)">Lista 4</h2>
+        <form class="form" onsubmit="addItem(event, 'list4')">
+          <input type="text" placeholder="Nombre del artículo" id="name-list4" required />
+          <button type="submit">+</button>
+        </form>
+        <div id="list4"></div>
+      </div>
+    </div>
+
+    <div id="list5View" class="view" style="display:none;">
+      <div class="top-bar">
+        <button class="back-btn" onclick="showList('selectorView')">←</button>
+        <div class="menu-container">
+          <button class="menu-btn" onclick="toggleMenu()">☰</button>
+          <div class="menu-dropdown" id="menuDropdown8">
+            <div class="menu-item" onclick="showList('articlesView')">Artículos</div>
+            <div class="menu-item" onclick="clearCompletedItems('list5')">Borrar comprados</div>
+            <div class="menu-item" onclick="goToBlog()">Blog - Noticias y Consejos</div>
+            <div class="menu-item" onclick="goToSuggestions()">Sugerencias</div>
+            <div class="menu-item" onclick="showList('accountView')">Cuenta</div>
+            <div class="menu-item" onclick="logout()">Cerrar sesión</div>
+            <div class="menu-item" onclick="goToAbout()">Acerca de</div>
+          </div>
+        </div>
+      </div>
+      <div class="list-container">
+        <h2 class="list-title editable" data-button-id="list5Button" onclick="editListTitle(this)">Lista 5</h2>
+        <form class="form" onsubmit="addItem(event, 'list5')">
+          <input type="text" placeholder="Nombre del artículo" id="name-list5" required />
+          <button type="submit">+</button>
+        </form>
+        <div id="list5"></div>
+      </div>
+    </div>
+
     <div id="articlesView" class="view" style="display:none;">
       <div class="top-bar">
         <button class="back-btn" onclick="showList('selectorView')">←</button>
@@ -402,57 +457,6 @@
         </div>
         
         <div id="accountMessage" style="margin-top: 15px; padding: 10px; border-radius: 5px; display: none;"></div>
-
-        <!-- Color Picker -->
-        <div class="color-picker-section">
-          <h3>Tema de color</h3>
-          <div class="color-grid" id="colorPickerGrid">
-            <div class="color-swatch-item">
-              <div class="color-swatch active" data-theme="azul" style="background:#4A7BC4"></div>
-              <span class="color-swatch-label">Azul</span>
-            </div>
-            <div class="color-swatch-item">
-              <div class="color-swatch" data-theme="verde" style="background:#5B8C5A"></div>
-              <span class="color-swatch-label">Verde</span>
-            </div>
-            <div class="color-swatch-item">
-              <div class="color-swatch" data-theme="rojo" style="background:#D35D5D"></div>
-              <span class="color-swatch-label">Rojo</span>
-            </div>
-            <div class="color-swatch-item">
-              <div class="color-swatch" data-theme="purpura" style="background:#8B6FAF"></div>
-              <span class="color-swatch-label">Púrpura</span>
-            </div>
-            <div class="color-swatch-item">
-              <div class="color-swatch" data-theme="naranja" style="background:#E08A4E"></div>
-              <span class="color-swatch-label">Naranja</span>
-            </div>
-            <div class="color-swatch-item">
-              <div class="color-swatch" data-theme="rosa" style="background:#D46B8D"></div>
-              <span class="color-swatch-label">Rosa</span>
-            </div>
-            <div class="color-swatch-item">
-              <div class="color-swatch" data-theme="teal" style="background:#479E9E"></div>
-              <span class="color-swatch-label">Teal</span>
-            </div>
-            <div class="color-swatch-item">
-              <div class="color-swatch" data-theme="gris" style="background:#6B7280"></div>
-              <span class="color-swatch-label">Gris</span>
-            </div>
-            <div class="color-swatch-item">
-              <div class="color-swatch" data-theme="lima" style="background:#7CB342"></div>
-              <span class="color-swatch-label">Lima</span>
-            </div>
-            <div class="color-swatch-item">
-              <div class="color-swatch" data-theme="marino" style="background:#3D5A80"></div>
-              <span class="color-swatch-label">Marino</span>
-            </div>
-            <div class="color-swatch-item">
-              <div class="color-swatch" data-theme="mostaza" style="background:#D4A843"></div>
-              <span class="color-swatch-label">Mostaza</span>
-            </div>
-          </div>
-        </div>
 
       </div>
     </div>

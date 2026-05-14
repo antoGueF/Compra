@@ -9,11 +9,7 @@ let listsData = {
         items: []
     },
     lista2: {
-        name: 'Lista 2', 
-        items: []
-    },
-    lista3: {
-        name: 'Lista 3',
+        name: 'Lista 2',
         items: []
     }
 };
@@ -34,27 +30,6 @@ function init() {
     loadData();
     updateListButtons();
     setupEventListeners();
-    setupOfflineColorPicker();
-}
-
-// ===== COLOR THEME SYSTEM =====
-function setupOfflineColorPicker() {
-    const savedTheme = localStorage.getItem('app-theme') || 'azul';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    
-    const grid = document.getElementById('offlineColorGrid');
-    if (!grid) return;
-    
-    grid.querySelectorAll('.color-swatch').forEach(el => {
-        el.classList.toggle('active', el.dataset.theme === savedTheme);
-        el.addEventListener('click', () => {
-            const themeId = el.dataset.theme;
-            document.documentElement.setAttribute('data-theme', themeId);
-            localStorage.setItem('app-theme', themeId);
-            grid.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-            el.classList.add('active');
-        });
-    });
 }
 
 function loadData() {
@@ -90,13 +65,7 @@ function updateListButtons() {
 function setupEventListeners() {
     document.querySelectorAll('.list-button').forEach(button => {
         button.addEventListener('click', (e) => {
-            const listId = e.target.dataset.list;
-            
-            if (listId === 'lista1') {
-                openList(listId);
-            } else {
-                showMessage('Regístrate para poder usar mas listas de la compra', true);
-            }
+            openList(e.target.dataset.list);
         });
     });
 
@@ -176,6 +145,10 @@ function closeList() {
     listView.classList.add('hidden');
     mainView.classList.remove('hidden');
     itemInput.value = '';
+}
+
+function showRegisterPrompt() {
+    showMessage('Regístrate para poder usar mas listas de la compra', true);
 }
 
 function closeArticlesView() {
