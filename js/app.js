@@ -93,10 +93,11 @@ authForm.addEventListener("submit", async (e) => {
   email: email,
   lists: {
     list1: [],
-    list2: [],
-    list3: []
+    list2: []
   },
-  itemLibrary: {}, // Nueva biblioteca de artículos del usuario
+  list1Name: 'Supermercado',
+  list2Name: 'Fruteria',
+  itemLibrary: {},
   hasSeenOnboarding: false
 });
 
@@ -133,18 +134,12 @@ currentUser = user;
 mainTitle.textContent = `Lista de la compra de ${userData.username}`;
 
 // Cargar nombres de listas guardados
-if (userData.list1Name) {
-  document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
-  document.getElementById('list1Button').textContent = userData.list1Name;
-}
-if (userData.list2Name) {
-  document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
-  document.getElementById('list2Button').textContent = userData.list2Name;
-}
-if (userData.list3Name) {
-  document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
-  document.getElementById('list3Button').textContent = userData.list3Name;
-}
+['list1','list2','list3','list4','list5'].forEach(id => {
+  if (userData[id + 'Name']) {
+    document.querySelector(`[data-button-id="${id}Button"]`).textContent = userData[id + 'Name'];
+    document.getElementById(id + 'Button').textContent = userData[id + 'Name'];
+  }
+});
 
 authView.style.display = 'none';
 appView.classList.add('active');
@@ -180,16 +175,17 @@ function logout() {
     });
     
     currentUser = null;
+    const defaultNames = ['Supermercado', 'Fruteria', 'Lista 3', 'Lista 4', 'Lista 5'];
     ['list1','list2','list3','list4','list5'].forEach((id, i) => {
       const btnId = `${id}Button`;
       const el = document.getElementById(btnId);
       if (el) {
-        el.textContent = `Lista ${i+1}`;
+        el.textContent = defaultNames[i];
         const q = document.querySelector(`[data-button-id="${btnId}"]`);
-        if (q) q.textContent = `Lista ${i+1}`;
+        if (q) q.textContent = defaultNames[i];
       }
       const row = document.getElementById(`${id}Row`);
-      if (row) row.style.display = i < 3 ? '' : 'none';
+      if (row) row.style.display = i < 2 ? '' : 'none';
     });
     document.getElementById('addListBtn').style.display = 'flex';
     
@@ -237,6 +233,12 @@ async function loadLists() {
   const container = document.getElementById(listId);
   container.innerHTML = '';
   const orderedList = reorderList(data[listId] || []);
+  // Setup autocomplete once
+  const input = document.getElementById('name-' + listId);
+  if (input && !input.dataset.autocompleteReady) {
+    input.dataset.autocompleteReady = '1';
+    setupAutocomplete(listId);
+  }
   orderedList.forEach((item, index) => {
   const el = document.createElement('div');
   el.className = 'item';
@@ -282,6 +284,73 @@ el.append(checkbox, img, span);
   } catch (error) {
     console.error("Error al cargar listas:", error);
   }
+}
+
+// ===== AUTOCOMPLETE =====
+let cachedLibrary = null;
+
+function setupAutocomplete(listId) {
+  const input = document.getElementById('name-' + listId);
+  const suggestions = document.getElementById('suggestions-' + listId);
+  if (!input || !suggestions) return;
+
+  input.addEventListener('focus', async () => {
+    if (!currentUser) return;
+    if (!cachedLibrary) {
+      try {
+        const doc = await db.collection("users").doc(currentUser.uid).get();
+        const userData = doc.data();
+        cachedLibrary = userData.itemLibrary || {};
+      } catch (e) {
+        console.error("Error loading library for autocomplete:", e);
+        return;
+      }
+    }
+    renderSuggestions(listId, input.value.trim().toLowerCase());
+  });
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (q.length > 0 || document.activeElement === input) {
+      renderSuggestions(listId, q);
+    } else {
+      suggestions.classList.remove('show');
+    }
+  });
+
+  input.addEventListener('blur', () => {
+    setTimeout(() => suggestions.classList.remove('show'), 200);
+  });
+}
+
+function renderSuggestions(listId, query) {
+  const suggestions = document.getElementById('suggestions-' + listId);
+  if (!suggestions || !cachedLibrary) return;
+  
+  const names = Object.values(cachedLibrary)
+    .map(a => a.name)
+    .filter(n => n.toLowerCase().includes(query))
+    .sort();
+
+  if (names.length === 0) {
+    suggestions.classList.remove('show');
+    return;
+  }
+
+  suggestions.innerHTML = names.slice(0, 20).map(name =>
+    `<div class="input-suggestion-item" data-name="${name.replace(/"/g, '&quot;')}">${name}</div>`
+  ).join('');
+  suggestions.classList.add('show');
+
+  suggestions.querySelectorAll('.input-suggestion-item').forEach(el => {
+    el.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('name-' + listId);
+      input.value = el.dataset.name;
+      suggestions.classList.remove('show');
+      input.form.requestSubmit();
+    });
+  });
 }
 
 async function saveItemToFirebase(listId, items) {
@@ -594,7 +663,7 @@ document.addEventListener('click', function(event) {
   });
   
   if (!clickedInsideMenu) {
-    document.querySelectorAll('.menu-dropdown, .list-menu-dropdown').forEach(dropdown => {
+    document.querySelectorAll('.menu-dropdown, .list-menu-dropdown, .input-suggestions').forEach(dropdown => {
       dropdown.classList.remove('show');
     });
   }
@@ -689,12 +758,9 @@ articles.forEach(article => {
   menuContainer.className = 'menu-container';
   menuContainer.style.marginLeft = 'auto';
   
-  const editBtn = document.createElement('button');
-  editBtn.innerHTML = '✎';
-  editBtn.className = 'menu-btn';
-  editBtn.style.minWidth = '35px';
-  editBtn.style.height = '35px';
-  editBtn.style.fontSize = '16px';
+  const editBtn = document.createElement('span');
+  editBtn.innerHTML = '⋯';
+  editBtn.className = 'list-menu-dots';
   editBtn.onclick = (e) => {
     e.stopPropagation();
     toggleArticleMenu(menuContainer);
@@ -1051,23 +1117,17 @@ async function handleAddList() {
     const userData = doc.data();
     const lists = userData.lists || {};
 
-    if (!lists.hasOwnProperty('list4') || lists.list4 === null) {
-      await db.collection("users").doc(currentUser.uid).update({
-        'lists.list4': [],
-        'list4Name': newName.trim()
-      });
-      document.getElementById('list4Button').textContent = newName.trim();
-      document.getElementById('list4Row').style.display = '';
-    } else if (!lists.hasOwnProperty('list5') || lists.list5 === null) {
-      await db.collection("users").doc(currentUser.uid).update({
-        'lists.list5': [],
-        'list5Name': newName.trim()
-      });
-      document.getElementById('list5Button').textContent = newName.trim();
-      document.getElementById('list5Row').style.display = '';
-    } else {
-      return;
-    }
+    const availableSlot = ['list1', 'list2', 'list3', 'list4', 'list5'].find(k =>
+      !lists.hasOwnProperty(k) || lists[k] === null
+    );
+    if (!availableSlot) return;
+
+    await db.collection("users").doc(currentUser.uid).update({
+      [`lists.${availableSlot}`]: [],
+      [`${availableSlot}Name`]: newName.trim()
+    });
+    document.getElementById(`${availableSlot}Button`).textContent = newName.trim();
+    document.getElementById(`${availableSlot}Row`).style.display = '';
 
     const updatedDoc = await db.collection("users").doc(currentUser.uid).get();
     const updatedData = updatedDoc.data();
@@ -1184,50 +1244,35 @@ const showFinalView = () => {
       mainTitle.textContent = `Lista de la compra de ${userData.username}`;
       mainTitle.style.display = 'block';
       
-      // PRIMERO: Resetear TODOS los nombres a valores por defecto
-['list1','list2','list3','list4','list5'].forEach((id, i) => {
-  const btnId = `${id}Button`;
-  const el = document.getElementById(btnId);
-  if (el) {
-    el.textContent = `Lista ${i+1}`;
-    const q = document.querySelector(`[data-button-id="${btnId}"]`);
-    if (q) q.textContent = `Lista ${i+1}`;
-  }
-  const row = document.getElementById(`${id}Row`);
-  if (row) row.style.display = i < 3 ? '' : 'none';
-});
+      // Resetear nombres por defecto (solo 2 visibles)
+      const defaultNames = ['Supermercado', 'Fruteria', 'Lista 3', 'Lista 4', 'Lista 5'];
+      ['list1','list2','list3','list4','list5'].forEach((id, i) => {
+        const btnId = `${id}Button`;
+        const el = document.getElementById(btnId);
+        if (el) {
+          el.textContent = defaultNames[i];
+          const q = document.querySelector(`[data-button-id="${btnId}"]`);
+          if (q) q.textContent = defaultNames[i];
+        }
+        const row = document.getElementById(`${id}Row`);
+        if (row) row.style.display = 'none';
+      });
 
-// Cargar nombres personalizados y visibilidad
-      if (userData.list1Name) {
-        document.querySelector('[data-button-id="list1Button"]').textContent = userData.list1Name;
-        document.getElementById('list1Button').textContent = userData.list1Name;
-      }
-      if (userData.list2Name) {
-        document.querySelector('[data-button-id="list2Button"]').textContent = userData.list2Name;
-        document.getElementById('list2Button').textContent = userData.list2Name;
-      }
-      if (userData.list3Name) {
-        document.querySelector('[data-button-id="list3Button"]').textContent = userData.list3Name;
-        document.getElementById('list3Button').textContent = userData.list3Name;
-      }
-      if (userData.list4Name) {
-        document.querySelector('[data-button-id="list4Button"]').textContent = userData.list4Name;
-        document.getElementById('list4Button').textContent = userData.list4Name;
-      }
-      if (userData.list5Name) {
-        document.querySelector('[data-button-id="list5Button"]').textContent = userData.list5Name;
-        document.getElementById('list5Button').textContent = userData.list5Name;
-      }
+      // Cargar nombres personalizados y mostrar listas existentes
+      ['list1','list2','list3','list4','list5'].forEach(id => {
+        if (userData[id + 'Name']) {
+          document.querySelector(`[data-button-id="${id}Button"]`).textContent = userData[id + 'Name'];
+          document.getElementById(id + 'Button').textContent = userData[id + 'Name'];
+        }
+      });
       
-      // Mostrar listas extra según datos
       const lists = userData.lists || {};
-      if (lists.hasOwnProperty('list4') && lists.list4 !== null) {
-        document.getElementById('list4Row').style.display = '';
-      }
-      if (lists.hasOwnProperty('list5') && lists.list5 !== null) {
-        document.getElementById('list5Row').style.display = '';
-      }
-      // Ocultar botón añadir si ya hay 5
+      ['list1','list2','list3','list4','list5'].forEach(id => {
+        if (lists.hasOwnProperty(id) && lists[id] !== null) {
+          document.getElementById(id + 'Row').style.display = '';
+        }
+      });
+      
       const listCount = Object.keys(lists).filter(k => k.startsWith('list') && lists[k] !== null).length;
       document.getElementById('addListBtn').style.display = listCount >= 5 ? 'none' : 'flex';
       

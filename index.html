@@ -260,7 +260,7 @@
         </div>
       </div>
       <div class="list-item-row">
-        <div class="list-button" id="list1Button" onclick="showList('list1View')">Lista 1</div>
+        <div class="list-button" id="list1Button" onclick="showList('list1View')">Supermercado</div>
         <div class="list-menu" onclick="event.stopPropagation()">
           <span class="list-menu-dots" onclick="toggleListMenu(event,'list1')">⋯</span>
           <div class="list-menu-dropdown" id="listMenu1">
@@ -270,7 +270,7 @@
         </div>
       </div>
       <div class="list-item-row">
-        <div class="list-button" id="list2Button" onclick="showList('list2View')">Lista 2</div>
+        <div class="list-button" id="list2Button" onclick="showList('list2View')">Fruteria</div>
         <div class="list-menu" onclick="event.stopPropagation()">
           <span class="list-menu-dots" onclick="toggleListMenu(event,'list2')">⋯</span>
           <div class="list-menu-dropdown" id="listMenu2">
@@ -279,7 +279,7 @@
           </div>
         </div>
       </div>
-      <div class="list-item-row">
+      <div class="list-item-row" id="list3Row" style="display:none;">
         <div class="list-button" id="list3Button" onclick="showList('list3View')">Lista 3</div>
         <div class="list-menu" onclick="event.stopPropagation()">
           <span class="list-menu-dots" onclick="toggleListMenu(event,'list3')">⋯</span>
@@ -308,9 +308,8 @@
             <div class="list-menu-item danger" onclick="deleteList('list5')">Eliminar lista</div>
           </div>
         </div>
+      <div class="add-list-btn" id="addListBtn" onclick="handleAddList()">+ Añadir lista</div>
       </div>
-    </div>
-    <div class="add-list-btn" id="addListBtn" onclick="handleAddList()">+ Añadir lista</div>
 
     <div id="list1View" class="view" style="display:none;">
       <div class="top-bar">
@@ -329,10 +328,13 @@
         </div>
       </div>
       <div class="list-container">
-        <h2 class="list-title editable" data-button-id="list1Button" onclick="editListTitle(this)">Lista 1</h2>
+        <h2 class="list-title editable" data-button-id="list1Button" onclick="editListTitle(this)">Supermercado</h2>
         <form class="form" onsubmit="addItem(event, 'list1')">
-          <input type="text" placeholder="Nombre del artículo" id="name-list1" required />
-          <button type="submit">+</button>
+          <div class="input-wrapper">
+            <input type="text" placeholder="Añadir artículo" id="name-list1" autocomplete="off" required />
+            <span class="input-plus" onclick="this.closest('form').requestSubmit()">+</span>
+            <div class="input-suggestions" id="suggestions-list1"></div>
+          </div>
         </form>
         <div id="list1"></div>
       </div>
@@ -355,10 +357,13 @@
         </div>
       </div>
       <div class="list-container">
-        <h2 class="list-title editable" data-button-id="list2Button" onclick="editListTitle(this)">Lista 2</h2>
+        <h2 class="list-title editable" data-button-id="list2Button" onclick="editListTitle(this)">Fruteria</h2>
         <form class="form" onsubmit="addItem(event, 'list2')">
-          <input type="text" placeholder="Nombre del artículo" id="name-list2" required />
-          <button type="submit">+</button>
+          <div class="input-wrapper">
+            <input type="text" placeholder="Añadir artículo" id="name-list2" autocomplete="off" required />
+            <span class="input-plus" onclick="this.closest('form').requestSubmit()">+</span>
+            <div class="input-suggestions" id="suggestions-list2"></div>
+          </div>
         </form>
         <div id="list2"></div>
       </div>
@@ -383,8 +388,11 @@
       <div class="list-container">
         <h2 class="list-title editable" data-button-id="list3Button" onclick="editListTitle(this)">Lista 3</h2>
         <form class="form" onsubmit="addItem(event, 'list3')">
-          <input type="text" placeholder="Nombre del artículo" id="name-list3" required />
-          <button type="submit">+</button>
+          <div class="input-wrapper">
+            <input type="text" placeholder="Añadir artículo" id="name-list3" autocomplete="off" required />
+            <span class="input-plus" onclick="this.closest('form').requestSubmit()">+</span>
+            <div class="input-suggestions" id="suggestions-list3"></div>
+          </div>
         </form>
         <div id="list3"></div>
       </div>
@@ -409,8 +417,11 @@
       <div class="list-container">
         <h2 class="list-title editable" data-button-id="list4Button" onclick="editListTitle(this)">Lista 4</h2>
         <form class="form" onsubmit="addItem(event, 'list4')">
-          <input type="text" placeholder="Nombre del artículo" id="name-list4" required />
-          <button type="submit">+</button>
+          <div class="input-wrapper">
+            <input type="text" placeholder="Añadir artículo" id="name-list4" autocomplete="off" required />
+            <span class="input-plus" onclick="this.closest('form').requestSubmit()">+</span>
+            <div class="input-suggestions" id="suggestions-list4"></div>
+          </div>
         </form>
         <div id="list4"></div>
       </div>
@@ -435,8 +446,11 @@
       <div class="list-container">
         <h2 class="list-title editable" data-button-id="list5Button" onclick="editListTitle(this)">Lista 5</h2>
         <form class="form" onsubmit="addItem(event, 'list5')">
-          <input type="text" placeholder="Nombre del artículo" id="name-list5" required />
-          <button type="submit">+</button>
+          <div class="input-wrapper">
+            <input type="text" placeholder="Añadir artículo" id="name-list5" autocomplete="off" required />
+            <span class="input-plus" onclick="this.closest('form').requestSubmit()">+</span>
+            <div class="input-suggestions" id="suggestions-list5"></div>
+          </div>
         </form>
         <div id="list5"></div>
       </div>

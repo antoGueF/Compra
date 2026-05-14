@@ -5,11 +5,11 @@ let previousView = null;
 let allArticles = [];
 let listsData = {
     lista1: {
-        name: 'Lista 1',
+        name: 'Supermercado',
         items: []
     },
     lista2: {
-        name: 'Lista 2',
+        name: 'Fruteria',
         items: []
     }
 };
@@ -18,8 +18,7 @@ const mainView = document.getElementById('mainView');
 const listView = document.getElementById('listView');
 const articlesView = document.getElementById('articlesView');
 const listTitle = document.getElementById('listTitle');
-const itemInput = document.getElementById('itemInput');
-const addItemBtn = document.getElementById('addItemBtn');
+const itemInput = document.getElementById('offlineItemInput');
 const itemsList = document.getElementById('itemsList');
 const allArticlesList = document.getElementById('allArticlesList');
 const backBtn = document.querySelector('.back-btn');
@@ -30,6 +29,7 @@ function init() {
     loadData();
     updateListButtons();
     setupEventListeners();
+    setupOfflineAutocomplete();
 }
 
 function loadData() {
@@ -75,9 +75,8 @@ document.addEventListener('click', (e) => {
             menu.classList.remove('show');
         });
     }
-    
-    if (!e.target.closest('.article-menu-container')) {
-        document.querySelectorAll('.article-menu-dropdown').forEach(menu => {
+    if (!e.target.closest('.list-menu')) {
+        document.querySelectorAll('.list-menu-dropdown').forEach(menu => {
             menu.classList.remove('show');
         });
     }
@@ -120,12 +119,13 @@ document.addEventListener('click', (e) => {
     }
 });
 
-    addItemBtn.addEventListener('click', addItem);
-    itemInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+    const offlineForm = document.getElementById('offlineForm');
+    if (offlineForm) {
+        offlineForm.addEventListener('submit', (e) => {
+            e.preventDefault();
             addItem();
-        }
-    });
+        });
+    }
 
     listTitle.addEventListener('click', editListTitle);
 }
@@ -223,7 +223,7 @@ function renderAllArticles() {
 
     sortedArticles.forEach(article => {
         const articleDiv = document.createElement('div');
-        articleDiv.className = 'article-item';
+        articleDiv.className = 'item';
         
         const img = document.createElement('img');
         img.src = article.image || 'https://cdn-icons-png.flaticon.com/512/685/685655.png';
@@ -238,37 +238,49 @@ function renderAllArticles() {
         
         const span = document.createElement('span');
         span.textContent = article.name;
+        span.className = 'editable';
         
         const menuContainer = document.createElement('div');
-        menuContainer.className = 'article-menu-container';
+        menuContainer.className = 'menu-container';
+        menuContainer.style.marginLeft = 'auto';
         
-        const menuBtn = document.createElement('button');
-        menuBtn.innerHTML = '✎';
-        menuBtn.className = 'menu-btn';
-        menuBtn.style.minWidth = '35px';
-        menuBtn.style.height = '35px';
-        menuBtn.style.fontSize = '16px';
+        const menuBtn = document.createElement('span');
+        menuBtn.innerHTML = '⋯';
+        menuBtn.className = 'list-menu-dots';
         menuBtn.onclick = (e) => {
             e.stopPropagation();
             toggleArticleMenu(menuContainer);
         };
         
         const dropdown = document.createElement('div');
-        dropdown.className = 'article-menu-dropdown';
-        dropdown.innerHTML = `
-            <div class="article-menu-item" onclick="changeArticleImage('${article.name}')">
-                Cambiar foto
-            </div>
-            <div class="article-menu-item" onclick="editArticleName('${article.name}')">
-                Editar nombre
-            </div>
-            <div class="article-menu-item delete" onclick="deleteArticle('${article.name}')">
-                Borrar artículo
-            </div>
-        `;
+        dropdown.className = 'menu-dropdown';
         
-        menuContainer.appendChild(menuBtn);
-        menuContainer.appendChild(dropdown);
+        const changePhotoItem = document.createElement('div');
+        changePhotoItem.className = 'menu-item';
+        changePhotoItem.textContent = 'Cambiar foto';
+        changePhotoItem.onclick = () => {
+            selectImageForArticle(article.name);
+            closeAllMenus();
+        };
+        
+        const editNameItem = document.createElement('div');
+        editNameItem.className = 'menu-item';
+        editNameItem.textContent = 'Editar nombre';
+        editNameItem.onclick = () => {
+            editArticleName(article.name);
+            closeAllMenus();
+        };
+        
+        const deleteItem = document.createElement('div');
+        deleteItem.className = 'menu-item';
+        deleteItem.textContent = 'Borrar artículo';
+        deleteItem.onclick = () => {
+            deleteArticle(article.name);
+            closeAllMenus();
+        };
+        
+        dropdown.append(changePhotoItem, editNameItem, deleteItem);
+        menuContainer.append(menuBtn, dropdown);
         
         articleDiv.appendChild(img);
         articleDiv.appendChild(span);
@@ -278,15 +290,64 @@ function renderAllArticles() {
 }
 
 function toggleArticleMenu(menuContainer) {
-    const dropdown = menuContainer.querySelector('.article-menu-dropdown');
-    const isVisible = dropdown.classList.contains('show');
+    const dropdown = menuContainer.querySelector('.menu-dropdown');
+    if (!dropdown) return;
     
-    document.querySelectorAll('.article-menu-dropdown').forEach(menu => {
-        menu.classList.remove('show');
+    document.querySelectorAll('.menu-dropdown').forEach(m => {
+        if (m !== dropdown) m.classList.remove('show');
     });
     
-    if (!isVisible) {
-        dropdown.classList.add('show');
+    dropdown.classList.toggle('show');
+}
+
+function closeAllMenus() {
+    document.querySelectorAll('.menu-dropdown, .list-menu-dropdown').forEach(m => {
+        m.classList.remove('show');
+    });
+}
+
+function toggleOfflineListMenu(event, listId) {
+    if (event) event.stopPropagation();
+    const num = listId === 'lista1' ? '1' : '2';
+    const menu = document.getElementById('offlineListMenu' + num);
+    if (!menu) return;
+    
+    document.querySelectorAll('.list-menu-dropdown').forEach(m => {
+        if (m !== menu) m.classList.remove('show');
+    });
+    
+    menu.classList.toggle('show');
+}
+
+function renameOfflineList(listId) {
+    closeAllMenus();
+    const list = listsData[listId];
+    if (!list) return;
+    const newName = prompt('Nuevo nombre de la lista:', list.name);
+    if (!newName || newName.trim() === '' || newName.trim() === list.name) return;
+    
+    list.name = newName.trim();
+    saveData();
+    updateListButtons();
+    if (currentList === listId) {
+        listTitle.textContent = list.name;
+    }
+}
+
+function deleteOfflineList(listId) {
+    closeAllMenus();
+    const list = listsData[listId];
+    if (!list) return;
+    
+    if (!confirm(`¿Estás seguro de que quieres eliminar la lista "${list.name}"? Se borrarán todos sus artículos.`)) return;
+    
+    const defaultName = listId === 'lista1' ? 'Supermercado' : 'Fruteria';
+    list.name = defaultName;
+    list.items = [];
+    saveData();
+    updateListButtons();
+    if (currentList === listId) {
+        renderItems();
     }
 }
 
@@ -628,6 +689,62 @@ function editListTitle() {
         if (e.key === 'Enter') {
             saveTitle();
         }
+    });
+}
+
+// ===== AUTOCOMPLETE =====
+function setupOfflineAutocomplete() {
+    const input = document.getElementById('offlineItemInput');
+    const suggestions = document.getElementById('offlineSuggestions');
+    if (!input || !suggestions) return;
+
+    input.addEventListener('focus', () => {
+        if (allArticles.length > 0) {
+            renderOfflineSuggestions(input.value.trim().toLowerCase());
+        }
+    });
+
+    input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        if (q.length > 0 || document.activeElement === input) {
+            renderOfflineSuggestions(q);
+        } else {
+            suggestions.classList.remove('show');
+        }
+    });
+
+    input.addEventListener('blur', () => {
+        setTimeout(() => suggestions.classList.remove('show'), 200);
+    });
+}
+
+function renderOfflineSuggestions(query) {
+    const suggestions = document.getElementById('offlineSuggestions');
+    if (!suggestions) return;
+
+    const names = allArticles
+        .filter(a => a.name.toLowerCase().includes(query))
+        .map(a => a.name)
+        .sort();
+
+    if (names.length === 0) {
+        suggestions.classList.remove('show');
+        return;
+    }
+
+    suggestions.innerHTML = names.slice(0, 20).map(name =>
+        `<div class="input-suggestion-item" data-name="${name.replace(/"/g, '&quot;')}">${name}</div>`
+    ).join('');
+    suggestions.classList.add('show');
+
+    suggestions.querySelectorAll('.input-suggestion-item').forEach(el => {
+        el.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('offlineItemInput');
+            input.value = el.dataset.name;
+            suggestions.classList.remove('show');
+            addItem();
+        });
     });
 }
 

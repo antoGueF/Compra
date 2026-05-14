@@ -402,83 +402,86 @@ h2.list-title.editable {
 
 /* ===== FORM (add item) ===== */
 .form {
-  display: flex;
-  align-items: center;
-  gap: var(--gap-sm);
   margin-bottom: var(--gap-md);
 }
 
-.form input[type="text"] {
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input[type="text"] {
+  width: 100%;
   font-size: var(--font-base);
-  padding: var(--pad-sm);
-  flex: 1;
+  padding: var(--pad-md) 44px var(--pad-md) var(--pad-md);
   border: 1px solid var(--input-border);
-  border-radius: var(--radius-sm);
-  background: var(--input-bg);
-}
-
-.form button {
-  font-size: 22px;
-  height: 32px;
-  width: 32px;
-  border-radius: 50%;
-  background-color: var(--accent);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.form button:hover {
-  background: var(--accent-hover);
-}
-
-/* ===== INPUT BAR (floating style) ===== */
-.input-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--gap-sm);
-  background: var(--card-bg);
   border-radius: var(--radius-md);
-  border: 1px solid var(--input-border);
-  padding: var(--pad-sm) var(--pad-md);
+  background: var(--input-bg);
+  box-sizing: border-box;
 }
 
-.input-bar input {
-  flex: 1;
-  border: none;
+.input-wrapper input[type="text"]:focus {
   outline: none;
-  font-size: var(--font-base);
-  background: transparent;
-  color: var(--text);
+  border-color: var(--accent);
 }
 
-.input-bar input::placeholder {
-  color: var(--text-muted);
-}
-
-.plus-btn {
+.input-plus {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 32px;
   height: 32px;
   border-radius: 50%;
   background: var(--accent);
   color: #fff;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  font-size: 22px;
+  cursor: pointer;
+  user-select: none;
 }
 
-.plus-btn:hover {
+.input-plus:hover {
   background: var(--accent-hover);
+}
+
+.input-suggestions {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.input-suggestions.show {
+  display: block;
+}
+
+.input-suggestion-item {
+  padding: var(--pad-sm) var(--pad-md);
+  cursor: pointer;
+  font-size: var(--font-base);
+  border-bottom: 1px solid var(--divider);
+}
+
+.input-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.input-suggestion-item:hover {
+  background: var(--accent-bg);
+  color: var(--accent);
 }
 
 /* ===== ITEMS ===== */

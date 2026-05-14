@@ -1,5 +1,5 @@
 // sw.js - Service Worker para la app de lista de la compra
-const CACHE_VERSION = 'shopping-list-v1.07.00';
+const CACHE_VERSION = 'shopping-list-v1.08.01';
 const CACHE_NAME = `shopping-list-${CACHE_VERSION}`;
 
 self.addEventListener('message', event => {
