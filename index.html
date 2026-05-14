@@ -259,11 +259,56 @@
           </div>
         </div>
       </div>
-      <div class="list-button" id="list1Button" onclick="showList('list1View')">Lista 1</div>
-      <div class="list-button" id="list2Button" onclick="showList('list2View')">Lista 2</div>
-      <div class="list-button" id="list3Button" onclick="showList('list3View')">Lista 3</div>
-      <div class="list-button" id="list4Button" onclick="showList('list4View')" style="display:none;">Lista 4</div>
-      <div class="list-button" id="list5Button" onclick="showList('list5View')" style="display:none;">Lista 5</div>
+      <div class="list-item-row">
+        <div class="list-button" id="list1Button" onclick="showList('list1View')">Lista 1</div>
+        <div class="list-menu" onclick="event.stopPropagation()">
+          <span class="list-menu-dots" onclick="toggleListMenu(event,'list1')">⋯</span>
+          <div class="list-menu-dropdown" id="listMenu1">
+            <div class="list-menu-item" onclick="renameList('list1')">Cambiar nombre</div>
+            <div class="list-menu-item danger" onclick="deleteList('list1')">Eliminar lista</div>
+          </div>
+        </div>
+      </div>
+      <div class="list-item-row">
+        <div class="list-button" id="list2Button" onclick="showList('list2View')">Lista 2</div>
+        <div class="list-menu" onclick="event.stopPropagation()">
+          <span class="list-menu-dots" onclick="toggleListMenu(event,'list2')">⋯</span>
+          <div class="list-menu-dropdown" id="listMenu2">
+            <div class="list-menu-item" onclick="renameList('list2')">Cambiar nombre</div>
+            <div class="list-menu-item danger" onclick="deleteList('list2')">Eliminar lista</div>
+          </div>
+        </div>
+      </div>
+      <div class="list-item-row">
+        <div class="list-button" id="list3Button" onclick="showList('list3View')">Lista 3</div>
+        <div class="list-menu" onclick="event.stopPropagation()">
+          <span class="list-menu-dots" onclick="toggleListMenu(event,'list3')">⋯</span>
+          <div class="list-menu-dropdown" id="listMenu3">
+            <div class="list-menu-item" onclick="renameList('list3')">Cambiar nombre</div>
+            <div class="list-menu-item danger" onclick="deleteList('list3')">Eliminar lista</div>
+          </div>
+        </div>
+      </div>
+      <div class="list-item-row" id="list4Row" style="display:none;">
+        <div class="list-button" id="list4Button" onclick="showList('list4View')">Lista 4</div>
+        <div class="list-menu" onclick="event.stopPropagation()">
+          <span class="list-menu-dots" onclick="toggleListMenu(event,'list4')">⋯</span>
+          <div class="list-menu-dropdown" id="listMenu4">
+            <div class="list-menu-item" onclick="renameList('list4')">Cambiar nombre</div>
+            <div class="list-menu-item danger" onclick="deleteList('list4')">Eliminar lista</div>
+          </div>
+        </div>
+      </div>
+      <div class="list-item-row" id="list5Row" style="display:none;">
+        <div class="list-button" id="list5Button" onclick="showList('list5View')">Lista 5</div>
+        <div class="list-menu" onclick="event.stopPropagation()">
+          <span class="list-menu-dots" onclick="toggleListMenu(event,'list5')">⋯</span>
+          <div class="list-menu-dropdown" id="listMenu5">
+            <div class="list-menu-item" onclick="renameList('list5')">Cambiar nombre</div>
+            <div class="list-menu-item danger" onclick="deleteList('list5')">Eliminar lista</div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="add-list-btn" id="addListBtn" onclick="handleAddList()">+ Añadir lista</div>
 

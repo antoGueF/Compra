@@ -180,16 +180,16 @@ function logout() {
     });
     
     currentUser = null;
-    // Reset nombres de listas y ocultar listas extra
     ['list1','list2','list3','list4','list5'].forEach((id, i) => {
       const btnId = `${id}Button`;
       const el = document.getElementById(btnId);
       if (el) {
         el.textContent = `Lista ${i+1}`;
-        el.style.display = i < 3 ? 'flex' : 'none';
         const q = document.querySelector(`[data-button-id="${btnId}"]`);
         if (q) q.textContent = `Lista ${i+1}`;
       }
+      const row = document.getElementById(`${id}Row`);
+      if (row) row.style.display = i < 3 ? '' : 'none';
     });
     document.getElementById('addListBtn').style.display = 'flex';
     
@@ -584,7 +584,7 @@ function closeAllMenus() {
 
 // Cerrar el menú si se hace clic fuera de él
 document.addEventListener('click', function(event) {
-  const menuContainers = document.querySelectorAll('.menu-container');
+  const menuContainers = document.querySelectorAll('.menu-container, .list-menu');
   let clickedInsideMenu = false;
   
   menuContainers.forEach(container => {
@@ -594,8 +594,7 @@ document.addEventListener('click', function(event) {
   });
   
   if (!clickedInsideMenu) {
-    const dropdowns = document.querySelectorAll('.menu-dropdown');
-    dropdowns.forEach(dropdown => {
+    document.querySelectorAll('.menu-dropdown, .list-menu-dropdown').forEach(dropdown => {
       dropdown.classList.remove('show');
     });
   }
@@ -1043,6 +1042,10 @@ async function clearCompletedItems(listId) {
 
 async function handleAddList() {
   if (!currentUser) return;
+  
+  const newName = prompt('Nombre de la nueva lista:');
+  if (!newName || newName.trim() === '') return;
+  
   try {
     const doc = await db.collection("users").doc(currentUser.uid).get();
     const userData = doc.data();
@@ -1051,15 +1054,17 @@ async function handleAddList() {
     if (!lists.hasOwnProperty('list4') || lists.list4 === null) {
       await db.collection("users").doc(currentUser.uid).update({
         'lists.list4': [],
-        'list4Name': 'Lista 4'
+        'list4Name': newName.trim()
       });
-      document.getElementById('list4Button').style.display = 'flex';
+      document.getElementById('list4Button').textContent = newName.trim();
+      document.getElementById('list4Row').style.display = '';
     } else if (!lists.hasOwnProperty('list5') || lists.list5 === null) {
       await db.collection("users").doc(currentUser.uid).update({
         'lists.list5': [],
-        'list5Name': 'Lista 5'
+        'list5Name': newName.trim()
       });
-      document.getElementById('list5Button').style.display = 'flex';
+      document.getElementById('list5Button').textContent = newName.trim();
+      document.getElementById('list5Row').style.display = '';
     } else {
       return;
     }
@@ -1075,6 +1080,69 @@ async function handleAddList() {
   } catch (error) {
     console.error("Error adding list:", error);
   }
+}
+
+function toggleListMenu(event, listId) {
+  if (event) event.stopPropagation();
+  const num = listId.replace('list', '');
+  const menu = document.getElementById('listMenu' + num);
+  if (!menu) return;
+  
+  document.querySelectorAll('.list-menu-dropdown').forEach(m => {
+    if (m !== menu) m.classList.remove('show');
+  });
+  
+  menu.classList.toggle('show');
+}
+
+async function renameList(listId) {
+  document.querySelectorAll('.list-menu-dropdown').forEach(m => m.classList.remove('show'));
+  
+  const button = document.getElementById(listId + 'Button');
+  if (!button) return;
+  const currentName = button.textContent.trim();
+  const newName = prompt('Nuevo nombre de la lista:', currentName);
+  if (!newName || newName.trim() === '' || newName.trim() === currentName) return;
+  
+  button.textContent = newName.trim();
+  const q = document.querySelector(`[data-button-id="${listId}Button"]`);
+  if (q) q.textContent = newName.trim();
+  
+  if (currentUser) {
+    try {
+      await db.collection("users").doc(currentUser.uid).update({
+        [listId + 'Name']: newName.trim()
+      });
+    } catch (error) {
+      console.error("Error renaming list:", error);
+    }
+  }
+}
+
+async function deleteList(listId) {
+  document.querySelectorAll('.list-menu-dropdown').forEach(m => m.classList.remove('show'));
+  
+  const button = document.getElementById(listId + 'Button');
+  if (!button) return;
+  const listName = button.textContent.trim();
+  
+  if (!confirm(`¿Estás seguro de que quieres eliminar la lista "${listName}"?`)) return;
+  
+  if (currentUser) {
+    try {
+      await db.collection("users").doc(currentUser.uid).update({
+        [`lists.${listId}`]: null,
+        [listId + 'Name']: null
+      });
+    } catch (error) {
+      console.error("Error deleting list:", error);
+      return;
+    }
+  }
+  
+  const row = document.getElementById(listId + 'Row');
+  if (row) row.style.display = 'none';
+  document.getElementById('addListBtn').style.display = 'flex';
 }
 
 // Detector de estado de autenticación con splash screen
@@ -1122,15 +1190,12 @@ const showFinalView = () => {
   const el = document.getElementById(btnId);
   if (el) {
     el.textContent = `Lista ${i+1}`;
-    el.style.display = 'none';
     const q = document.querySelector(`[data-button-id="${btnId}"]`);
     if (q) q.textContent = `Lista ${i+1}`;
   }
+  const row = document.getElementById(`${id}Row`);
+  if (row) row.style.display = i < 3 ? '' : 'none';
 });
-// Mostrar las 3 listas base siempre
-document.getElementById('list1Button').style.display = 'flex';
-document.getElementById('list2Button').style.display = 'flex';
-document.getElementById('list3Button').style.display = 'flex';
 
 // Cargar nombres personalizados y visibilidad
       if (userData.list1Name) {
@@ -1157,10 +1222,10 @@ document.getElementById('list3Button').style.display = 'flex';
       // Mostrar listas extra según datos
       const lists = userData.lists || {};
       if (lists.hasOwnProperty('list4') && lists.list4 !== null) {
-        document.getElementById('list4Button').style.display = 'flex';
+        document.getElementById('list4Row').style.display = '';
       }
       if (lists.hasOwnProperty('list5') && lists.list5 !== null) {
-        document.getElementById('list5Button').style.display = 'flex';
+        document.getElementById('list5Row').style.display = '';
       }
       // Ocultar botón añadir si ya hay 5
       const listCount = Object.keys(lists).filter(k => k.startsWith('list') && lists[k] !== null).length;

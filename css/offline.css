@@ -425,7 +425,8 @@ h2.list-title.editable {
   color: var(--accent);
   cursor: pointer;
   text-align: center;
-  margin-top: var(--gap-xs);
+  max-width: 50%;
+  margin: var(--gap-xs) auto 0;
   transition: background 0.15s;
 }
 
