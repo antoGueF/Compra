@@ -259,7 +259,7 @@
           </div>
         </div>
       </div>
-      <div class="list-item-row">
+      <div class="list-item-row" id="list1Row">
         <div class="list-button" id="list1Button" onclick="showList('list1View')">Supermercado</div>
         <div class="list-menu" onclick="event.stopPropagation()">
           <span class="list-menu-dots" onclick="toggleListMenu(event,'list1')">⋯</span>
@@ -269,7 +269,7 @@
           </div>
         </div>
       </div>
-      <div class="list-item-row">
+      <div class="list-item-row" id="list2Row">
         <div class="list-button" id="list2Button" onclick="showList('list2View')">Fruteria</div>
         <div class="list-menu" onclick="event.stopPropagation()">
           <span class="list-menu-dots" onclick="toggleListMenu(event,'list2')">⋯</span>
@@ -308,8 +308,8 @@
             <div class="list-menu-item danger" onclick="deleteList('list5')">Eliminar lista</div>
           </div>
         </div>
-      <div class="add-list-btn" id="addListBtn" onclick="handleAddList()">+ Añadir lista</div>
       </div>
+      <div class="add-list-btn" id="addListBtn" onclick="handleAddList()">+ Añadir lista</div>
 
     <div id="list1View" class="view" style="display:none;">
       <div class="top-bar">
